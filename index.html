@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>RYANN • TOOLS</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&family=Fira+Code:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Roboto+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=Space+Mono&family=Ubuntu+Mono&family=Rajdhani:wght@400;700&family=Audiowide&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#04080f;--card:rgba(10,20,35,.78);--border:#1e4d5c;--bl:#2a6b7f;--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--tx:#e0f2fe;--txd:#64748b;--txm:#475569;--ok:#4ade80;--er:#f87171;--wr:#fbbf24;--fs:13px;--fh:'Orbitron',sans-serif;--fm:'JetBrains Mono',monospace}
 [data-theme="t-cyan"]{--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--border:#1e4d5c;--bl:#2a6b7f}
@@ -24,8 +24,9 @@
 [data-theme="t-fuchsia"]{--ac:#e879f9;--ac2:#f0abfc;--acd:rgba(232,121,249,.15);--border:#4d1e4d;--bl:#7f2a7f}
 [data-theme="t-slate"]{--ac:#94a3b8;--ac2:#cbd5e1;--acd:rgba(148,163,184,.15);--border:#3a4551;--bl:#5c6775}
 *{margin:0;padding:0;box-sizing:border-box}html{font-size:var(--fs)}
-body{background:var(--bg);color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;overflow-x:hidden;transition:background .3s}
-body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg);transition:background .3s}
+body{background:var(--bg);color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;overflow-x:hidden;position:relative;transition:background .3s}
+body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg);transition:background .3s}
+#bg-canvas{position:fixed;inset:0;z-index:-2;pointer-events:none;display:none}
 .bg-layer{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
 .stars{position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1px 1px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 75% 40%,#a5f3fc,transparent),radial-gradient(1px 1px at 90% 80%,#fff,transparent),radial-gradient(1.5px 1.5px at 25% 30%,#fff,transparent),radial-gradient(1.5px 1.5px at 60% 70%,#94a3b8,transparent),radial-gradient(1.5px 1.5px at 85% 15%,#fff,transparent),radial-gradient(2px 2px at 50% 20%,#fff,transparent),radial-gradient(2px 2px at 15% 60%,#a5f3fc,transparent),radial-gradient(2px 2px at 80% 90%,#fff,transparent);background-size:300px 300px;animation:starTwinkle 5s infinite,starDrift 60s linear infinite}
 .stars2{position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 20% 30%,#fff,transparent),radial-gradient(1px 1px at 60% 50%,#a78bfa,transparent),radial-gradient(1.5px 1.5px at 40% 80%,#fff,transparent),radial-gradient(2px 2px at 85% 25%,#67e8f9,transparent);background-size:400px 400px;animation:starTwinkle 7s infinite reverse,starDrift 90s linear infinite reverse;opacity:.7}
@@ -37,15 +38,34 @@ body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-grad
 .shoot.s3{top:70%;left:-5%;animation-delay:7s;animation-duration:9s}
 .shoot::after{content:"";position:absolute;top:0;left:0;width:140px;height:1px;background:linear-gradient(90deg,#fff,rgba(165,243,252,.6),transparent);transform:translateX(-140px) rotate(180deg);transform-origin:right center}
 @keyframes shootMove{0%{transform:translate(0,0) rotate(30deg);opacity:0}5%{opacity:1}20%{transform:translate(60vw,40vh) rotate(30deg);opacity:1}25%{transform:translate(90vw,60vh) rotate(30deg);opacity:0}100%{transform:translate(90vw,60vh) rotate(30deg);opacity:0}}
-body.bg-matrix .bg-layer{background:#000}
-body.bg-matrix .stars,body.bg-matrix .stars2{display:none}
-body.bg-matrix .bg-layer::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(0,255,100,.5)),repeating-linear-gradient(0deg,rgba(0,255,100,.15) 0,rgba(0,255,100,.15) 2px,transparent 2px,transparent 20px);animation:matrixDrop 3s linear infinite;opacity:.6}
-@keyframes matrixDrop{0%{background-position:0 0}100%{background-position:0 100px}}
-body.bg-plain .bg-layer{display:none}
-body.bg-plain{background:#04080f}
+.ufo{position:absolute;width:70px;height:28px;pointer-events:none;animation:ufoFly 25s linear infinite;opacity:.9}
+.ufo-body{position:absolute;inset:0;background:linear-gradient(180deg,#a5b4fc,#6366f1 40%,#3730a3);border-radius:50% 50% 40% 40%;box-shadow:0 0 25px rgba(165,180,252,.7),inset 0 -6px 12px rgba(0,0,0,.5)}
+.ufo-dome{position:absolute;top:-10px;left:50%;width:30px;height:18px;transform:translateX(-50%);background:radial-gradient(circle at 50% 100%,rgba(34,211,238,.95),rgba(34,211,238,.3) 60%,transparent);border-radius:50% 50% 0 0;box-shadow:0 0 20px rgba(34,211,238,.9);animation:ufoDome 1.5s ease-in-out infinite alternate}
+@keyframes ufoDome{0%{opacity:.6;filter:brightness(1)}100%{opacity:1;filter:brightness(1.5)}}
+.ufo-light{position:absolute;bottom:3px;left:50%;width:7px;height:7px;border-radius:50%;background:#fbbf24;transform:translateX(-50%);box-shadow:-14px 0 8px 2px rgba(251,191,36,.9),14px 0 8px 2px rgba(251,191,36,.9),0 0 14px 4px rgba(251,191,36,.8);animation:ufoLight .8s linear infinite}
+@keyframes ufoLight{0%,100%{filter:hue-rotate(0deg) brightness(1)}50%{filter:hue-rotate(45deg) brightness(1.3)}}
+.ufo.u2{animation-delay:-12s;animation-duration:30s;transform:scale(.7) scaleX(-1);top:60%}
+.ufo.u3{animation-delay:-6s;animation-duration:22s;transform:scale(1.1);top:30%}
+@keyframes ufoFly{0%{left:-100px;top:15%}25%{top:8%}50%{top:18%}75%{top:10%}100%{left:calc(100% + 100px);top:15%}}
+body.bg-binary{background:#000}
+body.bg-binary #bg-canvas{display:block}
+body.bg-binary .stars,body.bg-binary .stars2,body.bg-binary .shoot,body.bg-binary .ufo{display:none}
+body.bg-ufo .stars,body.bg-ufo .stars2{opacity:.4}
+body.bg-plain .stars,body.bg-plain .stars2,body.bg-plain .shoot,body.bg-plain .ufo{display:none}
+body.bg-custom{background-size:cover!important;background-position:center!important;background-attachment:fixed!important}
+body.bg-custom .stars,body.bg-custom .stars2,body.bg-custom .shoot,body.bg-custom .ufo,body.bg-custom::before{display:none!important}
 body.no-anim *{animation:none!important;transition:none!important}
 body.no-anim .bg-layer{display:none}
-body{position:relative}
+body.light{--bg:#f0f4f8;--card:rgba(255,255,255,.92);--border:#cbd5e1;--bl:#94a3b8;--tx:#0f172a;--txd:#475569;--txm:#64748b;background:#f0f4f8;color:#0f172a}
+body.light::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#e0e7ff,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#fef3c7,transparent 55%),#f0f4f8}
+body.light .bg-layer,body.light #bg-canvas{display:none!important}
+body.light .tb,body.light .c,body.light .s{background:rgba(255,255,255,.92);box-shadow:0 4px 15px rgba(0,0,0,.06)}
+body.light .nb{background:rgba(255,255,255,.7);color:#475569}
+body.light input,body.light textarea,body.light select{background:#fff;color:#0f172a}
+body.light .r,body.light .hi{background:rgba(241,245,249,.9);color:#0f172a}
+body.light .ach{background:rgba(241,245,249,.5)}
+body.light button.g{color:var(--ac);border-color:var(--ac)}
+body.light button.g:hover{background:var(--acd)}
 .w{max-width:520px;margin:0 auto;padding:10px;position:relative;z-index:1}
 .tb{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px;animation:slideDown .4s}
 @keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
@@ -56,7 +76,8 @@ body{position:relative}
 .pl .d{width:5px;height:5px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok);animation:pulse 1.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .ib{width:26px;height:26px;border:1px solid var(--bl);border-radius:5px;background:var(--acd);color:var(--ac);cursor:pointer;font-size:12px;transition:transform .2s}
-.ib:hover{transform:scale(1.1)}
+.tgl{width:26px;height:26px;border:1px solid var(--bl);border-radius:5px;background:var(--acd);color:var(--ac);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;margin-left:5px}
+.tgl:hover{transform:scale(1.1);filter:brightness(1.2)}
 .nv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
 .nb{border:1px solid var(--border);border-radius:7px;background:rgba(10,20,35,.6);padding:8px 3px;text-align:center;cursor:pointer;font-weight:700;font-size:.5rem;color:var(--txd);text-transform:uppercase;transition:all .25s;user-select:none}
 .nb:hover{border-color:var(--ac);color:var(--ac);transform:translateY(-2px)}
@@ -93,16 +114,19 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
 .tab{border:1px solid var(--border);border-radius:8px;padding:9px 6px;text-align:center;cursor:pointer;font-weight:700;font-size:.6rem;color:var(--txd);text-transform:uppercase;transition:all .2s}
-.tab:hover{color:var(--ac)}
 .tab.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
 .tg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
 .to{aspect-ratio:1;border-radius:7px;border:2px solid var(--border);cursor:pointer;position:relative;transition:all .2s}
-.to:hover{transform:scale(1.08)}
 .to.a{border-color:var(--ac);transform:scale(1.08);box-shadow:0 0 10px var(--acd)}
 .to .lbl{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.4rem;color:#fff;text-shadow:0 0 4px #000}
-.bg-opt{padding:10px;border-radius:8px;border:2px solid var(--border);cursor:pointer;text-align:center;font-size:.6rem;font-weight:700;color:var(--txd);background:rgba(10,20,35,.6);transition:all .2s}
-.bg-opt:hover{border-color:var(--ac);color:var(--ac)}
-.bg-opt.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
+.snd-pack{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+.snd-opt{padding:8px 4px;border-radius:7px;border:2px solid var(--border);cursor:pointer;text-align:center;font-size:.55rem;font-weight:700;color:var(--txd);background:rgba(10,20,35,.6);text-transform:uppercase;transition:all .2s}
+.snd-opt:hover{border-color:var(--ac);color:var(--ac)}
+.snd-opt.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
+.bg-upload{border:2px dashed var(--bl);border-radius:9px;background:rgba(4,8,15,.4);padding:16px;text-align:center;cursor:pointer;margin-top:8px;transition:all .2s}
+.bg-upload:hover{border-color:var(--ac);background:var(--acd)}
+.bg-upload .ic{font-size:26px;display:block;margin-bottom:4px}
+.bg-preview{width:100%;height:80px;border-radius:7px;background-size:cover;background-position:center;border:1px solid var(--border);margin-top:8px;display:none}
 .hi{padding:9px;border-radius:7px;border:1px solid var(--border);background:rgba(4,8,15,.5);margin-bottom:5px;font-size:.6rem}
 .hi b{color:var(--ac)}
 .hd{display:none!important}
@@ -119,21 +143,26 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 </head>
 <body data-theme="t-cyan">
 
+<canvas id="bg-canvas"></canvas>
 <div class="bg-layer">
   <div class="stars"></div>
   <div class="stars2"></div>
   <div class="shoot s1"></div>
   <div class="shoot s2"></div>
   <div class="shoot s3"></div>
+  <div class="ufo u1"><div class="ufo-body"></div><div class="ufo-dome"></div><div class="ufo-light"></div></div>
+  <div class="ufo u2"><div class="ufo-body"></div><div class="ufo-dome"></div><div class="ufo-light"></div></div>
+  <div class="ufo u3"><div class="ufo-body"></div><div class="ufo-dome"></div><div class="ufo-light"></div></div>
 </div>
 
 <div class="w">
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v4.1</span>
+<span class="ch">v4.2</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
+<button class="tgl" id="mode-tgl">🌙</button>
 </div>
 
 <div class="nv">
@@ -294,12 +323,21 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 </div>
 
 <div class="c"><div class="cl">🖼 BACKGROUND</div>
-<div class="br" id="bg-grid">
-<div class="bg-opt a" data-bg="galaxy">GALAXY</div>
-<div class="bg-opt" data-bg="matrix">MATRIX</div>
-<div class="bg-opt" data-bg="plain">PLAIN DARK</div>
-<div class="bg-opt" data-bg="galaxy2">GALAXY 2</div>
+<div class="snd-pack" id="bg-grid">
+<div class="snd-opt a" data-bg="galaxy">GALAXY</div>
+<div class="snd-opt" data-bg="binary">BINARY</div>
+<div class="snd-opt" data-bg="ufo">UFO</div>
+<div class="snd-opt" data-bg="plain">PLAIN</div>
+<div class="snd-opt" data-bg="custom">CUSTOM</div>
 </div>
+<div class="bg-upload" id="bg-upload-btn">
+<span class="ic">🖼️</span>
+<div style="font-weight:700;font-size:.65rem">UPLOAD CUSTOM BG</div>
+<div style="font-size:.55rem;color:var(--txd);margin-top:3px">JPG · PNG · max 5MB</div>
+</div>
+<input type="file" id="bg-file" accept="image/*" class="hd">
+<div class="bg-preview" id="bg-preview"></div>
+<button class="g" id="bg-clear" style="margin-top:8px">🗑 CLEAR CUSTOM BG</button>
 </div>
 
 <div class="c"><div class="cl">🔤 FONT <span id="fv" style="color:var(--ac)">13px</span></div>
@@ -329,9 +367,19 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 <div class="br"><button class="g" data-lang="id">🇮🇩 ID</button><button class="g" data-lang="en">🇬🇧 EN</button></div>
 </div>
 
-<div class="c"><div class="cl">🔔 EFFECTS</div>
-<div class="br"><button class="g" id="snd">🔊 SOUND: OFF</button><button class="g" id="ani">✨ ANIM: ON</button></div>
-<div class="br"><button class="g" id="haptic">📳 HAPTIC: OFF</button><button class="g" id="test-snd">🔊 TEST</button></div>
+<div class="c"><div class="cl">🔔 SOUND PACK</div>
+<div class="snd-pack" id="snd-grid">
+<div class="snd-opt a" data-snd="beep">BEEP</div>
+<div class="snd-opt" data-snd="click">CLICK</div>
+<div class="snd-opt" data-snd="digital">DIGITAL</div>
+<div class="snd-opt" data-snd="soft">SOFT</div>
+<div class="snd-opt" data-snd="off">OFF</div>
+<button class="g" id="test-snd" style="padding:8px 4px;font-size:.55rem;margin-top:0">🔊 TEST</button>
+</div>
+</div>
+
+<div class="c"><div class="cl">✨ ANIMATION & HAPTIC</div>
+<div class="br"><button class="g" id="ani">✨ ANIM: ON</button><button class="g" id="haptic">📳 HAPTIC: OFF</button></div>
 </div>
 
 <div class="c"><div class="cl">💾 DATA</div>
@@ -341,15 +389,19 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 </div>
 
 <div class="pg hd" id="pg-abt">
-<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.1</div>
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.2</div>
 <p style="font-size:.65rem;color:var(--txd);text-align:center;line-height:1.7">Static HTML · No Backend · No VPS<br><span style="color:var(--ac)">RyanApi77</span></p>
 </div>
 <div class="c"><div class="cl">INFO</div>
-<div class="r">Build: v4.1</div><div class="r">Features: 65</div><div class="r">Tabs: 8</div>
+<div class="r">Build: v4.2</div>
+<div class="r">Features: 70</div>
+<div class="r">Tabs: 8</div>
+<div class="r">Backgrounds: 5</div>
+<div class="r">Sound Packs: 5</div>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v4.1</div>
+<div class="ft">RYANN • TOOLS · v4.2</div>
 </div>
 
 <script src="templates.js"></script>
@@ -357,19 +409,48 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 var $=function(i){return document.getElementById(i)};
 var S={set:function(k,v){try{localStorage.setItem('rx_'+k,JSON.stringify(v))}catch(e){}},get:function(k,d){try{var v=localStorage.getItem('rx_'+k);return v?JSON.parse(v):d}catch(e){return d}},del:function(k){try{localStorage.removeItem('rx_'+k)}catch(e){}}};
 
-// SOUND ENGINE
-var sndOn=S.get('sound',false);
+// ============================================
+// SOUND ENGINE — 5 PACKS
+// ============================================
 var audioCtx=null;
+var sndPack=S.get('snd_pack','beep');
 function initAudio(){if(!audioCtx){try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){audioCtx=null}}}
-function beep(freq,dur,type,vol){if(!sndOn){return}initAudio();if(!audioCtx)return;try{var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type||'sine';o.frequency.value=freq;g.gain.value=vol||.05;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur)}catch(e){}}
-function sndClick(){beep(800,.05,'square',.03)}
-function sndSuccess(){beep(600,.08,'sine',.05);setTimeout(function(){beep(900,.1,'sine',.05)},80)}
-function sndError(){beep(200,.15,'sawtooth',.05)}
-function sndNav(){beep(500,.04,'sine',.02)}
+function beep(freq,dur,type,vol){initAudio();if(!audioCtx)return;try{var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type||'sine';o.frequency.value=freq;g.gain.value=vol||.04;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur)}catch(e){}}
+function noiseBurst(dur,vol){initAudio();if(!audioCtx)return;try{var b=audioCtx.createBuffer(1,audioCtx.sampleRate*dur,audioCtx.sampleRate);var d=b.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);var s=audioCtx.createBufferSource();s.buffer=b;var g=audioCtx.createGain();g.gain.value=vol||.05;s.connect(g);g.connect(audioCtx.destination);s.start()}catch(e){}}
+function sndPlay(kind){
+if(sndPack==='off')return;
+if(sndPack==='beep'){
+if(kind==='click')beep(800,.05,'square',.03);
+else if(kind==='nav')beep(500,.04,'sine',.02);
+else if(kind==='success'){beep(600,.08,'sine',.05);setTimeout(function(){beep(900,.1,'sine',.05)},80)}
+else if(kind==='error')beep(200,.15,'sawtooth',.05);
+}
+else if(sndPack==='click'){
+if(kind==='click'||kind==='nav')noiseBurst(.03,.06);
+else if(kind==='success'){noiseBurst(.03,.06);setTimeout(function(){noiseBurst(.03,.06)},60)}
+else if(kind==='error'){noiseBurst(.03,.08);setTimeout(function(){noiseBurst(.03,.08)},60);setTimeout(function(){noiseBurst(.03,.08)},120)}
+}
+else if(sndPack==='digital'){
+if(kind==='click')beep(1200,.03,'square',.04);
+else if(kind==='nav')beep(1500,.02,'square',.03);
+else if(kind==='success'){beep(523,.07,'square',.04);setTimeout(function(){beep(659,.07,'square',.04)},80);setTimeout(function(){beep(784,.1,'square',.04)},160)}
+else if(kind==='error'){beep(200,.1,'square',.05);setTimeout(function(){beep(100,.15,'square',.05)},100)}
+}
+else if(sndPack==='soft'){
+if(kind==='click')beep(400,.08,'sine',.02);
+else if(kind==='nav')beep(300,.04,'sine',.015);
+else if(kind==='success'){beep(500,.1,'sine',.03);setTimeout(function(){beep(700,.12,'sine',.03)},100)}
+else if(kind==='error')beep(250,.15,'sine',.03);
+}
+}
+function sndClick(){sndPlay('click')}
+function sndSuccess(){sndPlay('success')}
+function sndError(){sndPlay('error')}
+function sndNav(){sndPlay('nav')}
 
 // HAPTIC
 var hapticOn=S.get('haptic',false);
-function vib(ms){if(!hapticOn)return;if(navigator.vibrate)navigator.vibrate(ms||20)}
+function vib(ms){if(!hapticOn)return;if(navigator.vibrate)try{navigator.vibrate(ms||20)}catch(e){}}
 
 // ANIMATION
 var aniOn=S.get('anim',true);
@@ -383,20 +464,46 @@ document.querySelectorAll('.to').forEach(function(o){o.onclick=function(){setTem
 var bgNow=S.get('bg','galaxy');
 function setBg(b){
 bgNow=b;S.set('bg',b);
-document.body.classList.remove('bg-matrix','bg-plain','bg-galaxy2');
-if(b==='matrix')document.body.classList.add('bg-matrix');
+document.body.classList.remove('bg-binary','bg-plain','bg-ufo','bg-custom');
+if(b==='binary')document.body.classList.add('bg-binary');
 else if(b==='plain')document.body.classList.add('bg-plain');
-else if(b==='galaxy2')document.body.classList.add('bg-galaxy2');
-document.querySelectorAll('.bg-opt').forEach(function(o){o.classList.toggle('a',o.dataset.bg===b)});
+else if(b==='ufo')document.body.classList.add('bg-ufo');
+else if(b==='custom'){document.body.classList.add('bg-custom');applyCustomBg()}
+document.querySelectorAll('#bg-grid .snd-opt').forEach(function(o){o.classList.toggle('a',o.dataset.bg===b)});
 }
-document.querySelectorAll('.bg-opt').forEach(function(o){o.onclick=function(){setBg(o.dataset.bg);sndClick();vib()}});
+function applyCustomBg(){var img=S.get('bg_custom','');if(img){document.body.style.backgroundImage='url('+img+')';var pv=$('bg-preview');pv.style.display='block';pv.style.backgroundImage='url('+img+')'}else{document.body.classList.remove('bg-custom');document.body.style.backgroundImage=''}}
+document.querySelectorAll('#bg-grid .snd-opt').forEach(function(o){o.onclick=function(){setBg(o.dataset.bg);sndClick();vib()}});
+
+// CUSTOM BG UPLOAD
+$('bg-upload-btn').onclick=function(){$('bg-file').click()};
+$('bg-file').onchange=function(e){
+var f=e.target.files[0];if(!f)return;
+if(f.size>5*1024*1024){alert('Gambar > 5MB, coba kompres dulu');sndError();return}
+var r=new FileReader();
+r.onload=function(ev){
+var img=new Image();
+img.onload=function(){
+var c=document.createElement('canvas');
+var maxW=1280;
+var scale=Math.min(1,maxW/img.width);
+c.width=img.width*scale;c.height=img.height*scale;
+c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+var b64=c.toDataURL('image/jpeg',.7);
+S.set('bg_custom',b64);
+setBg('custom');sndSuccess();alert('Custom BG tersimpan');
+};
+img.src=ev.target.result;
+};
+r.readAsDataURL(f);
+};
+$('bg-clear').onclick=function(){S.del('bg_custom');document.body.style.backgroundImage='';$('bg-preview').style.display='none';setBg('galaxy');sndSuccess()};
 
 // NAV
 document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){sndNav();vib(10);document.querySelectorAll('.nb').forEach(function(x){x.classList.remove('a')});b.classList.add('a');document.querySelectorAll('.pg').forEach(function(p){p.classList.add('hd')});var pg=$('pg-'+b.dataset.p);if(pg)pg.classList.remove('hd')}});
 window.go=function(p){var b=document.querySelector('.nb[data-p="'+p+'"]');if(b)b.click()};
 
 // GLOBAL BUTTON CLICK SOUND
-document.addEventListener('click',function(e){if(e.target.tagName==='BUTTON'){sndClick();vib(15)}},true);
+document.addEventListener('click',function(e){if(e.target.tagName==='BUTTON'&&!e.target.classList.contains('tgl')){sndClick();vib(15)}},true);
 
 // FONT
 $('fsr').oninput=function(){document.documentElement.style.setProperty('--fs',this.value+'px');S.set('font',this.value);$('fv').textContent=this.value+'px'};
@@ -439,17 +546,17 @@ checkAch(g);
 
 // DOWNLOAD
 $('db').onclick=function(){if(!genCode){sndError();alert('Generate dulu');return}var b=new Blob([genCode],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=$('rm').textContent;document.body.appendChild(a);a.click();document.body.removeChild(a);var d=S.get('downloads',0)+1;S.set('downloads',d);$('st-d').textContent=d;sndSuccess();vib(50);setTimeout(function(){URL.revokeObjectURL(u)},1000)};
-$('cob').onclick=function(){if(!genCode)return;navigator.clipboard.writeText(genCode).then(function(){sndSuccess()})};
+$('cob').onclick=function(){if(!genCode){sndError();return}navigator.clipboard.writeText(genCode).then(function(){sndSuccess()})};
 $('shb').onclick=function(){if(!genCode){sndError();return}if(navigator.share){navigator.share({title:$('rm').textContent,text:'RYANN TOOLS generate: '+$('rm').textContent}).catch(function(){})}else alert('Browser gak support share')};
 $('pvb').onclick=function(){var pb=$('pbox');if(pb.classList.contains('hd')){pb.textContent=genCode.substring(0,3000)+(genCode.length>3000?'\n\n... (truncated)':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
 $('cb').onclick=function(){$('ci').value='';$('rc').classList.add('hd');$('sw').innerHTML='';genCode=''};
 $('vb').onclick=function(){var c=$('ci').value;var q1=(c.match(/'/g)||[]).length,q2=(c.match(/"/g)||[]).length;var w=[];if(q1%2)w.push("kutip ' ganjil");if(q2%2)w.push('kutip " ganjil');$('sw').innerHTML=w.length?'<div class="st-er">⚠ '+w.join(', ')+'</div>':'<div class="st-ok">✓ Kode OK</div>';if(w.length)sndError();else sndSuccess()};
 
-// ACH
+// ACHIEVEMENTS
 function checkAch(g){document.querySelectorAll('.ach').forEach(function(el){var v=parseInt(el.dataset.ach);if(g>=v){if(el.classList.contains('locked')){el.classList.remove('locked');el.classList.add('unlocked');sndSuccess()}}})}
 
 // UTILS
-$('pgen').onclick=function(){var l=parseInt($('plen').value)||16;var c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';var r='';for(var i=0;i<l;i++)r+=c[Math.floor(Math.random()*c.length)];$('pres').textContent=r};
+$('pgen').onclick=function(){var l=parseInt($('plen').value)||16;var c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';var r='';for(var i=0;i<l;i++)r+=c[Math.floor(Math.random()*c.length)];$('pres').textContent=r;sndSuccess()};
 $('pcp').onclick=function(){navigator.clipboard.writeText($('pres').textContent).then(sndSuccess)};
 $('ugen').onclick=function(){$('ures').textContent=crypto.randomUUID();sndSuccess()};
 function hashIt(algo,el){var t=$('hin').value;var e=new TextEncoder().encode(t);crypto.subtle.digest(algo,e).then(function(b){var h=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');el.textContent=h;sndSuccess()})}
@@ -465,11 +572,67 @@ $('mip').onclick=function(){$('mres').textContent='Loading...';fetch('https://ap
 $('whogen').onclick=function(){var d=$('whoin').value.trim();if(!d){sndError();return}$('whores').textContent='Cek manual di whois.domaintools.com/'+d};
 $('dgen').onclick=function(){var kw=$('dkw').value.trim(),site=$('dsite').value.trim(),tp=$('dtype').value.trim();var q='';if(site)q+='site:'+site+' ';if(kw)q+='"'+kw+'" ';if(tp)q+='filetype:'+tp;$('dres').textContent=q.trim()||'(kosong)';sndSuccess()};
 $('dvinfo').onclick=function(){var d='Browser: '+navigator.userAgent+'<br>Platform: '+navigator.platform+'<br>Language: '+navigator.language+'<br>Layar: '+screen.width+'x'+screen.height+'<br>Online: '+navigator.onLine;$('dvres').innerHTML=d;sndSuccess()};
+
+// SOUND PACK PICKER
+document.querySelectorAll('#snd-grid .snd-opt').forEach(function(o){
+o.onclick=function(){
+sndPack=o.dataset.snd;S.set('snd_pack',sndPack);
+document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});
+if(sndPack!=='off')sndSuccess();
+};
+});
+$('test-snd').onclick=function(){var old=sndPack;if(sndPack==='off')sndPack='beep';sndSuccess();setTimeout(function(){sndPack=old},300)};
+
+// DARK/LIGHT TOGGLE
+var mode=S.get('mode','dark');
+function applyMode(){
+if(mode==='light')document.body.classList.add('light');else document.body.classList.remove('light');
+$('mode-tgl').textContent=mode==='light'?'☀️':'🌙';
+}
+$('mode-tgl').onclick=function(){mode=(mode==='dark')?'light':'dark';S.set('mode',mode);applyMode();sndClick();vib()};
+
+// HAPTIC TOGGLE
+$('haptic').onclick=function(){hapticOn=!hapticOn;S.set('haptic',hapticOn);$('haptic').textContent='📳 HAPTIC: '+(hapticOn?'ON':'OFF');if(hapticOn)vib(50)};
+$('haptic').textContent='📳 HAPTIC: '+(hapticOn?'ON':'OFF');
+
+// ANIMATION TOGGLE
+$('ani').onclick=function(){aniOn=!aniOn;S.set('anim',aniOn);$('ani').textContent='✨ ANIM: '+(aniOn?'ON':'OFF');applyAnim();sndClick();vib()};
+$('ani').textContent='✨ ANIM: '+(aniOn?'ON':'OFF');
+applyAnim();
 </script>
 <script>
-// PART 2 — HISTORY, TEMPLATES, SETTINGS, SOUND TOGGLE, BOOT
+// ============================================
+// PATCH v4.2 — BINARY RAIN CANVAS + HISTORY + TEMPLATE + SETTINGS + BOOT
+// ============================================
 
-// SNIPPET
+// BINARY RAIN (canvas)
+(function(){
+var canvas=$('bg-canvas');
+if(!canvas)return;
+var ctx=canvas.getContext('2d');
+var cols=0,drops=[];
+var chars='01';
+var fontSize=16;
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;cols=Math.floor(canvas.width/fontSize);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*canvas.height/fontSize}
+resize();
+addEventListener('resize',resize);
+var running=true;
+function draw(){
+if(!document.body.classList.contains('bg-binary')||!aniOn){requestAnimationFrame(draw);return}
+ctx.fillStyle='rgba(0,0,0,0.06)';ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle='#22ff44';ctx.font=fontSize+'px monospace';
+for(var i=0;i<cols;i++){
+var ch=chars[Math.floor(Math.random()*chars.length)];
+ctx.fillText(ch,i*fontSize,drops[i]*fontSize);
+if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;
+drops[i]++;
+}
+requestAnimationFrame(draw);
+}
+draw();
+})();
+
+// SNIPPET SAVE/LOAD
 $('snp-save').onclick=function(){var c=$('ci').value.trim();if(!c){sndError();alert('Kosong');return}var n=prompt('Nama snippet:');if(!n)return;var sn=S.get('snippets',{});sn[n]=c;S.set('snippets',sn);var cnt=Object.keys(sn).length;S.set('snippet_count',cnt);$('st-s').textContent=cnt;sndSuccess();alert('Saved: '+n)};
 $('snp-load').onclick=function(){var sn=S.get('snippets',{});var keys=Object.keys(sn);if(!keys.length){sndError();alert('Belum ada snippet');return}var pick=prompt('Pilih:\n'+keys.map(function(k,i){return (i+1)+'. '+k}).join('\n')+'\n\nKetik nomor:');var i=parseInt(pick)-1;if(keys[i]){$('ci').value=sn[keys[i]];sndSuccess();alert('Loaded: '+keys[i])}};
 
@@ -518,28 +681,14 @@ $('wipe').onclick=function(){if(confirm('Wipe ALL data?')){Object.keys(localStor
 // LANGUAGE
 document.querySelectorAll('[data-lang]').forEach(function(b){b.onclick=function(){S.set('lang',b.dataset.lang);sndClick();location.reload()}});
 
-// SOUND TOGGLE
-$('snd').onclick=function(){sndOn=!sndOn;S.set('sound',sndOn);$('snd').textContent='🔊 SOUND: '+(sndOn?'ON':'OFF');if(sndOn){initAudio();sndSuccess()}vib()};
-$('snd').textContent='🔊 SOUND: '+(sndOn?'ON':'OFF');
-
-// HAPTIC TOGGLE
-$('haptic').onclick=function(){hapticOn=!hapticOn;S.set('haptic',hapticOn);$('haptic').textContent='📳 HAPTIC: '+(hapticOn?'ON':'OFF');if(hapticOn)vib(50)};
-$('haptic').textContent='📳 HAPTIC: '+(hapticOn?'ON':'OFF');
-
-// ANIMATION TOGGLE
-$('ani').onclick=function(){aniOn=!aniOn;S.set('anim',aniOn);$('ani').textContent='✨ ANIM: '+(aniOn?'ON':'OFF');applyAnim();sndClick();vib()};
-$('ani').textContent='✨ ANIM: '+(aniOn?'ON':'OFF');
-applyAnim();
-
-// TEST SOUND
-$('test-snd').onclick=function(){var old=sndOn;sndOn=true;sndSuccess();setTimeout(function(){sndOn=old},300)};
-
 // BOOT
 function boot(){
 setTema(S.get('theme','t-cyan'));
 setBg(S.get('bg','galaxy'));
+applyMode();
 var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';
 var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);
+document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});
 $('st-g').textContent=S.get('generates',0);
 $('st-d').textContent=S.get('downloads',0);
 $('st-s').textContent=S.get('snippet_count',0);
