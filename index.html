@@ -147,6 +147,7 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 .msg-item{padding:9px;border:1px solid var(--border);border-radius:7px;margin-bottom:5px;cursor:pointer;font-size:.6rem;background:rgba(4,8,15,.5);transition:all .2s}
 .msg-item:hover{border-color:var(--ac);background:var(--acd)}
 .msg-item b{color:var(--ac)}
+button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 </style>
 </head>
 <body data-theme="t-cyan">
@@ -167,7 +168,7 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v4.3</span>
+<span class="ch">v4.3.1</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
 <button class="tgl" id="mode-tgl">🌙</button>
@@ -338,8 +339,8 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 <input id="scr-vtoken" placeholder="vercel token (vercel.com/account/tokens)">
 <label>Project Name</label>
 <input id="scr-vname" placeholder="my-project">
-<label>File (HTML / ZIP)</label>
-<input type="file" id="scr-vfile">
+<label>File (HTML / CSS / JS / semua file project)</label>
+<input type="file" id="scr-vfile" multiple>
 <div class="br"><button class="g" id="scr-vdeploy">🚀 DEPLOY</button><button class="g" id="scr-vclear">🗑 CLEAR</button></div>
 <div id="scr-vlog" class="console-log" style="height:180px"></div>
 <div id="scr-vresult" class="r hd"></div>
@@ -352,7 +353,7 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 <input id="tmp-name" placeholder="namalo">
 <label>Domain</label>
 <select id="tmp-domain"><option value="">Loading domains...</option></select>
-<div class="br"><button class="g" id="tmp-gen">⚡ GENERATE</button><button class="g" id="tmp-copy">📋 COPY</button></div>
+<div class="br3"><button class="g" id="tmp-gen">⚡ GENERATE</button><button class="g" id="tmp-copy">📋 COPY</button><button class="g" id="tmp-reaload">🔄 RELOAD</button></div>
 <div id="tmp-log" class="console-log" style="height:100px"></div>
 <div class="r" id="tmp-email">—</div>
 </div>
@@ -469,19 +470,19 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 </div>
 
 <div class="pg hd" id="pg-abt">
-<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.3</div>
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.3.1</div>
 <p style="font-size:.65rem;color:var(--txd);text-align:center;line-height:1.7">Static HTML · No Backend · No VPS<br><span style="color:var(--ac)">RyanApi77</span></p>
 </div>
 <div class="c"><div class="cl">INFO</div>
-<div class="r">Build: v4.3</div>
-<div class="r">Features: 75</div>
+<div class="r">Build: v4.3.1</div>
+<div class="r">Features: 78</div>
 <div class="r">Tabs: 10</div>
 <div class="r">Backgrounds: 5</div>
 <div class="r">Sound Packs: 5</div>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v4.3</div>
+<div class="ft">RYANN • TOOLS · v4.3.1</div>
 </div>
 
 <script src="templates.js"></script>
@@ -568,7 +569,7 @@ $('bg-clear').onclick=function(){S.del('bg_custom');document.body.style.backgrou
 document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){sndNav();vib(10);document.querySelectorAll('.nb').forEach(function(x){x.classList.remove('a')});b.classList.add('a');document.querySelectorAll('.pg').forEach(function(p){p.classList.add('hd')});var pg=$('pg-'+b.dataset.p);if(pg)pg.classList.remove('hd')}});
 window.go=function(p){var b=document.querySelector('.nb[data-p="'+p+'"]');if(b)b.click()};
 
-document.addEventListener('click',function(e){if(e.target.tagName==='BUTTON'&&!e.target.classList.contains('tgl')){sndClick();vib(15)}},true);
+document.addEventListener('click',function(e){if(e.target.tagName==='BUTTON'&&!e.target.classList.contains('tgl')&&!e.target.disabled){sndClick();vib(15)}},true);
 
 // FONT
 $('fsr').oninput=function(){document.documentElement.style.setProperty('--fs',this.value+'px');S.set('font',this.value);$('fv').textContent=this.value+'px'};
@@ -708,11 +709,36 @@ $('wipe').onclick=function(){if(confirm('Wipe ALL data?')){Object.keys(localStor
 document.querySelectorAll('[data-lang]').forEach(function(b){b.onclick=function(){S.set('lang',b.dataset.lang);sndClick();location.reload()}});
 
 // ============================================
-// PROXY SCRAPER
+// PROXY SCRAPER — cooldown 15 menit
 // ============================================
 var scrResults=[];
+var SCR_CD=15*60*1000;
+
+function scrUpdateCooldownUI(){
+var last=S.get('scr_last',0);
+var diff=last+SCR_CD-Date.now();
+var btn=$('scr-start');
+if(!btn)return;
+if(diff>0){
+var m=Math.floor(diff/60000),s=Math.floor((diff%60000)/1000);
+btn.disabled=true;
+btn.textContent='⏳ TUNGGU '+m+'m '+s+'s';
+}else{
+btn.disabled=false;
+btn.textContent='▶ START SCRAPE';
+}
+}
+
 $('scr-clear').onclick=function(){$('scr-log').innerHTML='';$('scr-pbox').classList.add('hd');scrResults=[];sndClick()};
 $('scr-start').onclick=async function(){
+var last=S.get('scr_last',0);
+var diff=last+SCR_CD-Date.now();
+if(diff>0){
+var m=Math.ceil(diff/60000);
+logTo('scr-log','⏳ Cooldown aktif — tunggu '+m+' menit lagi','warn');
+sndError();
+return;
+}
 var sources=$('scr-sources').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});
 if(!sources.length){alert('Sumber kosong');sndError();return}
 var log=$('scr-log');log.innerHTML='';scrResults=[];
@@ -732,45 +758,84 @@ logTo('scr-log','  ✓ '+found.length+' proxy · '+uniq+' unik baru','ok');
 logTo('scr-log','  ✗ Gagal: '+e.message,'er');
 }
 }
+S.set('scr_last',Date.now());
 logTo('scr-log','','');
-logTo('scr-log','SELESAI — Total unik: '+total,'in');sndSuccess();
+logTo('scr-log','SELESAI — Total unik: '+total,'in');
+logTo('scr-log','⏳ Cooldown 15 menit dimulai','warn');
+sndSuccess();
+scrUpdateCooldownUI();
 };
 $('scr-preview').onclick=function(){var pb=$('scr-pbox');if(pb.classList.contains('hd')){pb.textContent=scrResults.slice(0,50).join('\n')+(scrResults.length>50?'\n\n... +'+(scrResults.length-50)+' lagi':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
 $('scr-dl').onclick=function(){if(!scrResults.length){alert('Belum ada hasil');sndError();return}var b=new Blob([scrResults.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxies.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 
 // ============================================
-// VERCEL DEPLOYER
+// VERCEL DEPLOYER — auto suffix + multi-file
 // ============================================
 $('scr-vclear').onclick=function(){$('scr-vlog').innerHTML='';$('scr-vresult').classList.add('hd');sndClick()};
+
+function vercelSuffix(){
+var c='abcdefghijklmnopqrstuvwxyz0123456789';
+var s='';
+for(var i=0;i<5;i++)s+=c[Math.floor(Math.random()*c.length)];
+return s;
+}
+function vercelNormName(n){
+n=(n||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
+if(!n)n='project';
+return n;
+}
+function vercelFileToBase64(file){
+return new Promise(function(res,rej){
+var r=new FileReader();
+r.onload=function(){var s=r.result;var i=s.indexOf(',');res(s.substring(i+1))};
+r.onerror=rej;
+r.readAsDataURL(file);
+});
+}
+
 $('scr-vdeploy').onclick=async function(){
 var tok=$('scr-vtoken').value.trim();
-var name=$('scr-vname').value.trim();
-var file=$('scr-vfile').files[0];
+var rawName=$('scr-vname').value.trim();
+var files=$('scr-vfile').files;
 if(!tok){alert('Token kosong');sndError();return}
-if(!name){alert('Project name kosong');sndError();return}
-if(!file){alert('File kosong');sndError();return}
+if(!rawName){alert('Project name kosong');sndError();return}
+if(!files||!files.length){alert('File kosong');sndError();return}
 var log=$('scr-vlog');log.innerHTML='';
-logTo('scr-vlog','Membaca file...','dim');
-var reader=new FileReader();
-reader.onload=async function(e){
-var content=e.target.result;
-logTo('scr-vlog','File: '+file.name+' · '+(file.size/1024).toFixed(1)+' KB','ok');
-logTo('scr-vlog','Deploy ke Vercel sebagai "'+name+'"...','in');
+
+var base=vercelNormName(rawName);
+var name=base+'-'+vercelSuffix();
+logTo('scr-vlog','Project name final: '+name,'in');
+
+logTo('scr-vlog','Membaca '+files.length+' file...','dim');
+var payloadFiles=[];
+var totalSize=0;
+for(var i=0;i<files.length;i++){
+var f=files[i];
+var path=f.name.replace(/^.*[\\\/]/,'');
+totalSize+=f.size;
+logTo('scr-vlog','  · '+path+' ('+(f.size/1024).toFixed(1)+' KB)','ok');
 try{
-var files={};
-if(file.name.endsWith('.html')||file.name.endsWith('.htm')){
-files['index.html']={file:'index.html'};
+var b64=await vercelFileToBase64(f);
+payloadFiles.push({file:path,data:b64,encoding:'base64'});
+}catch(e){logTo('scr-vlog','  ✗ gagal baca '+path,'er');sndError();return}
 }
-var payload={
-name:name,
-files:[{file:'index.html',data:content}],
-projectSettings:{framework:null}
-};
+var hasIndex=payloadFiles.some(function(x){return x.file==='index.html'});
+if(!hasIndex){
+logTo('scr-vlog','⚠ gak ada index.html — pastikan salah satu file namanya index.html','warn');
+}
+
+logTo('scr-vlog','Total: '+(totalSize/1024).toFixed(1)+' KB','in');
 logTo('scr-vlog','POST /v13/deployments...','dim');
+
+try{
 var r=await fetch('https://api.vercel.com/v13/deployments',{
 method:'POST',
 headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},
-body:JSON.stringify(payload)
+body:JSON.stringify({
+name:name,
+files:payloadFiles,
+projectSettings:{framework:null}
+})
 });
 var j=await r.json();
 if(r.ok){
@@ -781,35 +846,60 @@ $('scr-vresult').textContent='✓ '+url;
 $('scr-vresult').classList.remove('hd');
 sndSuccess();
 }else{
-logTo('scr-vlog','✗ Error: '+(j.error&&j.error.message||JSON.stringify(j)),'er');
+var em=(j.error&&j.error.message)||JSON.stringify(j);
+logTo('scr-vlog','✗ Error: '+em,'er');
 sndError();
 }
 }catch(err){logTo('scr-vlog','✗ Fetch error: '+err.message,'er');sndError()}
 };
-reader.readAsText(file);
-};
 
 // ============================================================
-// TEMP MAIL — mail.tm API
+// TEMP MAIL — mail.tm via CORS proxy fallback
 // ============================================================
 var tmpToken=null;
 var tmpEmail=null;
 var tmpMsgs=[];
+var CORS_PROXIES=[
+'https://corsproxy.io/?url=',
+'https://api.allorigins.win/raw?url=',
+'https://cors.eu.org/'
+];
+
+async function tmpFetch(url,opts){
+var lastErr=null;
+for(var i=0;i<CORS_PROXIES.length;i++){
+var p=CORS_PROXIES[i];
+var full=p+encodeURIComponent(url);
+try{
+var r=await fetch(full,opts||{});
+if(r.ok)return r;
+lastErr=new Error('HTTP '+r.status);
+}catch(e){lastErr=e}
+}
+throw lastErr||new Error('All proxies failed');
+}
 
 async function tmpLoadDomains(){
-try{
-var r=await fetch('https://api.mail.tm/domains');
-var j=await r.json();
 var sel=$('tmp-domain');
+sel.innerHTML='<option value="">Loading domains...</option>';
+try{
+var r=await tmpFetch('https://api.mail.tm/domains');
+var j=await r.json();
+var arr=j['hydra:member']||[];
+if(!arr.length)throw new Error('Domain list kosong');
 sel.innerHTML='<option value="">— Pilih Domain —</option>';
-(j['hydra:member']||[]).forEach(function(d){
+arr.forEach(function(d){
 var o=document.createElement('option');
 o.value=d.domain;o.textContent=d.domain;
 sel.appendChild(o);
 });
-logTo('tmp-log','✓ '+((j['hydra:member']||[]).length)+' domain loaded','ok');
-}catch(e){logTo('tmp-log','✗ Gagal load domain: '+e.message,'er')}
+logTo('tmp-log','✓ '+arr.length+' domain loaded','ok');
+}catch(e){
+sel.innerHTML='<option value="">✗ Gagal load — klik RELOAD</option>';
+logTo('tmp-log','✗ Gagal load domain: '+e.message,'er');
 }
+}
+$('tmp-reaload').onclick=function(){tmpLoadDomains();sndClick()};
 
 $('tmp-gen').onclick=async function(){
 var nm=$('tmp-name').value.trim()||('user'+Math.floor(Math.random()*99999));
@@ -819,15 +909,23 @@ var em=nm+'@'+dom;
 var pw='RyannTmp!'+Math.floor(Math.random()*99999);
 logTo('tmp-log','Bikin akun '+em+'...','in');
 try{
-var r=await fetch('https://api.mail.tm/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});
+var r=await tmpFetch('https://api.mail.tm/accounts',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({address:em,password:pw})
+});
 var j=await r.json();
 if(!r.ok){logTo('tmp-log','✗ '+(j.message||JSON.stringify(j)),'er');sndError();return}
 logTo('tmp-log','✓ Akun dibuat','ok');
-var r2=await fetch('https://api.mail.tm/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});
+var r2=await tmpFetch('https://api.mail.tm/token',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({address:em,password:pw})
+});
 var j2=await r2.json();
 tmpToken=j2.token;tmpEmail=em;
 $('tmp-email').textContent=em;
-logTo('tmp-log','✓ Login berhasil','ok');
+logTo('tmp-log','✓ Login berhasil · token siap','ok');
 sndSuccess();
 }catch(e){logTo('tmp-log','✗ '+e.message,'er');sndError()}
 };
@@ -838,14 +936,14 @@ $('tmp-refresh').onclick=async function(){
 if(!tmpToken){alert('Generate dulu');sndError();return}
 logTo('tmp-inbox-log','Cek inbox...','dim');
 try{
-var r=await fetch('https://api.mail.tm/messages',{headers:{'Authorization':'Bearer '+tmpToken}});
+var r=await tmpFetch('https://api.mail.tm/messages',{headers:{'Authorization':'Bearer '+tmpToken}});
 var j=await r.json();
 tmpMsgs=j['hydra:member']||[];
 logTo('tmp-inbox-log','✓ '+tmpMsgs.length+' pesan','ok');
 var el=$('tmp-list');
 if(!tmpMsgs.length){el.innerHTML='<div class="r">Belum ada pesan</div>';return}
 el.innerHTML=tmpMsgs.map(function(m,i){
-return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'<div style="color:var(--txd);font-size:.55rem;margin-top:3px">'+m.intro+'</div></div>';
+return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'<div style="color:var(--txd);font-size:.55rem;margin-top:3px">'+(m.intro||'')+'</div></div>';
 }).join('');
 el.querySelectorAll('.msg-item').forEach(function(it){it.onclick=function(){tmpShowMsg(parseInt(it.dataset.i))}});
 sndSuccess();
@@ -855,10 +953,10 @@ sndSuccess();
 async function tmpShowMsg(i){
 var m=tmpMsgs[i];if(!m)return;
 try{
-var r=await fetch('https://api.mail.tm/messages/'+m.id,{headers:{'Authorization':'Bearer '+tmpToken}});
+var r=await tmpFetch('https://api.mail.tm/messages/'+m.id,{headers:{'Authorization':'Bearer '+tmpToken}});
 var j=await r.json();
 var view=$('tmp-msg-view');
-var body='<div style="font-size:.65rem"><b>From:</b> '+j.from.address+'<br><b>Subject:</b> '+j.subject+'<br><hr style="margin:6px 0;border:none;border-top:1px solid var(--border)">'+(j.html&&j.html.length?'<div>'+j.html.join('')+'</div>':j.text||'(kosong)')+'</div>';
+var body='<div style="font-size:.65rem"><b>From:</b> '+j.from.address+'<br><b>Subject:</b> '+j.subject+'<br><hr style="margin:6px 0;border:none;border-top:1px solid var(--border)">'+(j.html&&j.html.length?'<div>'+j.html.join('')+'</div>':(j.text||'(kosong)'))+'</div>';
 view.innerHTML=body;
 view.classList.remove('hd');
 sndSuccess();
@@ -886,6 +984,8 @@ $('st-g').textContent=S.get('generates',0);
 $('st-d').textContent=S.get('downloads',0);
 $('st-s').textContent=S.get('snippet_count',0);
 renderHist();renderTpl();checkAch(S.get('generates',0));
+scrUpdateCooldownUI();
+setInterval(scrUpdateCooldownUI,1000);
 }
 boot();
 setTimeout(function(){if(!window.TEMPLATE_COMMAND){$('sw').innerHTML='<div class="st-er" style="font-size:.55rem">⚠ templates.js gak load</div>'}},400);
