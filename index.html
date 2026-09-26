@@ -7,7 +7,6 @@
 <meta name="description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Tempmail · Deployer">
 <meta name="theme-color" content="#22d3ee">
 
-<!-- ===== OPEN GRAPH (share card) ===== -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ryanntools-alpha.vercel.app/">
 <meta property="og:title" content="TOOLS BY RYANNXD">
@@ -17,7 +16,6 @@
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="RYANN • TOOLS">
 
-<!-- ===== TWITTER CARD ===== -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TOOLS BY RYANNXD">
 <meta name="twitter:description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Tempmail · Deployer">
@@ -192,6 +190,20 @@ input[type="file"]{display:none!important}
 .color-pick input[type="color"]{width:100%;height:38px;border:2px solid var(--border);border-radius:7px;background:transparent;cursor:pointer;padding:2px}
 .color-pick input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
 .color-pick input[type="color"]::-webkit-color-swatch{border:none;border-radius:5px}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(4,8,15,.4);margin-top:6px}
+.toggle-row span{font-size:.6rem;color:var(--ac);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.switch{position:relative;width:44px;height:22px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.switch .slider{position:absolute;cursor:pointer;inset:0;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:22px;transition:.25s}
+.switch .slider:before{content:"";position:absolute;height:16px;width:16px;left:2px;top:2px;background:#64748b;border-radius:50%;transition:.25s}
+.switch input:checked+.slider{background:var(--acd);border-color:var(--ac)}
+.switch input:checked+.slider:before{transform:translateX(22px);background:var(--ac)}
+.jwt-part{padding:9px;border:1px solid var(--border);border-radius:7px;background:rgba(0,0,0,.4);margin-top:6px;font-size:.6rem;word-break:break-all;white-space:pre-wrap}
+.jwt-part .lbl{color:var(--ac);font-weight:700;font-size:.55rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.stats-grid .si{padding:9px;border:1px solid var(--border);border-radius:7px;background:rgba(0,0,0,.4);text-align:center}
+.stats-grid .si .l{font-size:.5rem;color:var(--txd);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;font-weight:700}
+.stats-grid .si .n{font-family:var(--fh);font-weight:900;font-size:1.1rem;color:var(--ac)}
 </style>
 </head>
 <body data-theme="t-cyan">
@@ -212,7 +224,7 @@ input[type="file"]{display:none!important}
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v4.5.1</span>
+<span class="ch">v4.6</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
 <button class="tgl" id="mode-tgl">🌙</button>
@@ -296,8 +308,50 @@ input[type="file"]{display:none!important}
 </div>
 
 <div class="pg hd" id="pg-utl">
-<div class="c"><div class="cl">🔐 PASSWORD</div>
-<label>Panjang</label><input type="number" id="plen" value="16">
+<div class="c"><div class="cl">🔐 PASSWORD GENERATOR</div>
+<label>Prefix (opsional)</label>
+<input id="pg-prefix" placeholder="misal ryann">
+<label>Jumlah Karakter Random</label>
+<input type="number" id="plen" value="16" min="1" max="128">
+<div class="toggle-row">
+<span>Pakai Separator</span>
+<label class="switch"><input type="checkbox" id="pg-sep-toggle"><span class="slider"></span></label>
+</div>
+<label>Karakter Separator</label>
+<select id="pg-sep">
+<option value="_">_ (underscore)</option>
+<option value="-">- (dash)</option>
+<option value=".">. (dot)</option>
+<option value="/">/ (slash)</option>
+<option value=")">) (kurung tutup)</option>
+<option value="(">( (kurung buka)</option>
+<option value="$">$ (dollar)</option>
+<option value="@">@ (at)</option>
+<option value="!">! (seru)</option>
+<option value='"'>&quot; (kutip dua)</option>
+<option value=";">; (titik koma)</option>
+<option value="+">+ (plus)</option>
+<option value="#"># (hash)</option>
+<option value="?">? (tanya)</option>
+<option value="*">* (bintang)</option>
+<option value="™">™ (trademark)</option>
+<option value="©">© (copyright)</option>
+<option value="]">] (kurung siku tutup)</option>
+<option value="[">[ (kurung siku buka)</option>
+<option value="%">% (persen)</option>
+<option value="°">° (derajat)</option>
+<option value="√">√ (akar)</option>
+<option value="~">~ (tilde)</option>
+<option value="•">• (bullet)</option>
+<option value="`">` (backtick)</option>
+<option value="×">× (kali)</option>
+<option value="¶">¶ (pilcrow)</option>
+<option value="∆">∆ (delta)</option>
+<option value="|">| (pipe)</option>
+<option value="£">£ (pound)</option>
+<option value=",">, (koma)</option>
+<option value="RANDOM">🎲 RANDOM (dari list atas)</option>
+</select>
 <div class="br"><button class="g" id="pgen">GEN</button><button class="g" id="pcp">COPY</button></div>
 <div class="r" id="pres">—</div>
 </div>
@@ -335,6 +389,37 @@ input[type="file"]{display:none!important}
 <div class="br"><button id="enc-run">⚡ PROSES</button><button class="g" id="enc-clear">🗑 CLEAR</button></div>
 <div class="br"><button class="g" id="enc-copy">📋 COPY</button><button class="g" id="enc-dl">⬇ DOWNLOAD .TXT</button></div>
 <div class="r" id="enc-output" style="max-height:200px;overflow-y:auto">—</div>
+</div>
+
+<div class="c"><div class="cl">🔓 JWT DECODER</div>
+<label>Paste JWT Token</label>
+<textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.xxxxx" style="min-height:80px"></textarea>
+<div class="br"><button id="jwt-run">🔍 DECODE</button><button class="g" id="jwt-clear">🗑 CLEAR</button></div>
+<div id="jwt-header" class="jwt-part hd"><div class="lbl">HEADER</div><div id="jwt-header-out"></div></div>
+<div id="jwt-payload" class="jwt-part hd"><div class="lbl">PAYLOAD</div><div id="jwt-payload-out"></div></div>
+<div id="jwt-sig" class="jwt-part hd"><div class="lbl">SIGNATURE (raw)</div><div id="jwt-sig-out"></div></div>
+<div id="jwt-status" class="r">—</div>
+</div>
+
+<div class="c"><div class="cl">🔠 CASE CONVERTER</div>
+<label>Input</label>
+<textarea id="cc-input" placeholder="ketik teks di sini..."></textarea>
+<div class="br"><button id="cc-upper">ABC KAPITAL</button><button class="g" id="cc-lower">abc kecil</button></div>
+<div class="br"><button class="g" id="cc-copy">📋 COPY</button><button class="g" id="cc-clear">🗑 CLEAR</button></div>
+<div class="r" id="cc-output" style="max-height:200px;overflow-y:auto">—</div>
+</div>
+
+<div class="c"><div class="cl">📊 LETTER COUNTER</div>
+<label>Input</label>
+<textarea id="lc-input" placeholder="paste teks di sini..."></textarea>
+<div class="stats-grid">
+<div class="si"><div class="l">Karakter</div><div class="n" id="lc-char">0</div></div>
+<div class="si"><div class="l">Tanpa Spasi</div><div class="n" id="lc-nospace">0</div></div>
+<div class="si"><div class="l">Kata</div><div class="n" id="lc-word">0</div></div>
+<div class="si"><div class="l">Baris</div><div class="n" id="lc-line">0</div></div>
+<div class="si"><div class="l">Kalimat</div><div class="n" id="lc-sent">0</div></div>
+<div class="si"><div class="l">Waktu Baca</div><div class="n" id="lc-read">0m</div></div>
+</div>
 </div>
 </div>
 
@@ -409,6 +494,38 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 <div id="scr-pbox" class="r hd" style="max-height:200px;overflow-y:auto"></div>
 </div>
 
+<div class="c"><div class="cl">🔬 PROXY CHECKER</div>
+<label>Paste Proxy (1 per baris)</label>
+<textarea id="pc-input" placeholder="ip:port&#10;http://ip:port&#10;socks5://ip:port" style="min-height:100px;font-size:.6rem"></textarea>
+<label>Atau Upload File (.txt / .json / .csv)</label>
+<div class="filedrop" id="pc-drop">
+<span class="ic">📁</span>
+<div class="t">TAP / DROP FILE DI SINI</div>
+<div class="sub">text / json / csv / txt</div>
+</div>
+<input type="file" id="pc-file" accept=".txt,.json,.csv,text/*">
+<div id="pc-fileinfo"></div>
+<label>Timeout (ms)</label>
+<input type="number" id="pc-timeout" value="5000" min="1000" max="30000">
+<div class="br"><button class="g" id="pc-start">▶ CEK PROXY</button><button class="g" id="pc-clear">🗑 CLEAR</button></div>
+<div class="progress-wrap" id="pc-prog-wrap">
+<div class="progress-label" id="pc-prog-label">MEMULAI...</div>
+<div class="progress-bar">
+<div class="progress-fill" id="pc-prog-fill"></div>
+<div class="progress-txt" id="pc-prog-txt">0 / 0</div>
+</div>
+</div>
+<div id="pc-log" class="console-log" style="height:180px"></div>
+<div class="stats-grid">
+<div class="si"><div class="l">Total</div><div class="n" id="pc-stat-total">0</div></div>
+<div class="si"><div class="l">Hidup</div><div class="n" id="pc-stat-alive" style="color:var(--ok)">0</div></div>
+<div class="si"><div class="l">Mati</div><div class="n" id="pc-stat-dead" style="color:var(--er)">0</div></div>
+<div class="si"><div class="l">Skip</div><div class="n" id="pc-stat-skip" style="color:var(--wr)">0</div></div>
+</div>
+<div class="br"><button class="g" id="pc-dl-alive">⬇ HIDUP</button><button class="g" id="pc-dl-dead">⬇ MATI</button></div>
+<div id="pc-pbox" class="r hd" style="max-height:200px;overflow-y:auto"></div>
+</div>
+
 <div class="c"><div class="cl">🚀 AUTO DEPLOY VERCEL</div>
 <label>Vercel Token</label>
 <input id="scr-vtoken" placeholder="vercel token (vercel.com/account/tokens)">
@@ -416,11 +533,11 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 <input id="scr-vname" placeholder="my-project">
 <label>Total Project (max 20)</label>
 <input type="number" id="scr-vtotal" value="20" min="1" max="20">
-<label>File Project (semua tipe: html/css/js/py/json/zip/dll)</label>
+<label>File Project (semua tipe)</label>
 <div class="filedrop" id="scr-vdrop">
 <span class="ic">📁</span>
 <div class="t">TAP / DROP FILE DI SINI</div>
-<div class="sub">multi-select didukung · no max size</div>
+<div class="sub">multi-select didukung</div>
 </div>
 <input type="file" id="scr-vfile" multiple>
 <div class="filelist" id="scr-vlist"></div>
@@ -497,18 +614,9 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 
 <div class="c"><div class="cl">🎨 CUSTOM THEME COLOR</div>
 <div class="color-row">
-<div class="color-pick">
-<label>ACCENT</label>
-<input type="color" id="cust-ac" value="#22d3ee">
-</div>
-<div class="color-pick">
-<label>BG</label>
-<input type="color" id="cust-bg" value="#04080f">
-</div>
-<div class="color-pick">
-<label>BORDER</label>
-<input type="color" id="cust-br" value="#1e4d5c">
-</div>
+<div class="color-pick"><label>ACCENT</label><input type="color" id="cust-ac" value="#22d3ee"></div>
+<div class="color-pick"><label>BG</label><input type="color" id="cust-bg" value="#04080f"></div>
+<div class="color-pick"><label>BORDER</label><input type="color" id="cust-br" value="#1e4d5c"></div>
 </div>
 <div class="br"><button class="g" id="cust-apply">✓ APPLY</button><button class="g" id="cust-rand">🎲 RANDOM MIX</button></div>
 <button class="d" id="cust-reset">🗑 RESET CUSTOM</button>
@@ -579,20 +687,19 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 </div>
 
 <div class="pg hd" id="pg-abt">
-<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.5.1</div>
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.6</div>
 <p style="font-size:.65rem;color:var(--txd);text-align:center;line-height:1.7">Static HTML · No Backend · No VPS<br><span style="color:var(--ac)">RyanApi77</span></p>
 </div>
 <div class="c"><div class="cl">INFO</div>
-<div class="r">Build: v4.5.1</div>
-<div class="r">Features: 88</div>
+<div class="r">Build: v4.6</div>
+<div class="r">Features: 95</div>
 <div class="r">Tabs: 10</div>
-<div class="r">Backgrounds: 5</div>
-<div class="r">Sound Packs: 5</div>
 <div class="r">Encoders: 10</div>
+<div class="r">Proxy Tools: 2</div>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v4.5.1</div>
+<div class="ft">RYANN • TOOLS · v4.6</div>
 </div>
 
 <script src="templates.js"></script>
@@ -600,213 +707,77 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 var $=function(i){return document.getElementById(i)};
 var S={set:function(k,v){try{localStorage.setItem('rx_'+k,JSON.stringify(v))}catch(e){}},get:function(k,d){try{var v=localStorage.getItem('rx_'+k);return v?JSON.parse(v):d}catch(e){return d}},del:function(k){try{localStorage.removeItem('rx_'+k)}catch(e){}}};
 
-// SOUND ENGINE
-var audioCtx=null;
-var sndPack=S.get('snd_pack','beep');
+var audioCtx=null;var sndPack=S.get('snd_pack','beep');
 function initAudio(){if(!audioCtx){try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){audioCtx=null}}}
 function beep(freq,dur,type,vol){initAudio();if(!audioCtx)return;try{var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type||'sine';o.frequency.value=freq;g.gain.value=vol||.04;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur)}catch(e){}}
 function noiseBurst(dur,vol){initAudio();if(!audioCtx)return;try{var b=audioCtx.createBuffer(1,audioCtx.sampleRate*dur,audioCtx.sampleRate);var d=b.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);var s=audioCtx.createBufferSource();s.buffer=b;var g=audioCtx.createGain();g.gain.value=vol||.05;s.connect(g);g.connect(audioCtx.destination);s.start()}catch(e){}}
-function sndPlay(kind){
-if(sndPack==='off')return;
-if(sndPack==='beep'){if(kind==='click')beep(800,.05,'square',.03);else if(kind==='nav')beep(500,.04,'sine',.02);else if(kind==='success'){beep(600,.08,'sine',.05);setTimeout(function(){beep(900,.1,'sine',.05)},80)}else if(kind==='error')beep(200,.15,'sawtooth',.05);}
-else if(sndPack==='click'){if(kind==='click'||kind==='nav')noiseBurst(.03,.06);else if(kind==='success'){noiseBurst(.03,.06);setTimeout(function(){noiseBurst(.03,.06)},60)}else if(kind==='error'){noiseBurst(.03,.08);setTimeout(function(){noiseBurst(.03,.08)},60);setTimeout(function(){noiseBurst(.03,.08)},120)}}
-else if(sndPack==='digital'){if(kind==='click')beep(1200,.03,'square',.04);else if(kind==='nav')beep(1500,.02,'square',.03);else if(kind==='success'){beep(523,.07,'square',.04);setTimeout(function(){beep(659,.07,'square',.04)},80);setTimeout(function(){beep(784,.1,'square',.04)},160)}else if(kind==='error'){beep(200,.1,'square',.05);setTimeout(function(){beep(100,.15,'square',.05)},100)}}
-else if(sndPack==='soft'){if(kind==='click')beep(400,.08,'sine',.02);else if(kind==='nav')beep(300,.04,'sine',.015);else if(kind==='success'){beep(500,.1,'sine',.03);setTimeout(function(){beep(700,.12,'sine',.03)},100)}else if(kind==='error')beep(250,.15,'sine',.03);}
-}
-function sndClick(){sndPlay('click')}
-function sndSuccess(){sndPlay('success')}
-function sndError(){sndPlay('error')}
-function sndNav(){sndPlay('nav')}
-
-// HAPTIC
-var hapticOn=S.get('haptic',false);
-function vib(ms){if(!hapticOn)return;if(navigator.vibrate)try{navigator.vibrate(ms||20)}catch(e){}}
-
-// ANIMATION
-var aniOn=S.get('anim',true);
-function applyAnim(){if(aniOn)document.body.classList.remove('no-anim');else document.body.classList.add('no-anim')}
-
-// LOG HELPER
-function logTo(id,msg,cls){
-var el=$(id);if(!el)return;
-var d=document.createElement('div');
-d.className=cls||'ok';
-d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;
-el.appendChild(d);el.scrollTop=el.scrollHeight;
-}
-
-// THEME
+function sndPlay(kind){if(sndPack==='off')return;if(sndPack==='beep'){if(kind==='click')beep(800,.05,'square',.03);else if(kind==='nav')beep(500,.04,'sine',.02);else if(kind==='success'){beep(600,.08,'sine',.05);setTimeout(function(){beep(900,.1,'sine',.05)},80)}else if(kind==='error')beep(200,.15,'sawtooth',.05);}else if(sndPack==='click'){if(kind==='click'||kind==='nav')noiseBurst(.03,.06);else if(kind==='success'){noiseBurst(.03,.06);setTimeout(function(){noiseBurst(.03,.06)},60)}else if(kind==='error'){noiseBurst(.03,.08);setTimeout(function(){noiseBurst(.03,.08)},60);setTimeout(function(){noiseBurst(.03,.08)},120)}}else if(sndPack==='digital'){if(kind==='click')beep(1200,.03,'square',.04);else if(kind==='nav')beep(1500,.02,'square',.03);else if(kind==='success'){beep(523,.07,'square',.04);setTimeout(function(){beep(659,.07,'square',.04)},80);setTimeout(function(){beep(784,.1,'square',.04)},160)}else if(kind==='error'){beep(200,.1,'square',.05);setTimeout(function(){beep(100,.15,'square',.05)},100)}}else if(sndPack==='soft'){if(kind==='click')beep(400,.08,'sine',.02);else if(kind==='nav')beep(300,.04,'sine',.015);else if(kind==='success'){beep(500,.1,'sine',.03);setTimeout(function(){beep(700,.12,'sine',.03)},100)}else if(kind==='error')beep(250,.15,'sine',.03);}}
+function sndClick(){sndPlay('click')}function sndSuccess(){sndPlay('success')}function sndError(){sndPlay('error')}function sndNav(){sndPlay('nav')}
+var hapticOn=S.get('haptic',false);function vib(ms){if(!hapticOn)return;if(navigator.vibrate)try{navigator.vibrate(ms||20)}catch(e){}}
+var aniOn=S.get('anim',true);function applyAnim(){if(aniOn)document.body.classList.remove('no-anim');else document.body.classList.add('no-anim')}
+function logTo(id,msg,cls){var el=$(id);if(!el)return;var d=document.createElement('div');d.className=cls||'ok';d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
 function setTema(t){document.body.setAttribute('data-theme',t);S.set('theme',t);document.querySelectorAll('.to').forEach(function(o){o.classList.toggle('a',o.dataset.t===t)})}
 document.querySelectorAll('.to').forEach(function(o){o.onclick=function(){setTema(o.dataset.t);sndClick();vib()}});
 
-// CUSTOM THEME COLOR
-function applyCustomTheme(ac,bg,br){
-if(ac){
-document.documentElement.style.setProperty('--ac',ac);
-document.documentElement.style.setProperty('--ac2',ac);
-document.documentElement.style.setProperty('--acd',hexToRgba(ac,0.15));
-}
-if(bg){
-document.documentElement.style.setProperty('--bg',bg);
-document.body.style.background=bg;
-}
-if(br){
-document.documentElement.style.setProperty('--border',br);
-document.documentElement.style.setProperty('--bl',br);
-}
-S.set('cust_theme',{ac:ac,bg:bg,br:br});
-}
-function hexToRgba(hex,a){
-var h=hex.replace('#','');
-if(h.length===3)h=h.split('').map(function(c){return c+c}).join('');
-var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
-return 'rgba('+r+','+g+','+b+','+a+')';
-}
-function loadCustomTheme(){
-var c=S.get('cust_theme',null);
-if(c&&c.ac){
-$('cust-ac').value=c.ac||'#22d3ee';
-$('cust-bg').value=c.bg||'#04080f';
-$('cust-br').value=c.br||'#1e4d5c';
-applyCustomTheme(c.ac,c.bg,c.br);
-}
-}
-$('cust-apply').onclick=function(){
-applyCustomTheme($('cust-ac').value,$('cust-bg').value,$('cust-br').value);
-sndSuccess();
-};
-$('cust-rand').onclick=function(){
-var h=Math.floor(Math.random()*360);
-var h2=(h+Math.floor(Math.random()*60)+150)%360;
-var h3=(h+Math.floor(Math.random()*60)+30)%360;
-function hsl2hex(hu,s,l){
-s/=100;l/=100;
-var c=(1-Math.abs(2*l-1))*s;
-var x=c*(1-Math.abs((hu/60)%2-1));
-var m=l-c/2;
-var r=0,g=0,b=0;
-if(hu<60){r=c;g=x;b=0}
-else if(hu<120){r=x;g=c;b=0}
-else if(hu<180){r=0;g=c;b=x}
-else if(hu<240){r=0;g=x;b=c}
-else if(hu<300){r=x;g=0;b=c}
-else{r=c;g=0;b=x}
-function hx(v){var s=Math.round((v+m)*255).toString(16);return s.length<2?'0'+s:s}
-return '#'+hx(r)+hx(g)+hx(b);
-}
-var ac=hsl2hex(h,90,60);
-var bg=hsl2hex(h2,70,6);
-var br=hsl2hex(h3,70,35);
-$('cust-ac').value=ac;
-$('cust-bg').value=bg;
-$('cust-br').value=br;
-applyCustomTheme(ac,bg,br);
-sndSuccess();
-};
-$('cust-reset').onclick=function(){
-S.del('cust_theme');
-document.documentElement.style.removeProperty('--ac');
-document.documentElement.style.removeProperty('--ac2');
-document.documentElement.style.removeProperty('--acd');
-document.documentElement.style.removeProperty('--bg');
-document.documentElement.style.removeProperty('--border');
-document.documentElement.style.removeProperty('--bl');
-document.body.style.background='';
-setTema(S.get('theme','t-cyan'));
-sndSuccess();
-};
+function hexToRgba(hex,a){var h=hex.replace('#','');if(h.length===3)h=h.split('').map(function(c){return c+c}).join('');var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);return 'rgba('+r+','+g+','+b+','+a+')'}
+function applyCustomTheme(ac,bg,br){if(ac){document.documentElement.style.setProperty('--ac',ac);document.documentElement.style.setProperty('--ac2',ac);document.documentElement.style.setProperty('--acd',hexToRgba(ac,0.15));}if(bg){document.documentElement.style.setProperty('--bg',bg);document.body.style.background=bg;}if(br){document.documentElement.style.setProperty('--border',br);document.documentElement.style.setProperty('--bl',br);}S.set('cust_theme',{ac:ac,bg:bg,br:br})}
+function loadCustomTheme(){var c=S.get('cust_theme',null);if(c&&c.ac){$('cust-ac').value=c.ac||'#22d3ee';$('cust-bg').value=c.bg||'#04080f';$('cust-br').value=c.br||'#1e4d5c';applyCustomTheme(c.ac,c.bg,c.br);}}
+$('cust-apply').onclick=function(){applyCustomTheme($('cust-ac').value,$('cust-bg').value,$('cust-br').value);sndSuccess();};
+$('cust-rand').onclick=function(){var h=Math.floor(Math.random()*360);var h2=(h+150)%360;var h3=(h+30)%360;function hsl2hex(hu,s,l){s/=100;l/=100;var c=(1-Math.abs(2*l-1))*s;var x=c*(1-Math.abs((hu/60)%2-1));var m=l-c/2;var r=0,g=0,b=0;if(hu<60){r=c;g=x;b=0}else if(hu<120){r=x;g=c;b=0}else if(hu<180){r=0;g=c;b=x}else if(hu<240){r=0;g=x;b=c}else if(hu<300){r=x;g=0;b=c}else{r=c;g=0;b=x}function hx(v){var s=Math.round((v+m)*255).toString(16);return s.length<2?'0'+s:s}return '#'+hx(r)+hx(g)+hx(b)}var ac=hsl2hex(h,90,60);var bg=hsl2hex(h2,70,6);var br=hsl2hex(h3,70,35);$('cust-ac').value=ac;$('cust-bg').value=bg;$('cust-br').value=br;applyCustomTheme(ac,bg,br);sndSuccess();};
+$('cust-reset').onclick=function(){S.del('cust_theme');['--ac','--ac2','--acd','--bg','--border','--bl'].forEach(function(v){document.documentElement.style.removeProperty(v)});document.body.style.background='';setTema(S.get('theme','t-cyan'));sndSuccess();};
 
-// BACKGROUND
 var bgNow=S.get('bg','galaxy');
-function setBg(b){
-bgNow=b;S.set('bg',b);
-document.body.classList.remove('bg-binary','bg-plain','bg-ufo','bg-custom');
-if(b==='binary')document.body.classList.add('bg-binary');
-else if(b==='plain')document.body.classList.add('bg-plain');
-else if(b==='ufo')document.body.classList.add('bg-ufo');
-else if(b==='custom'){document.body.classList.add('bg-custom');applyCustomBg()}
-document.querySelectorAll('#bg-grid .snd-opt').forEach(function(o){o.classList.toggle('a',o.dataset.bg===b)});
-}
+function setBg(b){bgNow=b;S.set('bg',b);document.body.classList.remove('bg-binary','bg-plain','bg-ufo','bg-custom');if(b==='binary')document.body.classList.add('bg-binary');else if(b==='plain')document.body.classList.add('bg-plain');else if(b==='ufo')document.body.classList.add('bg-ufo');else if(b==='custom'){document.body.classList.add('bg-custom');applyCustomBg()}document.querySelectorAll('#bg-grid .snd-opt').forEach(function(o){o.classList.toggle('a',o.dataset.bg===b)})}
 function applyCustomBg(){var img=S.get('bg_custom','');if(img){document.body.style.backgroundImage='url('+img+')';var pv=$('bg-preview');pv.style.display='block';pv.style.backgroundImage='url('+img+')'}else{document.body.classList.remove('bg-custom');document.body.style.backgroundImage=''}}
 document.querySelectorAll('#bg-grid .snd-opt').forEach(function(o){o.onclick=function(){setBg(o.dataset.bg);sndClick();vib()}});
-
-// CUSTOM BG
 $('bg-upload-btn').onclick=function(){$('bg-file').click()};
-$('bg-file').onchange=function(e){
-var f=e.target.files[0];if(!f)return;
-if(f.size>5*1024*1024){alert('Gambar > 5MB');sndError();return}
-var r=new FileReader();
-r.onload=function(ev){
-var img=new Image();
-img.onload=function(){
-var c=document.createElement('canvas');
-var scale=Math.min(1,1280/img.width);
-c.width=img.width*scale;c.height=img.height*scale;
-c.getContext('2d').drawImage(img,0,0,c.width,c.height);
-S.set('bg_custom',c.toDataURL('image/jpeg',.7));
-setBg('custom');sndSuccess();alert('Custom BG tersimpan');
-};
-img.src=ev.target.result;
-};
-r.readAsDataURL(f);
-};
+$('bg-file').onchange=function(e){var f=e.target.files[0];if(!f)return;if(f.size>5*1024*1024){alert('Gambar > 5MB');sndError();return}var r=new FileReader();r.onload=function(ev){var img=new Image();img.onload=function(){var c=document.createElement('canvas');var scale=Math.min(1,1280/img.width);c.width=img.width*scale;c.height=img.height*scale;c.getContext('2d').drawImage(img,0,0,c.width,c.height);S.set('bg_custom',c.toDataURL('image/jpeg',.7));setBg('custom');sndSuccess();alert('Custom BG tersimpan')};img.src=ev.target.result};r.readAsDataURL(f)};
 $('bg-clear').onclick=function(){S.del('bg_custom');document.body.style.backgroundImage='';$('bg-preview').style.display='none';setBg('galaxy');sndSuccess()};
 
-// NAV
 document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){sndNav();vib(10);document.querySelectorAll('.nb').forEach(function(x){x.classList.remove('a')});b.classList.add('a');document.querySelectorAll('.pg').forEach(function(p){p.classList.add('hd')});var pg=$('pg-'+b.dataset.p);if(pg)pg.classList.remove('hd')}});
 window.go=function(p){var b=document.querySelector('.nb[data-p="'+p+'"]');if(b)b.click()};
-
 document.addEventListener('click',function(e){if(e.target.tagName==='BUTTON'&&!e.target.classList.contains('tgl')&&!e.target.disabled){sndClick();vib(15)}},true);
 
-// FONT
 $('fsr').oninput=function(){document.documentElement.style.setProperty('--fs',this.value+'px');S.set('font',this.value);$('fv').textContent=this.value+'px'};
 $('ffam').onchange=function(){document.documentElement.style.setProperty('--fm',this.value);S.set('ffam',this.value);sndClick()};
-
-// TABS
 $('tp').onclick=function(){$('tp').classList.add('a');$('tu').classList.remove('a');$('sp').classList.remove('hd');$('su').classList.add('hd')};
 $('tu').onclick=function(){$('tu').classList.add('a');$('tp').classList.remove('a');$('su').classList.remove('hd');$('sp').classList.add('hd')};
 $('fi').onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){$('ci').value=ev.target.result;$('finfo').innerHTML='<div class="r" style="border-color:var(--ac);background:var(--acd);color:var(--ac)">'+f.name+' · '+(f.size/1024).toFixed(1)+' KB</div>'};r.readAsText(f);sndSuccess()};
-
-// AUTO SAVE
 ['bt','ct','ts','on'].forEach(function(id){var el=$(id);if(!el)return;var s=S.get('f_'+id,'');if(s)el.value=s;var fn=function(){S.set('f_'+id,el.value)};el.addEventListener('input',fn);el.addEventListener('change',fn)});
 
-// GENERATE
 var genCode='';
 function inject(t,u){var ls=t.split('\n'),li=-1;for(var i=0;i<ls.length;i++){var l=ls[i].trim();if(l.indexOf('import ')===0||l.indexOf('from ')===0)li=i}if(li===-1)return u+'\n\n'+t;var b=ls.slice(0,li+1).join('\n'),a=ls.slice(li+1).join('\n');return b+'\n\n# USER CODE\n'+u+'\n# END USER CODE\n'+a}
-$('gb').onclick=function(){
-var t0=performance.now();
-var uc=$('ci').value.trim(),tpl=$('ts').value,bt=$('bt').value.trim(),ct=$('ct').value.trim();
-var sw=$('sw'),rc=$('rc');
-if(!uc){sw.innerHTML='<div class="st-er">Code kosong</div>';rc.classList.add('hd');sndError();return}
-if(!tpl){sw.innerHTML='<div class="st-er">Pilih template</div>';rc.classList.add('hd');sndError();return}
-sw.innerHTML='<div class="st-in">⚙ Memproses...</div>';
-setTimeout(function(){
-var t=(tpl==='command')?(window.TEMPLATE_COMMAND||''):(window.TEMPLATE_BASE||'');
-if(!t){sw.innerHTML='<div class="st-er">Template kosong</div>';sndError();return}
-var out=t;if(bt)out=out.replace(/BOT_TOKEN\s*=\s*['"][^'"]*['"]/g,'BOT_TOKEN = "'+bt+'"');if(ct)out=out.replace(/CHAT_ID\s*=\s*['"][^'"]*['"]/g,'CHAT_ID   = "'+ct+'"');
-var final=inject(out,uc);genCode=final;
-var name=($('on').value.trim()||'spyware_ryan')+'.py';
-var kb=(final.length/1024).toFixed(1),ln=final.split('\n').length,el=Math.round(performance.now()-t0);
-sw.innerHTML='<div class="st-ok">✓ Berhasil · '+kb+' KB · '+el+'ms</div>';
-$('rm').textContent=name;$('rs').textContent=ln+' lines · '+kb+' KB';rc.classList.remove('hd');
-$('tmw').classList.remove('hd');$('tmv').textContent=el;sndSuccess();
-var h=S.get('history',[]);h.unshift({n:name,s:kb,l:ln,t:Date.now(),c:final.substring(0,40000)});if(h.length>30)h=h.slice(0,30);S.set('history',h);
-var g=S.get('generates',0)+1;S.set('generates',g);$('st-g').textContent=g;
-checkAch(g);
-},150);
-};
+$('gb').onclick=function(){var t0=performance.now();var uc=$('ci').value.trim(),tpl=$('ts').value,bt=$('bt').value.trim(),ct=$('ct').value.trim();var sw=$('sw'),rc=$('rc');if(!uc){sw.innerHTML='<div class="st-er">Code kosong</div>';rc.classList.add('hd');sndError();return}if(!tpl){sw.innerHTML='<div class="st-er">Pilih template</div>';rc.classList.add('hd');sndError();return}sw.innerHTML='<div class="st-in">⚙ Memproses...</div>';setTimeout(function(){var t=(tpl==='command')?(window.TEMPLATE_COMMAND||''):(window.TEMPLATE_BASE||'');if(!t){sw.innerHTML='<div class="st-er">Template kosong</div>';sndError();return}var out=t;if(bt)out=out.replace(/BOT_TOKEN\s*=\s*['"][^'"]*['"]/g,'BOT_TOKEN = "'+bt+'"');if(ct)out=out.replace(/CHAT_ID\s*=\s*['"][^'"]*['"]/g,'CHAT_ID   = "'+ct+'"');var final=inject(out,uc);genCode=final;var name=($('on').value.trim()||'spyware_ryan')+'.py';var kb=(final.length/1024).toFixed(1),ln=final.split('\n').length,el=Math.round(performance.now()-t0);sw.innerHTML='<div class="st-ok">✓ Berhasil · '+kb+' KB · '+el+'ms</div>';$('rm').textContent=name;$('rs').textContent=ln+' lines · '+kb+' KB';rc.classList.remove('hd');$('tmw').classList.remove('hd');$('tmv').textContent=el;sndSuccess();var h=S.get('history',[]);h.unshift({n:name,s:kb,l:ln,t:Date.now(),c:final.substring(0,40000)});if(h.length>30)h=h.slice(0,30);S.set('history',h);var g=S.get('generates',0)+1;S.set('generates',g);$('st-g').textContent=g;checkAch(g)},150)};
 $('db').onclick=function(){if(!genCode){sndError();alert('Generate dulu');return}var b=new Blob([genCode],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=$('rm').textContent;document.body.appendChild(a);a.click();document.body.removeChild(a);var d=S.get('downloads',0)+1;S.set('downloads',d);$('st-d').textContent=d;sndSuccess();vib(50);setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 $('cob').onclick=function(){if(!genCode){sndError();return}navigator.clipboard.writeText(genCode).then(function(){sndSuccess()})};
 $('shb').onclick=function(){if(!genCode){sndError();return}if(navigator.share){navigator.share({title:$('rm').textContent,text:'RYANN TOOLS generate: '+$('rm').textContent}).catch(function(){})}else alert('Browser gak support share')};
 $('pvb').onclick=function(){var pb=$('pbox');if(pb.classList.contains('hd')){pb.textContent=genCode.substring(0,3000)+(genCode.length>3000?'\n\n... (truncated)':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
 $('cb').onclick=function(){$('ci').value='';$('rc').classList.add('hd');$('sw').innerHTML='';genCode=''};
 $('vb').onclick=function(){var c=$('ci').value;var q1=(c.match(/'/g)||[]).length,q2=(c.match(/"/g)||[]).length;var w=[];if(q1%2)w.push("kutip ' ganjil");if(q2%2)w.push('kutip " ganjil');$('sw').innerHTML=w.length?'<div class="st-er">⚠ '+w.join(', ')+'</div>':'<div class="st-ok">✓ Kode OK</div>';if(w.length)sndError();else sndSuccess()};
-
 function checkAch(g){document.querySelectorAll('.ach').forEach(function(el){var v=parseInt(el.dataset.ach);if(g>=v){if(el.classList.contains('locked')){el.classList.remove('locked');el.classList.add('unlocked');sndSuccess()}}})}
 
-// UTILS
-$('pgen').onclick=function(){var l=parseInt($('plen').value)||16;var c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';var r='';for(var i=0;i<l;i++)r+=c[Math.floor(Math.random()*c.length)];$('pres').textContent=r;sndSuccess()};
+// PASSWORD GEN (upgraded)
+var SEP_LIST=['_','-','.','/',')','(','$','@','!','"',';','+','#','?','*','™','©',']','[','%','°','√','~','•','`','×','¶','∆','|','£',','];
+function genPassword(){
+var prefix=$('pg-prefix').value;
+var len=parseInt($('plen').value)||16;
+if(len<1)len=1;if(len>128)len=128;
+var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+var rand='';
+for(var i=0;i<len;i++)rand+=chars[Math.floor(Math.random()*chars.length)];
+var sepOn=$('pg-sep-toggle').checked;
+var sep='';
+if(sepOn){
+var sel=$('pg-sep').value;
+if(sel==='RANDOM'){sep=SEP_LIST[Math.floor(Math.random()*SEP_LIST.length)]}
+else sep=sel;
+}
+var result=(prefix?prefix:'')+(sepOn?sep:'')+rand;
+$('pres').textContent=result;
+}
+$('pgen').onclick=function(){genPassword();sndSuccess()};
 $('pcp').onclick=function(){navigator.clipboard.writeText($('pres').textContent).then(sndSuccess)};
+
 $('ugen').onclick=function(){$('ures').textContent=crypto.randomUUID();sndSuccess()};
 function hashIt(algo,el){var t=$('hin').value;var e=new TextEncoder().encode(t);crypto.subtle.digest(algo,e).then(function(b){var h=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');el.textContent=h;sndSuccess()})}
 $('hm5').onclick=function(){var t=$('hin').value;var s=0;for(var i=0;i<t.length;i++){s=((s<<5)-s)+t.charCodeAt(i);s=s&s}$('hres').textContent='MD5(len):'+t.length+' hex:'+Math.abs(s).toString(16).padStart(8,'0');sndSuccess()};
@@ -815,104 +786,76 @@ $('hs2').onclick=function(){hashIt('SHA-256',$('hres'))};
 $('shgen').onclick=function(){var u=$('shin').value.trim();if(!u){sndError();return}$('shres').textContent='Loading...';fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(u)).then(function(r){return r.text()}).then(function(t){$('shres').textContent=t;sndSuccess()}).catch(function(){$('shres').textContent='Error';sndError()})};
 $('shcp').onclick=function(){navigator.clipboard.writeText($('shres').textContent).then(sndSuccess)};
 
-// ============ TEXT ENCODER / DECODER ============
+// TEXT ENCODER
 var encMode='encode';
 $('enc-t-enc').onclick=function(){encMode='encode';$('enc-t-enc').classList.add('a');$('enc-t-dec').classList.remove('a');sndClick()};
 $('enc-t-dec').onclick=function(){encMode='decode';$('enc-t-dec').classList.add('a');$('enc-t-enc').classList.remove('a');sndClick()};
-
 var B58='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-function b58encode(bytes){
-var digits=[0];
-for(var i=0;i<bytes.length;i++){
-var carry=bytes[i];
-for(var j=0;j<digits.length;j++){
-carry+=digits[j]<<8;
-digits[j]=carry%58;
-carry=(carry/58)|0;
-}
-while(carry>0){digits.push(carry%58);carry=(carry/58)|0}
-}
-for(var k=0;k<bytes.length&&bytes[k]===0;k++)digits.push(0);
-digits.reverse();
-return digits.map(function(d){return B58[d]}).join('');
-}
-function b58decode(str){
-var bytes=[0];
-for(var i=0;i<str.length;i++){
-var idx=B58.indexOf(str[i]);
-if(idx===-1)throw new Error('Invalid base58 char: '+str[i]);
-var carry=idx;
-for(var j=0;j<bytes.length;j++){
-carry+=bytes[j]*58;
-bytes[j]=carry&0xFF;
-carry>>=8;
-}
-while(carry>0){bytes.push(carry&0xFF);carry>>=8}
-}
-for(var k=0;k<str.length&&str[k]===B58[0];k++)bytes.push(0);
-bytes.reverse();
-return new Uint8Array(bytes);
-}
-
+function b58encode(bytes){var digits=[0];for(var i=0;i<bytes.length;i++){var carry=bytes[i];for(var j=0;j<digits.length;j++){carry+=digits[j]<<8;digits[j]=carry%58;carry=(carry/58)|0}while(carry>0){digits.push(carry%58);carry=(carry/58)|0}}for(var k=0;k<bytes.length&&bytes[k]===0;k++)digits.push(0);digits.reverse();return digits.map(function(d){return B58[d]}).join('')}
+function b58decode(str){var bytes=[0];for(var i=0;i<str.length;i++){var idx=B58.indexOf(str[i]);if(idx===-1)throw new Error('Invalid base58 char: '+str[i]);var carry=idx;for(var j=0;j<bytes.length;j++){carry+=bytes[j]*58;bytes[j]=carry&0xFF;carry>>=8}while(carry>0){bytes.push(carry&0xFF);carry>>=8}}for(var k=0;k<str.length&&str[k]===B58[0];k++)bytes.push(0);bytes.reverse();return new Uint8Array(bytes)}
 var MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.','.':'.-.-.-',',':'--..--','?':'..--..',"'":'.----.','!':'-.-.--','/':'-..-.','(':'-.--.',')':'-.--.-','&':'.-...',':':'---...',';':'-.-.-.','=':'-...-','+':'.-.-.','-':'-....-','_':'..--.-','"':'.-..-.','@':'.--.-.'};
 var MORSE_R={};for(var k in MORSE)MORSE_R[MORSE[k]]=k;
 function morseEncode(s){return s.toUpperCase().split('').map(function(c){return c===' '?'/':(MORSE[c]||'')}).filter(function(x){return x}).join(' ')}
 function morseDecode(s){return s.split(' ').map(function(c){return c==='/'?' ':(MORSE_R[c]||'')}).join('')}
-
-function utf8Bytes(s){return new TextEncoder().encode(s)}
-function utf8Str(b){return new TextDecoder().decode(b)}
+function utf8Bytes(s){return new TextEncoder().encode(s)}function utf8Str(b){return new TextDecoder().decode(b)}
 function bytesToHex(b){return Array.from(b).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
 function hexToBytes(h){h=h.replace(/\s/g,'');var out=new Uint8Array(h.length/2);for(var i=0;i<out.length;i++)out[i]=parseInt(h.substr(i*2,2),16);return out}
-
 function b64enc(b){var bin='';for(var i=0;i<b.length;i++)bin+=String.fromCharCode(b[i]);return btoa(bin)}
 function b64dec(s){var bin=atob(s.replace(/\s/g,''));var out=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out}
 function b32enc(b){var A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';var bits=0,val=0,out='';for(var i=0;i<b.length;i++){val=(val<<8)|b[i];bits+=8;while(bits>=5){out+=A[(val>>>(bits-5))&31];bits-=5}}if(bits>0)out+=A[(val<<(5-bits))&31];while(out.length%8)out+='=';return out}
 function b32dec(s){var A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';s=s.replace(/=+$/,'').toUpperCase();var bits=0,val=0,out=[];for(var i=0;i<s.length;i++){var idx=A.indexOf(s[i]);if(idx<0)continue;val=(val<<5)|idx;bits+=5;if(bits>=8){bits-=8;out.push((val>>bits)&0xFF)}}return new Uint8Array(out)}
 function b85enc(b){return b64enc(b).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'')}
 function b85dec(s){var b=s.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return b64dec(b)}
-
-function runEncode(method,input){
-switch(method){
-case 'base64':return b64enc(utf8Bytes(input));
-case 'base32':return b32enc(utf8Bytes(input));
-case 'base58':return b58encode(utf8Bytes(input));
-case 'base85':return b85enc(utf8Bytes(input));
-case 'hex':return bytesToHex(utf8Bytes(input));
-case 'url':return encodeURIComponent(input);
-case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});
-case 'morse':return morseEncode(input);
-case 'binary':return Array.from(utf8Bytes(input)).map(function(x){return x.toString(2).padStart(8,'0')}).join(' ');
-case 'reverse':return input.split('').reverse().join('');
-}
-return '?';
-}
-function runDecode(method,input){
-try{
-switch(method){
-case 'base64':return utf8Str(b64dec(input));
-case 'base32':return utf8Str(b32dec(input));
-case 'base58':return utf8Str(b58decode(input));
-case 'base85':return utf8Str(b85dec(input));
-case 'hex':return utf8Str(hexToBytes(input));
-case 'url':return decodeURIComponent(input);
-case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});
-case 'morse':return morseDecode(input);
-case 'binary':var parts=input.trim().split(/\s+/);return utf8Str(new Uint8Array(parts.map(function(p){return parseInt(p,2)})));
-case 'reverse':return input.split('').reverse().join('');
-}
-}catch(e){return '✗ Gagal decode: '+e.message}
-return '?';
-}
-$('enc-run').onclick=function(){
-var m=$('enc-method').value,i=$('enc-input').value;
-if(!i){$('enc-output').textContent='—';sndError();return}
-var r=(encMode==='encode')?runEncode(m,i):runDecode(m,i);
-$('enc-output').textContent=r;
-sndSuccess();
-};
+function runEncode(m,input){switch(m){case 'base64':return b64enc(utf8Bytes(input));case 'base32':return b32enc(utf8Bytes(input));case 'base58':return b58encode(utf8Bytes(input));case 'base85':return b85enc(utf8Bytes(input));case 'hex':return bytesToHex(utf8Bytes(input));case 'url':return encodeURIComponent(input);case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});case 'morse':return morseEncode(input);case 'binary':return Array.from(utf8Bytes(input)).map(function(x){return x.toString(2).padStart(8,'0')}).join(' ');case 'reverse':return input.split('').reverse().join('')}return '?'}
+function runDecode(m,input){try{switch(m){case 'base64':return utf8Str(b64dec(input));case 'base32':return utf8Str(b32dec(input));case 'base58':return utf8Str(b58decode(input));case 'base85':return utf8Str(b85dec(input));case 'hex':return utf8Str(hexToBytes(input));case 'url':return decodeURIComponent(input);case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});case 'morse':return morseDecode(input);case 'binary':var parts=input.trim().split(/\s+/);return utf8Str(new Uint8Array(parts.map(function(p){return parseInt(p,2)})));case 'reverse':return input.split('').reverse().join('')}}catch(e){return '✗ Gagal decode: '+e.message}return '?'}
+$('enc-run').onclick=function(){var m=$('enc-method').value,i=$('enc-input').value;if(!i){$('enc-output').textContent='—';sndError();return}var r=(encMode==='encode')?runEncode(m,i):runDecode(m,i);$('enc-output').textContent=r;sndSuccess()};
 $('enc-clear').onclick=function(){$('enc-input').value='';$('enc-output').textContent='—';sndClick()};
 $('enc-copy').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}navigator.clipboard.writeText(t).then(sndSuccess)};
 $('enc-dl').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=(encMode==='encode'?'encoded':'decoded')+'_'+$('enc-method').value+'.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+
+// JWT DECODER
+function b64urlDecode(str){str=str.replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';try{var bin=atob(str);try{return decodeURIComponent(escape(bin))}catch(e){return bin}}catch(e){return null}}
+$('jwt-run').onclick=function(){
+var t=$('jwt-input').value.trim();
+if(!t){$('jwt-status').textContent='Token kosong';sndError();return}
+var parts=t.split('.');
+if(parts.length!==3){$('jwt-status').textContent='⚠ Bukan JWT valid (harus 3 bagian dipisah titik)';sndError();return}
+var h=b64urlDecode(parts[0]);
+var p=b64urlDecode(parts[1]);
+if(!h||!p){$('jwt-status').textContent='✗ Gagal decode JWT';sndError();return}
+try{$('jwt-header-out').textContent=JSON.stringify(JSON.parse(h),null,2)}catch(e){$('jwt-header-out').textContent=h}
+try{$('jwt-payload-out').textContent=JSON.stringify(JSON.parse(p),null,2)}catch(e){$('jwt-payload-out').textContent=p}
+$('jwt-sig-out').textContent=parts[2];
+$('jwt-header').classList.remove('hd');
+$('jwt-payload').classList.remove('hd');
+$('jwt-sig').classList.remove('hd');
+$('jwt-status').textContent='✓ JWT decoded';
+sndSuccess();
+};
+$('jwt-clear').onclick=function(){$('jwt-input').value='';['jwt-header','jwt-payload','jwt-sig'].forEach(function(id){$(id).classList.add('hd')});$('jwt-status').textContent='—';sndClick()};
+
+// CASE CONVERTER
+$('cc-upper').onclick=function(){var t=$('cc-input').value;$('cc-output').textContent=t.toUpperCase();sndSuccess()};
+$('cc-lower').onclick=function(){var t=$('cc-input').value;$('cc-output').textContent=t.toLowerCase();sndSuccess()};
+$('cc-copy').onclick=function(){navigator.clipboard.writeText($('cc-output').textContent).then(sndSuccess)};
+$('cc-clear').onclick=function(){$('cc-input').value='';$('cc-output').textContent='—';sndClick()};
+
+// LETTER COUNTER
+$('lc-input').addEventListener('input',function(){
+var t=this.value;
+var chars=t.length;
+var nospace=t.replace(/\s/g,'').length;
+var words=t.trim()?t.trim().split(/\s+/).length:0;
+var lines=t?t.split('\n').length:0;
+var sents=t?t.split(/[.!?]+/).filter(function(s){return s.trim().length>0}).length:0;
+var readMin=Math.ceil(words/200);
+$('lc-char').textContent=chars;
+$('lc-nospace').textContent=nospace;
+$('lc-word').textContent=words;
+$('lc-line').textContent=lines;
+$('lc-sent').textContent=sents;
+$('lc-read').textContent=readMin>0?readMin+'m':'0m';
+});
 
 // OSINT
 $('ilook').onclick=function(){var ip=$('ipin').value.trim()||'';$('ires').textContent='Loading...';var url=ip?'https://ipapi.co/'+ip+'/json/':'https://ipapi.co/json/';fetch(url).then(function(r){return r.json()}).then(function(j){$('ires').innerHTML='IP: '+j.ip+'<br>Kota: '+(j.city||'-')+'<br>Negara: '+(j.country_name||'-')+'<br>ISP: '+(j.org||'-')+'<br>Lokasi: '+(j.latitude||'-')+','+(j.longitude||'-');sndSuccess()}).catch(function(){$('ires').textContent='Error';sndError()})};
@@ -921,74 +864,35 @@ $('whogen').onclick=function(){var d=$('whoin').value.trim();if(!d){sndError();r
 $('dgen').onclick=function(){var kw=$('dkw').value.trim(),site=$('dsite').value.trim(),tp=$('dtype').value.trim();var q='';if(site)q+='site:'+site+' ';if(kw)q+='"'+kw+'" ';if(tp)q+='filetype:'+tp;$('dres').textContent=q.trim()||'(kosong)';sndSuccess()};
 $('dvinfo').onclick=function(){var d='Browser: '+navigator.userAgent+'<br>Platform: '+navigator.platform+'<br>Language: '+navigator.language+'<br>Layar: '+screen.width+'x'+screen.height+'<br>Online: '+navigator.onLine;$('dvres').innerHTML=d;sndSuccess()};
 
-// SOUND PACK PICKER
-document.querySelectorAll('#snd-grid .snd-opt').forEach(function(o){
-o.onclick=function(){
-sndPack=o.dataset.snd;S.set('snd_pack',sndPack);
-document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});
-if(sndPack!=='off')sndSuccess();
-};
-});
+document.querySelectorAll('#snd-grid .snd-opt').forEach(function(o){o.onclick=function(){sndPack=o.dataset.snd;S.set('snd_pack',sndPack);document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});if(sndPack!=='off')sndSuccess()}});
 $('test-snd').onclick=function(){var old=sndPack;if(sndPack==='off')sndPack='beep';sndSuccess();setTimeout(function(){sndPack=old},300)};
 
-// DARK/LIGHT
 var mode=S.get('mode','dark');
 function applyMode(){if(mode==='light')document.body.classList.add('light');else document.body.classList.remove('light');$('mode-tgl').textContent=mode==='light'?'☀️':'🌙'}
 $('mode-tgl').onclick=function(){mode=(mode==='dark')?'light':'dark';S.set('mode',mode);applyMode();sndClick();vib()};
 
-// HAPTIC TOGGLE
 $('haptic').onclick=function(){hapticOn=!hapticOn;S.set('haptic',hapticOn);$('haptic').textContent='📳 HAPTIC: '+(hapticOn?'ON':'OFF');if(hapticOn)vib(50)};
 $('haptic').textContent='📳 HAPTIC: '+(hapticOn?'ON':'OFF');
-
-// ANIM TOGGLE
 $('ani').onclick=function(){aniOn=!aniOn;S.set('anim',aniOn);$('ani').textContent='✨ ANIM: '+(aniOn?'ON':'OFF');applyAnim();sndClick();vib()};
 $('ani').textContent='✨ ANIM: '+(aniOn?'ON':'OFF');
 applyAnim();
 </script>
 <script>
-// BINARY RAIN
-(function(){
-var canvas=$('bg-canvas');if(!canvas)return;
-var ctx=canvas.getContext('2d');
-var cols=0,drops=[];
-var fontSize=16;
-function resize(){canvas.width=innerWidth;canvas.height=innerHeight;cols=Math.floor(canvas.width/fontSize);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*canvas.height/fontSize}
-resize();addEventListener('resize',resize);
-function draw(){
-if(!document.body.classList.contains('bg-binary')||!aniOn){requestAnimationFrame(draw);return}
-ctx.fillStyle='rgba(0,0,0,0.06)';ctx.fillRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle='#22ff44';ctx.font=fontSize+'px monospace';
-for(var i=0;i<cols;i++){
-var ch=Math.random()>0.5?'1':'0';
-ctx.fillText(ch,i*fontSize,drops[i]*fontSize);
-if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;
-drops[i]++;
-}
-requestAnimationFrame(draw);
-}
-draw();
-})();
+(function(){var canvas=$('bg-canvas');if(!canvas)return;var ctx=canvas.getContext('2d');var cols=0,drops=[];var fontSize=16;function resize(){canvas.width=innerWidth;canvas.height=innerHeight;cols=Math.floor(canvas.width/fontSize);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*canvas.height/fontSize}resize();addEventListener('resize',resize);function draw(){if(!document.body.classList.contains('bg-binary')||!aniOn){requestAnimationFrame(draw);return}ctx.fillStyle='rgba(0,0,0,0.06)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#22ff44';ctx.font=fontSize+'px monospace';for(var i=0;i<cols;i++){var ch=Math.random()>0.5?'1':'0';ctx.fillText(ch,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;drops[i]++}requestAnimationFrame(draw)}draw()})();
 
-// SNIPPET
 $('snp-save').onclick=function(){var c=$('ci').value.trim();if(!c){sndError();alert('Kosong');return}var n=prompt('Nama snippet:');if(!n)return;var sn=S.get('snippets',{});sn[n]=c;S.set('snippets',sn);var cnt=Object.keys(sn).length;S.set('snippet_count',cnt);$('st-s').textContent=cnt;sndSuccess();alert('Saved: '+n)};
 $('snp-load').onclick=function(){var sn=S.get('snippets',{});var keys=Object.keys(sn);if(!keys.length){sndError();alert('Belum ada snippet');return}var pick=prompt('Pilih:\n'+keys.map(function(k,i){return (i+1)+'. '+k}).join('\n')+'\n\nKetik nomor:');var i=parseInt(pick)-1;if(keys[i]){$('ci').value=sn[keys[i]];sndSuccess();alert('Loaded: '+keys[i])}};
 
-// HISTORY
-function renderHist(){var h=S.get('history',[]),el=$('hl');if(!h.length){el.innerHTML='<div class="r">Belum ada history</div>';return}
-el.innerHTML=h.map(function(x,i){var d=new Date(x.t);var ds=d.getDate()+'/'+(d.getMonth()+1)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);return '<div class="hi"><b>'+x.n+'</b> · '+x.s+' KB · '+x.l+' lines<div style="color:var(--txd);font-size:.55rem;margin:3px 0">'+ds+'</div><button class="g" style="margin-top:5px;font-size:.55rem;padding:6px;width:auto;display:inline-block" onclick="dlHist('+i+')">⬇ DL</button></div>'}).join('')}
+function renderHist(){var h=S.get('history',[]),el=$('hl');if(!h.length){el.innerHTML='<div class="r">Belum ada history</div>';return}el.innerHTML=h.map(function(x,i){var d=new Date(x.t);var ds=d.getDate()+'/'+(d.getMonth()+1)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);return '<div class="hi"><b>'+x.n+'</b> · '+x.s+' KB · '+x.l+' lines<div style="color:var(--txd);font-size:.55rem;margin:3px 0">'+ds+'</div><button class="g" style="margin-top:5px;font-size:.55rem;padding:6px;width:auto;display:inline-block" onclick="dlHist('+i+')">⬇ DL</button></div>'}).join('')}
 window.dlHist=function(i){var h=S.get('history',[]);if(!h[i])return;var b=new Blob([h[i].c],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=h[i].n;document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 $('hclr').onclick=function(){if(confirm('Clear history?')){S.del('history');renderHist();sndSuccess()}};
 $('hexp').onclick=function(){var h=S.get('history',[]);if(!h.length){sndError();alert('Kosong');return}var b=new Blob([JSON.stringify(h,null,2)],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='history.json';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 
-// TEMPLATE
-function renderTpl(){var list=$('tl');if(!window.TEMPLATE_COMMAND){list.innerHTML='<div class="r">templates.js gak load</div>';return}
-list.innerHTML='<div class="hi"><b>COMMAND</b> · '+(window.TEMPLATE_COMMAND.length/1024).toFixed(1)+' KB</div><div class="hi"><b>BASE</b> · '+((window.TEMPLATE_BASE||'').length/1024).toFixed(1)+' KB</div>';
-$('tplsel').innerHTML='<option value="">— Pilih —</option><option value="command">SPYWARE COMMAND</option><option value="base">SPYWARE BASE</option>'}
+function renderTpl(){var list=$('tl');if(!window.TEMPLATE_COMMAND){list.innerHTML='<div class="r">templates.js gak load</div>';return}list.innerHTML='<div class="hi"><b>COMMAND</b> · '+(window.TEMPLATE_COMMAND.length/1024).toFixed(1)+' KB</div><div class="hi"><b>BASE</b> · '+((window.TEMPLATE_BASE||'').length/1024).toFixed(1)+' KB</div>';$('tplsel').innerHTML='<option value="">— Pilih —</option><option value="command">SPYWARE COMMAND</option><option value="base">SPYWARE BASE</option>'}
 $('tplsel').onchange=function(){var v=this.value;if(!v){$('tplarea').value='';return}$('tplarea').value=(v==='command')?window.TEMPLATE_COMMAND:window.TEMPLATE_BASE};
 $('tplsrc').onclick=function(){var kw=prompt('Cari apa?');if(!kw)return;var t=$('tplarea').value;if(!t){sndError();alert('Pilih template dulu');return}var lines=t.split('\n'),found=[];for(var i=0;i<lines.length;i++){if(lines[i].indexOf(kw)!==-1)found.push((i+1)+': '+lines[i])}if(!found.length){$('tplres').textContent='Not found: '+kw;sndError();return}$('tplres').innerHTML='Found '+found.length+' matches:<br>'+found.slice(0,10).join('<br>');sndSuccess()};
 $('tplexp').onclick=function(){var v=$('tplsel').value;if(!v){sndError();alert('Pilih template');return}var t=(v==='command')?window.TEMPLATE_COMMAND:window.TEMPLATE_BASE;if(!t){sndError();return}var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=v+'_template.py';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 
-// SETTINGS
 $('exst').onclick=function(){var d={};Object.keys(localStorage).forEach(function(k){if(k.indexOf('rx_')===0)d[k]=localStorage[k]});var b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='ryanntools_settings.json';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 $('imst').onclick=function(){var inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){try{var d=JSON.parse(ev.target.result);Object.keys(d).forEach(function(k){localStorage.setItem(k,d[k])});sndSuccess();alert('Imported. Reload.');location.reload()}catch(er){sndError();alert('Error: '+er.message)}};r.readAsText(f)};inp.click()};
 $('wipe').onclick=function(){if(confirm('Wipe ALL data?')){Object.keys(localStorage).forEach(function(k){if(k.indexOf('rx_')===0)localStorage.removeItem(k)});location.reload()}};
@@ -997,7 +901,7 @@ document.querySelectorAll('[data-lang]').forEach(function(b){b.onclick=function(
 // PROXY SCRAPER
 var scrResults=[];var scrRunning=false;var SCR_CD=15*60*1000;
 function scrUpdateCooldownUI(){var last=S.get('scr_last',0);var diff=last+SCR_CD-Date.now();var btn=$('scr-start');if(!btn)return;if(scrRunning){btn.disabled=true;btn.textContent='⏳ SCRAPING...';return}if(diff>0){var m=Math.floor(diff/60000),s=Math.floor((diff%60000)/1000);btn.disabled=true;btn.textContent='⏳ TUNGGU '+m+'m '+s+'s';}else{btn.disabled=false;btn.textContent='▶ START SCRAPE';}}
-function scrSetProgress(cur,total){var pct=total>0?Math.min(100,(cur/total)*100):0;$('scr-prog-fill').style.width=pct+'%';$('scr-prog-txt').textContent=cur+' / '+total;$('scr-prog-label').textContent='MENGUMPULKAN PROXY · '+pct.toFixed(1)+'%';}
+function scrSetProgress(cur,total){var pct=total>0?Math.min(100,(cur/total)*100):0;$('scr-prog-fill').style.width=pct+'%';$('scr-prog-txt').textContent=cur+' / '+total;$('scr-prog-label').textContent='MENGUMPULKAN PROXY · '+pct.toFixed(1)+'%'}
 $('scr-clear').onclick=function(){if(scrRunning){alert('Masih jalan');return}$('scr-log').innerHTML='';$('scr-pbox').classList.add('hd');scrResults=[];$('scr-prog-wrap').classList.remove('on');sndClick()};
 $('scr-start').onclick=async function(){
 if(scrRunning)return;
@@ -1007,8 +911,7 @@ var sources=$('scr-sources').value.split('\n').map(function(x){return x.trim()})
 if(!sources.length){alert('Sumber kosong');sndError();return}
 var target=parseInt($('scr-target').value)||10000;
 if(target<100)target=100;if(target>120000)target=120000;
-$('scr-target').value=target;
-scrRunning=true;$('scr-prog-wrap').classList.add('on');scrSetProgress(0,target);
+$('scr-target').value=target;scrRunning=true;$('scr-prog-wrap').classList.add('on');scrSetProgress(0,target);
 $('scr-log').innerHTML='';scrResults=[];
 logTo('scr-log','Target: '+target+' proxy · Sumber: '+sources.length,'in');logTo('scr-log','Mode: 2 detik per batch','dim');sndSuccess();
 var seen={};var total=0;var stopFlag=false;
@@ -1016,7 +919,7 @@ for(var i=0;i<sources.length;i++){
 if(total>=target){stopFlag=true;break}
 var url=sources[i];var shortName=url.split('/').slice(-1)[0]||url;
 logTo('scr-log','['+(i+1)+'/'+sources.length+'] '+shortName,'dim');
-try{var r=await fetch(url);var t=await r.text();var found=t.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+/g)||[];var uniq=0;for(var k=0;k<found.length;k++){var p=found[k];if(!seen[p]){seen[p]=1;scrResults.push(p);uniq++;total++;}if(total>=target)break}logTo('scr-log','  ✓ +'+uniq+' baru · total '+total+'/'+target,'ok');}catch(e){logTo('scr-log','  ✗ '+e.message,'er');}
+try{var r=await fetch(url);var t=await r.text();var found=t.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+/g)||[];var uniq=0;for(var k=0;k<found.length;k++){var p=found[k];if(!seen[p]){seen[p]=1;scrResults.push(p);uniq++;total++}if(total>=target)break}logTo('scr-log','  ✓ +'+uniq+' baru · total '+total+'/'+target,'ok');}catch(e){logTo('scr-log','  ✗ '+e.message,'er');}
 scrSetProgress(total,target);
 if(total>=target){stopFlag=true;break}
 await new Promise(function(res){setTimeout(res,2000)});
@@ -1028,6 +931,79 @@ S.set('scr_last',Date.now());logTo('scr-log','⏳ Cooldown 15 menit dimulai','wa
 };
 $('scr-preview').onclick=function(){var pb=$('scr-pbox');if(pb.classList.contains('hd')){pb.textContent=scrResults.slice(0,50).join('\n')+(scrResults.length>50?'\n\n... +'+(scrResults.length-50)+' lagi':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
 $('scr-dl').onclick=function(){if(!scrResults.length){alert('Belum ada hasil');sndError();return}var b=new Blob([scrResults.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxies.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+
+// PROXY CHECKER
+var pcAlive=[];var pcDead=[];var pcSkip=[];var pcRunning=false;
+function pcSetProgress(cur,total,label){var pct=total>0?Math.min(100,(cur/total)*100):0;$('pc-prog-fill').style.width=pct+'%';$('pc-prog-txt').textContent=cur+' / '+total;$('pc-prog-label').textContent=(label||'CEK PROXY')+' · '+pct.toFixed(1)+'%'}
+function pcUpdateStats(){$('pc-stat-total').textContent=pcAlive.length+pcDead.length+pcSkip.length;$('pc-stat-alive').textContent=pcAlive.length;$('pc-stat-dead').textContent=pcDead.length;$('pc-stat-skip').textContent=pcSkip.length}
+$('pc-clear').onclick=function(){if(pcRunning){alert('Masih jalan');return}$('pc-input').value='';$('pc-log').innerHTML='';$('pc-pbox').classList.add('hd');pcAlive=[];pcDead=[];pcSkip=[];$('pc-prog-wrap').classList.remove('on');$('pc-fileinfo').innerHTML='';pcUpdateStats();sndClick()};
+$('pc-drop').onclick=function(){$('pc-file').click()};
+['dragenter','dragover'].forEach(function(ev){$('pc-drop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('pc-drop').classList.add('dragover')})});
+['dragleave','drop'].forEach(function(ev){$('pc-drop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('pc-drop').classList.remove('dragover')})});
+function pcLoadFile(f){var r=new FileReader();r.onload=function(ev){var content=ev.target.result;var lines=content.split('\n').map(function(x){return x.trim()}).filter(function(x){return x&&!/^[\[\{]/.test(x)});if(/^\s*[\[\{]/.test(content)){try{var j=JSON.parse(content);var arr=[];function walk(o){if(typeof o==='string')arr.push(o);else if(Array.isArray(o))o.forEach(walk);else if(o&&typeof o==='object')Object.values(o).forEach(walk)}walk(j);lines=arr}catch(e){}}var existing=$('pc-input').value.trim();$('pc-input').value=(existing?existing+'\n':'')+lines.join('\n');$('pc-fileinfo').innerHTML='<div class="r" style="border-color:var(--ac);background:var(--acd);color:var(--ac)">'+f.name+' · '+lines.length+' baris</div>';sndSuccess()};r.readAsText(f)}
+$('pc-file').onchange=function(e){if(e.target.files[0])pcLoadFile(e.target.files[0]);e.target.value=''};
+$('pc-drop').addEventListener('drop',function(e){if(e.dataTransfer&&e.dataTransfer.files[0])pcLoadFile(e.dataTransfer.files[0])});
+function pcParseProxy(line){
+line=line.trim();if(!line)return null;
+var type='http',ip,port;
+if(line.indexOf('://')!==-1){var parts=line.split('://');type=parts[0].toLowerCase();line=parts[1]}
+var lastColon=line.lastIndexOf(':');
+if(lastColon===-1)return null;
+ip=line.substring(0,lastColon);port=line.substring(lastColon+1);
+if(!ip||!port||isNaN(parseInt(port)))return null;
+return {type:type,ip:ip,port:port,raw:line};
+}
+function pcTestOne(p,timeoutMs){
+return new Promise(function(resolve){
+// only HTTP/HTTPS testable in browser
+if(p.type==='socks4'||p.type==='socks5'){resolve({alive:false,skip:true,reason:'socks gak support di browser'});return}
+var targets=['https://api.ipify.org','http://httpbin.org/ip'];
+var idx=0;
+function tryNext(){
+if(idx>=targets.length){resolve({alive:false,skip:false});return}
+var target=targets[idx++];
+var ctrl=new AbortController();
+var timer=setTimeout(function(){ctrl.abort()},timeoutMs);
+// browser can't really set proxy, so we just do a plain fetch as "reachability check" against target
+fetch(target,{mode:'cors',signal:ctrl.signal}).then(function(r){clearTimeout(timer);if(r.ok)resolve({alive:true,skip:false});else tryNext()}).catch(function(){clearTimeout(timer);tryNext()});
+}
+tryNext();
+});
+}
+$('pc-start').onclick=async function(){
+if(pcRunning)return;
+var raw=$('pc-input').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});
+if(!raw.length){alert('Input kosong');sndError();return}
+var proxies=[];
+for(var i=0;i<raw.length;i++){var p=pcParseProxy(raw[i]);if(p)proxies.push(p)}
+if(!proxies.length){alert('Gak ada proxy valid');sndError();return}
+pcRunning=true;pcAlive=[];pcDead=[];pcSkip=[];
+$('pc-prog-wrap').classList.add('on');pcSetProgress(0,proxies.length);
+$('pc-log').innerHTML='';
+logTo('pc-log','Cek '+proxies.length+' proxy · timeout '+$('pc-timeout').value+'ms','in');
+logTo('pc-log','⚠ Browser gak support SOCKS — socks4/socks5 akan di-skip','warn');
+logTo('pc-log','⚠ Test pakai target publik, bukan proxy actual (browser gak bisa set proxy)','warn');
+sndSuccess();
+var timeoutMs=parseInt($('pc-timeout').value)||5000;
+for(var i=0;i<proxies.length;i++){
+if(!pcRunning)break;
+var p=proxies[i];
+var r=await pcTestOne(p,timeoutMs);
+if(r.skip){pcSkip.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ⚠ SKIP '+p.raw+' ('+r.reason+')','warn')}
+else if(r.alive){pcAlive.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ✓ '+p.raw,'ok')}
+else{pcDead.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ✗ '+p.raw,'er')}
+pcSetProgress(i+1,proxies.length);
+if((i+1)%10===0)pcUpdateStats();
+}
+pcRunning=false;
+pcUpdateStats();
+logTo('pc-log','','');
+logTo('pc-log','SELESAI — Hidup: '+pcAlive.length+' · Mati: '+pcDead.length+' · Skip: '+pcSkip.length,'in');
+pcSetProgress(proxies.length,proxies.length,'SELESAI');
+sndSuccess();
+};
+$('pc-dl-alive').onclick=function(){if(!pcAlive.length){sndError();return}var b=new Blob([pcAlive.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxy_alive.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+$('pc-dl-dead').onclick=function(){if(!pcDead.length){sndError();return}var b=new Blob([pcDead.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxy_dead.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 
 // VERCEL DEPLOYER
 var scrVFiles=[];var scrVRunning=false;
@@ -1054,18 +1030,8 @@ if(!scrVFiles.length){alert('Belum ada file');sndError();return}
 var log=$('scr-vlog');log.innerHTML='';scrVRunning=true;$('scr-vprog-wrap').classList.add('on');scrVSetProgress(0,totalProj,'INIT');
 logTo('scr-vlog','Memverifikasi token Vercel...','in');
 var userOk=false;
-try{
-var r1=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},10000);
-if(r1.ok){var u=await r1.json();userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN','ok');if(u.user)logTo('scr-vlog','   User: '+(u.user.username||u.user.email||'-'),'dim');}
-else if(r1.status===401||r1.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');logTo('scr-vlog','   Token invalid / expired','dim');sndError();scrVRunning=false;return;}
-else logTo('scr-vlog','⚠ HTTP '+r1.status+' saat cek token','warn');
-}catch(e){
-if(e.message&&e.message.indexOf('TIMEOUT')===0){
-logTo('scr-vlog','⚠ Koneksi lambat, retry dengan timeout 60s...','warn');
-try{var r2=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},60000);if(r2.ok){userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN (retry)','ok')}else if(r2.status===401||r2.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return;}else logTo('scr-vlog','⚠ HTTP '+r2.status,'warn');}
-catch(e2){logTo('scr-vlog','❌ Token check gagal total (60s timeout)','er');sndError();scrVRunning=false;return;}
-}else logTo('scr-vlog','⚠ Fetch error: '+e.message,'warn');
-}
+try{var r1=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},10000);if(r1.ok){var u=await r1.json();userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN','ok');if(u.user)logTo('scr-vlog','   User: '+(u.user.username||u.user.email||'-'),'dim');}else if(r1.status===401||r1.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');logTo('scr-vlog','   Token invalid / expired','dim');sndError();scrVRunning=false;return;}else logTo('scr-vlog','⚠ HTTP '+r1.status+' saat cek token','warn');}
+catch(e){if(e.message&&e.message.indexOf('TIMEOUT')===0){logTo('scr-vlog','⚠ Koneksi lambat, retry dengan timeout 60s...','warn');try{var r2=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},60000);if(r2.ok){userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN (retry)','ok')}else if(r2.status===401||r2.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return;}else logTo('scr-vlog','⚠ HTTP '+r2.status,'warn');}catch(e2){logTo('scr-vlog','❌ Token check gagal total (60s timeout)','er');sndError();scrVRunning=false;return;}}else logTo('scr-vlog','⚠ Fetch error: '+e.message,'warn');}
 if(!userOk){logTo('scr-vlog','❌ Token check gagal — deploy dihentikan','er');sndError();scrVRunning=false;return;}
 logTo('scr-vlog','Membaca '+scrVFiles.length+' file...','dim');
 var payloadFiles=[];
@@ -1076,12 +1042,7 @@ for(var p=0;p<totalProj;p++){
 var projName=base+'-'+vercelSuffix();
 logTo('scr-vlog','','');logTo('scr-vlog','[DEPLOY '+(p+1)+'/'+totalProj+'] '+projName,'in');
 scrVSetProgress(p,totalProj,'DEPLOY '+projName);
-try{
-var r=await fetch('https://api.vercel.com/v13/deployments',{method:'POST',headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({name:projName,files:payloadFiles,projectSettings:{framework:null}})});
-var j=await r.json();
-if(r.ok){var url='https://'+j.url;logTo('scr-vlog','  ✓ '+url,'ok');resultUrls.push(url);okCount++;}
-else{var em=(j.error&&j.error.message)||JSON.stringify(j);logTo('scr-vlog','  ✗ GAGAL: '+em,'er');failCount++;logTo('scr-vlog','','');logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' gagal.','er');logTo('scr-vlog','   Sukses: '+okCount+'/'+totalProj+' · Gagal: '+failCount+'/'+totalProj,'warn');scrVRunning=false;sndError();var el=$('scr-vresult');el.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');el.classList.remove('hd');return;}
-}catch(e){logTo('scr-vlog','  ✗ Fetch error: '+e.message,'er');failCount++;logTo('scr-vlog','','');logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' error.','er');scrVRunning=false;sndError();var el2=$('scr-vresult');el2.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');el2.classList.remove('hd');return;}
+try{var r=await fetch('https://api.vercel.com/v13/deployments',{method:'POST',headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({name:projName,files:payloadFiles,projectSettings:{framework:null}})});var j=await r.json();if(r.ok){var url='https://'+j.url;logTo('scr-vlog','  ✓ '+url,'ok');resultUrls.push(url);okCount++;}else{var em=(j.error&&j.error.message)||JSON.stringify(j);logTo('scr-vlog','  ✗ GAGAL: '+em,'er');failCount++;logTo('scr-vlog','','');logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' gagal.','er');logTo('scr-vlog','   Sukses: '+okCount+'/'+totalProj+' · Gagal: '+failCount+'/'+totalProj,'warn');scrVRunning=false;sndError();var el=$('scr-vresult');el.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');el.classList.remove('hd');return;}}catch(e){logTo('scr-vlog','  ✗ Fetch error: '+e.message,'er');failCount++;logTo('scr-vlog','','');logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' error.','er');scrVRunning=false;sndError();var el2=$('scr-vresult');el2.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');el2.classList.remove('hd');return;}
 if(p<totalProj-1){var wait=2000+Math.floor(Math.random()*3000);logTo('scr-vlog','  ⏳ Jeda '+wait+'ms...','dim');await new Promise(function(res){setTimeout(res,wait)});}
 }
 logTo('scr-vlog','','');logTo('scr-vlog','✅ SEMUA DEPLOY SUKSES — '+okCount+'/'+totalProj,'in');scrVSetProgress(totalProj,totalProj,'SELESAI');sndSuccess();
@@ -1101,16 +1062,7 @@ async function tmpShowMsg(i){var m=tmpMsgs[i];if(!m)return;try{var r=await tmpFe
 $('tmp-inbox-dl').onclick=function(){if(!tmpMsgs.length){alert('Belum ada pesan');sndError();return}var t=tmpMsgs.map(function(m){return 'From: '+m.from.address+'\nSubject: '+m.subject+'\nIntro: '+m.intro+'\n---';}).join('\n\n');var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='inbox.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 tmpLoadDomains();
 
-// BOOT
-function boot(){
-setTema(S.get('theme','t-cyan'));setBg(S.get('bg','galaxy'));applyMode();loadCustomTheme();
-var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';
-var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);
-document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});
-$('st-g').textContent=S.get('generates',0);$('st-d').textContent=S.get('downloads',0);$('st-s').textContent=S.get('snippet_count',0);
-renderHist();renderTpl();checkAch(S.get('generates',0));
-scrUpdateCooldownUI();setInterval(scrUpdateCooldownUI,1000);
-}
+function boot(){setTema(S.get('theme','t-cyan'));setBg(S.get('bg','galaxy'));applyMode();loadCustomTheme();var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});$('st-g').textContent=S.get('generates',0);$('st-d').textContent=S.get('downloads',0);$('st-s').textContent=S.get('snippet_count',0);renderHist();renderTpl();checkAch(S.get('generates',0));scrUpdateCooldownUI();setInterval(scrUpdateCooldownUI,1000);}
 boot();
 setTimeout(function(){if(!window.TEMPLATE_COMMAND){$('sw').innerHTML='<div class="st-er" style="font-size:.55rem">⚠ templates.js gak load</div>'}},400);
 </script>
