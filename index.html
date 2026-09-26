@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>RYANN • TOOLS</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#04080f;--card:rgba(10,20,35,.78);--border:#1e4d5c;--bl:#2a6b7f;--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--tx:#e0f2fe;--txd:#64748b;--txm:#475569;--ok:#4ade80;--er:#f87171;--wr:#fbbf24;--fs:13px;--fh:'Orbitron',sans-serif;--fm:'JetBrains Mono',monospace}
+.t-g{--ac:#4ade80;--ac2:#86efac;--acd:rgba(74,222,128,.15);--border:#1e4d2a;--bl:#2a6b3f}.t-r{--ac:#f87171;--ac2:#fca5a5;--acd:rgba(248,113,113,.15);--border:#4d1e1e;--bl:#7f2a2a}.t-o{--ac:#fb923c;--ac2:#fdba74;--acd:rgba(251,146,60,.15);--border:#4d2e1e;--bl:#7f4a2a}.t-p{--ac:#c084fc;--ac2:#d8b4fe;--acd:rgba(192,132,252,.15);--border:#3d1e4d;--bl:#5c2a7f}.t-k{--ac:#f472b6;--ac2:#f9a8d4;--acd:rgba(244,114,182,.15);--border:#4d1e35;--bl:#7f2a55}.t-m{--ac:#e0f2fe;--ac2:#fff;--acd:rgba(224,242,254,.12);--border:#3a4551;--bl:#5c6775}
+*{margin:0;padding:0;box-sizing:border-box}html{font-size:var(--fs)}
+body{background:var(--bg);color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg)}
+.w{max-width:520px;margin:0 auto;padding:10px}
+.tb{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px}
+.lg{font-family:var(--fh);font-weight:900;font-size:.9rem;letter-spacing:2px;color:var(--ac)}.lg .y{color:var(--ac2)}
+.ch{font-size:.5rem;color:var(--ac2);border:1px solid var(--bl);padding:2px 5px;border-radius:3px;background:var(--acd)}
+.sp{flex:1}
+.pl{display:inline-flex;align-items:center;gap:5px;font-size:.55rem;color:var(--ac);border:1px solid var(--bl);padding:3px 7px;border-radius:4px;background:var(--acd)}
+.pl .d{width:5px;height:5px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.ib{width:26px;height:26px;border:1px solid var(--bl);border-radius:5px;background:var(--acd);color:var(--ac);cursor:pointer;font-size:12px}
+.nv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
+.nb{border:1px solid var(--border);border-radius:7px;background:rgba(10,20,35,.6);padding:8px 3px;text-align:center;cursor:pointer;font-weight:700;font-size:.5rem;color:var(--txd);text-transform:uppercase}
+.nb.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
+.nb .i{display:block;font-size:13px;margin-bottom:1px}
+.c{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:12px;margin-bottom:9px}
+.cl{font-size:.55rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px;padding-left:8px;position:relative}
+.cl::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:11px;background:var(--ac);border-radius:2px}
+.hr{font-family:var(--fh);font-weight:900;font-size:1.4rem;letter-spacing:2px;text-align:center;text-transform:uppercase;color:var(--ac);text-shadow:0 0 12px var(--ac)}.hr .y{color:var(--ac2)}
+.sb{text-align:center;font-size:.55rem;color:var(--txd);letter-spacing:2px;margin:3px 0 10px;text-transform:uppercase}
+label{display:block;font-size:.55rem;color:var(--ac);letter-spacing:1.5px;margin:8px 0 4px;text-transform:uppercase;font-weight:700}
+input,select,textarea{width:100%;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(4,8,15,.7);color:var(--tx);font-family:var(--fm);font-size:.75rem;outline:none}
+input:focus,textarea:focus{border-color:var(--ac);box-shadow:0 0 0 2px var(--acd)}
+textarea{min-height:100px;resize:vertical;font-size:.65rem}
+button{width:100%;padding:10px;border-radius:8px;border:none;cursor:pointer;font-family:var(--fh);font-weight:800;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;background:var(--ac);color:#04080f;margin-top:7px}
+button.g{background:transparent;color:var(--ac);border:1px solid var(--bl);box-shadow:none}
+button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
+.br{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}.br button{margin-top:0}
+.br3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:7px}.br3 button{margin-top:0;font-size:.55rem;padding:8px 3px}
+.br4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px}.br4 button{margin-top:0;font-size:.5rem;padding:7px 2px}
+.r{margin-top:8px;padding:9px;border-radius:7px;border:1px solid var(--border);background:rgba(0,0,0,.4);font-size:.65rem;color:var(--ac2);word-break:break-all;min-height:32px}
+.st{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
+.s{border:1px solid var(--border);border-radius:9px;background:var(--card);padding:12px;text-align:center}
+.s .l{font-size:.5rem;color:var(--txd);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.s .n{font-family:var(--fh);font-weight:900;font-size:1.4rem;color:var(--ac)}
+.st-ok{padding:9px;border-radius:7px;margin-top:8px;font-size:.6rem;font-weight:700;border:1px solid var(--ok);background:rgba(74,222,128,.08);color:var(--ok)}
+.st-er{padding:9px;border-radius:7px;margin-top:8px;font-size:.6rem;font-weight:700;border:1px solid var(--er);background:rgba(248,113,113,.08);color:var(--er)}
+.st-in{padding:9px;border-radius:7px;margin-top:8px;font-size:.6rem;font-weight:700;border:1px solid var(--ac);background:var(--acd);color:var(--ac)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
+.tab{border:1px solid var(--border);border-radius:8px;padding:9px 6px;text-align:center;cursor:pointer;font-weight:700;font-size:.6rem;color:var(--txd);text-transform:uppercase}
+.tab.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
+.tg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.to{aspect-ratio:1;border-radius:7px;border:2px solid var(--border);cursor:pointer;position:relative}
+.to.a{border-color:var(--ac);transform:scale(1.05)}
+.to .lbl{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.4rem;color:#fff;text-shadow:0 0 4px #000}
+.hi{padding:9px;border-radius:7px;border:1px solid var(--border);background:rgba(4,8,15,.5);margin-bottom:5px;font-size:.6rem}
+.hi b{color:var(--ac)}
+.hd{display:none!important}
+.ft{text-align:center;font-size:.5rem;color:var(--txd);letter-spacing:2px;text-transform:uppercase;padding:12px 0;opacity:.6}
+.drop{border:2px dashed var(--bl);border-radius:9px;background:rgba(4,8,15,.4);padding:18px;text-align:center;cursor:pointer}
+.drop .ic{font-size:28px;display:block;margin-bottom:5px}
+.fs-range{width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;-webkit-appearance:none}
+.fs-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac);cursor:pointer}
+.ach{padding:9px;margin-bottom:5px;border-radius:7px;border:1px solid var(--border);background:rgba(0,0,0,.3);font-size:.6rem}
+.ach.locked{opacity:.4}
+.ach.unlocked{border-color:var(--ac);background:var(--acd);color:var(--ac);font-weight:700}
+</style>
+</head>
+<body>
+<div class="w">
+
+<div class="tb">
+<span class="lg">RYANN <span class="y">• TOOLS</span></span>
+<span class="ch">v4.0</span>
+<span class="sp"></span>
+<span class="pl"><span class="d"></span>ONLINE</span>
+</div>
+
+<div class="nv">
+<div class="nb a" data-p="home"><span class="i">🏠</span>HOME</div>
+<div class="nb" data-p="spy"><span class="i">💀</span>SPY</div>
+<div class="nb" data-p="utl"><span class="i">🔧</span>UTILS</div>
+<div class="nb" data-p="osi"><span class="i">🕵</span>OSINT</div>
+<div class="nb" data-p="tpl"><span class="i">📄</span>TPL</div>
+<div class="nb" data-p="hst"><span class="i">📜</span>HIST</div>
+<div class="nb" data-p="set"><span class="i">⚙</span>SET</div>
+<div class="nb" data-p="abt"><span class="i">ℹ</span>ABOUT</div>
+</div>
+
+<!-- HOME -->
+<div class="pg" id="pg-home">
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">INJECTOR · UTILS · OSINT</div></div>
+<div class="st">
+<div class="s"><div class="l">Generates</div><div class="n" id="st-g">0</div></div>
+<div class="s"><div class="l">Downloads</div><div class="n" id="st-d">0</div></div>
+<div class="s"><div class="l">Snippets</div><div class="n" id="st-s">0</div></div>
+<div class="s"><div class="l">Templates</div><div class="n" id="st-t">2</div></div>
+</div>
+<div class="c"><div class="cl">QUICK ACTIONS</div>
+<div class="br"><button class="g" onclick="go('spy')">💀 GENERATE</button><button class="g" onclick="go('utl')">🔧 TOOLS</button></div>
+<div class="br"><button class="g" onclick="go('osi')">🕵 OSINT</button><button class="g" onclick="go('hst')">📜 HISTORY</button></div>
+</div>
+<div class="c"><div class="cl">ACHIEVEMENTS</div>
+<div id="ach-wrap">
+<div class="ach locked" data-ach="1">🏆 First Generate</div>
+<div class="ach locked" data-ach="10">🔥 10 Generates</div>
+<div class="ach locked" data-ach="50">💎 50 Generates</div>
+<div class="ach locked" data-ach="100">👑 100 Generates</div>
+</div>
+</div>
+</div>
+
+<!-- SPYWARE -->
+<div class="pg hd" id="pg-spy">
+<div class="c"><div class="cl">INPUT CODE</div>
+<div class="tabs"><div class="tab a" id="tp">📋 PASTE</div><div class="tab" id="tu">📁 UPLOAD</div></div>
+<div id="sp"><textarea id="ci" placeholder="# Paste code python..."></textarea></div>
+<div id="su" class="hd">
+<div class="drop" onclick="document.getElementById('fi').click()">
+<span class="ic">📁</span>
+<div style="font-weight:700;font-size:.65rem">TAP TO UPLOAD</div>
+</div>
+<input type="file" id="fi" accept=".py,.txt" class="hd">
+<div id="finfo"></div>
+</div>
+</div>
+<div class="c"><div class="cl">SNIPPET</div>
+<div class="br"><button class="g" id="snp-save">💾 SAVE</button><button class="g" id="snp-load">📂 LOAD</button></div>
+</div>
+<div class="c"><div class="cl">CONFIG</div>
+<label>Bot Token</label><input id="bt" placeholder="123456:ABC...">
+<label>Chat ID</label><input id="ct" placeholder="123456789">
+<label>Template</label><select id="ts"><option value="">— Pilih —</option><option value="command">SPYWARE COMMAND</option><option value="base">SPYWARE BASE</option></select>
+<label>Nama File</label><input id="on" value="spyware_ryan">
+</div>
+<div class="c"><div class="cl">GENERATE</div>
+<button id="gb">⚡ GENERATE FILE</button>
+<div class="br"><button class="g" id="cb">🗑 CLEAR</button><button class="g" id="vb">✓ VALIDATE</button></div>
+<div id="sw"></div>
+<div id="tmw" class="hd"><div class="st-in">⏱ <span id="tmv">0</span> ms</div></div>
+</div>
+<div class="c hd" id="rc"><div class="cl">RESULT</div>
+<div style="text-align:center;padding:8px 0">
+<div style="font-size:32px">⬇️</div>
+<div style="font-weight:800;color:var(--ac);font-size:.7rem">FILE SIAP</div>
+<div style="font-size:.6rem;color:var(--txd)" id="rm">spyware_ryan.py</div>
+<div style="font-size:.6rem;color:var(--txd);margin-top:4px" id="rs">0 lines · 0 KB</div>
+</div>
+<div class="br"><button id="db">⬇ DOWNLOAD</button><button class="g" id="cob">📋 COPY</button></div>
+<div class="br"><button class="g" id="shb">📤 SHARE</button><button class="g" id="pvb">👁 PREVIEW</button></div>
+<div id="pbox" class="r hd" style="max-height:200px;overflow-y:auto"></div>
+</div>
+</div>
+
+<!-- UTILS -->
+<div class="pg hd" id="pg-utl">
+<div class="c"><div class="cl">🔐 PASSWORD</div>
+<label>Panjang</label><input type="number" id="plen" value="16">
+<div class="br"><button class="g" id="pgen">GEN</button><button class="g" id="pcp">COPY</button></div>
+<div class="r" id="pres">—</div>
+</div>
+<div class="c"><div class="cl">🆔 UUID</div>
+<button class="g" id="ugen">GENERATE</button><div class="r" id="ures">—</div>
+</div>
+<div class="c"><div class="cl">🔑 HASH</div>
+<input id="hin" placeholder="text to hash">
+<div class="br3"><button class="g" id="hm5">MD5</button><button class="g" id="hs1">SHA-1</button><button class="g" id="hs2">SHA-256</button></div>
+<div class="r" id="hres">—</div>
+</div>
+<div class="c"><div class="cl">🔗 URL SHORTENER</div>
+<input id="shin" placeholder="https://...">
+<div class="br"><button class="g" id="shgen">SHORTEN</button><button class="g" id="shcp">COPY</button></div>
+<div class="r" id="shres">—</div>
+</div>
+</div>
+
+<!-- OSINT -->
+<div class="pg hd" id="pg-osi">
+<div class="c"><div class="cl">🌍 IP LOOKUP</div>
+<input id="ipin" placeholder="8.8.8.8 atau kosong = IP lo">
+<button class="g" id="ilook">LOOKUP</button><div class="r" id="ires">—</div>
+</div>
+<div class="c"><div class="cl">📡 MY IP</div>
+<button class="g" id="mip">CEK IP LO</button><div class="r" id="mres">—</div>
+</div>
+<div class="c"><div class="cl">🏢 WHOIS</div>
+<input id="whoin" placeholder="domain.com">
+<button class="g" id="whogen">LOOKUP</button><div class="r" id="whores">—</div>
+</div>
+<div class="c"><div class="cl">🔎 GOOGLE DORK</div>
+<label>Kata kunci</label><input id="dkw" placeholder="admin login">
+<label>Site</label><input id="dsite" placeholder="example.com">
+<label>File type</label><input id="dtype" placeholder="pdf">
+<button class="g" id="dgen">GENERATE</button><div class="r" id="dres">—</div>
+</div>
+<div class="c"><div class="cl">📱 DEVICE INFO</div>
+<button class="g" id="dvinfo">CEK DEVICE</button><div class="r" id="dvres">—</div>
+</div>
+</div>
+
+<!-- TEMPLATES -->
+<div class="pg hd" id="pg-tpl">
+<div class="c"><div class="cl">TEMPLATE LIST</div><div id="tl">Loading...</div></div>
+<div class="c"><div class="cl">EDITOR</div>
+<label>Pilih Template</label><select id="tplsel"><option value="">— Pilih —</option></select>
+<label>Isi</label><textarea id="tplarea" placeholder="Pilih template" readonly></textarea>
+<div class="br"><button class="g" id="tplsrc">🔍 SEARCH</button><button class="g" id="tplexp">⬇ EXPORT .PY</button></div>
+<div class="r" id="tplres">—</div>
+</div>
+</div>
+
+<!-- HISTORY -->
+<div class="pg hd" id="pg-hst">
+<div class="c"><div class="cl">HISTORY</div>
+<div id="hl">Belum ada</div>
+<div class="br"><button class="g" id="hexp">⬇ EXPORT</button><button class="d" id="hclr">🗑 CLEAR</button></div>
+</div>
+</div>
+
+<!-- SETTINGS -->
+<div class="pg hd" id="pg-set">
+<div class="c"><div class="cl">🎨 THEME</div>
+<div class="tg" id="tg">
+<div class="to t-cyan a" data-t="t-cyan" style="background:linear-gradient(135deg,#04080f,#22d3ee)"><span class="lbl">CYAN</span></div>
+<div class="to t-green" data-t="t-green" style="background:linear-gradient(135deg,#04080f,#4ade80)"><span class="lbl">GRN</span></div>
+<div class="to t-red" data-t="t-red" style="background:linear-gradient(135deg,#04080f,#f87171)"><span class="lbl">RED</span></div>
+<div class="to t-orange" data-t="t-orange" style="background:linear-gradient(135deg,#04080f,#fb923c)"><span class="lbl">ORG</span></div>
+<div class="to t-purple" data-t="t-purple" style="background:linear-gradient(135deg,#04080f,#c084fc)"><span class="lbl">PUR</span></div>
+<div class="to t-pink" data-t="t-pink" style="background:linear-gradient(135deg,#04080f,#f472b6)"><span class="lbl">PNK</span></div>
+<div class="to t-lime" data-t="t-lime" style="background:linear-gradient(135deg,#04080f,#a3e635)"><span class="lbl">LME</span></div>
+<div class="to t-yellow" data-t="t-yellow" style="background:linear-gradient(135deg,#04080f,#facc15)"><span class="lbl">YEL</span></div>
+<div class="to t-teal" data-t="t-teal" style="background:linear-gradient(135deg,#04080f,#2dd4bf)"><span class="lbl">TEA</span></div>
+<div class="to t-indigo" data-t="t-indigo" style="background:linear-gradient(135deg,#04080f,#818cf8)"><span class="lbl">IND</span></div>
+<div class="to t-rose" data-t="t-rose" style="background:linear-gradient(135deg,#04080f,#fb7185)"><span class="lbl">ROS</span></div>
+<div class="to t-emerald" data-t="t-emerald" style="background:linear-gradient(135deg,#04080f,#34d399)"><span class="lbl">EME</span></div>
+<div class="to t-sky" data-t="t-sky" style="background:linear-gradient(135deg,#04080f,#38bdf8)"><span class="lbl">SKY</span></div>
+<div class="to t-fuchsia" data-t="t-fuchsia" style="background:linear-gradient(135deg,#04080f,#e879f9)"><span class="lbl">FUC</span></div>
+<div class="to t-slate" data-t="t-slate" style="background:linear-gradient(135deg,#04080f,#94a3b8)"><span class="lbl">SLT</span></div>
+<div class="to t-mono" data-t="t-mono" style="background:linear-gradient(135deg,#04080f,#e0f2fe)"><span class="lbl">MON</span></div>
+</div>
+</div>
+<div class="c"><div class="cl">🔤 FONT <span id="fv" style="color:var(--ac)">13px</span></div>
+<input type="range" id="fsr" class="fs-range" min="11" max="18" value="13">
+<label>Family</label>
+<select id="ffam"><option value="'JetBrains Mono',monospace">JetBrains Mono</option><option value="monospace">Monospace</option><option value="'Orbitron',sans-serif">Orbitron</option></select>
+</div>
+<div class="c"><div class="cl">🌐 LANGUAGE</div>
+<div class="br"><button class="g" data-lang="id">🇮🇩 ID</button><button class="g" data-lang="en">🇬🇧 EN</button></div>
+</div>
+<div class="c"><div class="cl">🔔 SOUND</div>
+<div class="br"><button class="g" id="snd">🔊 SOUND: OFF</button><button class="g" id="ani">✨ ANIM: ON</button></div>
+</div>
+<div class="c"><div class="cl">💾 DATA</div>
+<div class="br"><button class="g" id="exst">⬇ EXPORT</button><button class="g" id="imst">⬆ IMPORT</button></div>
+<button class="d" id="wipe">🗑 WIPE ALL DATA</button>
+</div>
+</div>
+
+<!-- ABOUT -->
+<div class="pg hd" id="pg-abt">
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.0</div>
+<p style="font-size:.65rem;color:var(--txd);text-align:center;line-height:1.7">Static HTML · No Backend · No VPS<br><span style="color:var(--ac)">RyanApi77</span></p>
+</div>
+<div class="c"><div class="cl">INFO</div>
+<div class="r">Build: v4.0</div><div class="r">Features: 58</div><div class="r">Tabs: 8</div>
+</div>
+</div>
+
+<div class="ft">RYANN • TOOLS · v4.0</div>
+</div>
