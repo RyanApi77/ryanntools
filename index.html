@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>TOOLS BY RYANNXD</title>
-<meta name="description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Tempmail · Deployer">
+<meta name="description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Bypass · Downloader · Tempmail">
 <meta name="theme-color" content="#22d3ee">
 
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ryanntools-alpha.vercel.app/">
 <meta property="og:title" content="TOOLS BY RYANNXD">
-<meta property="og:description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Tempmail · Deployer">
+<meta property="og:description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Bypass · Downloader · Tempmail">
 <meta property="og:image" content="https://raw.githubusercontent.com/RyanApi77/ryanntools/main/banner.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -18,7 +18,7 @@
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="TOOLS BY RYANNXD">
-<meta name="twitter:description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Tempmail · Deployer">
+<meta name="twitter:description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Bypass · Downloader · Tempmail">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/RyanApi77/ryanntools/main/banner.png">
 
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&family=Fira+Code:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Roboto+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=Space+Mono&family=Ubuntu+Mono&family=Rajdhani:wght@400;700&family=Audiowide&display=swap" rel="stylesheet">
@@ -57,7 +57,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-grad
 @keyframes shootMove{0%{transform:translate(0,0) rotate(30deg);opacity:0}5%{opacity:1}20%{transform:translate(60vw,40vh) rotate(30deg);opacity:1}25%{transform:translate(90vw,60vh) rotate(30deg);opacity:0}100%{transform:translate(90vw,60vh) rotate(30deg);opacity:0}}
 .ufo{position:absolute;width:70px;height:28px;pointer-events:none;animation:ufoFly 25s linear infinite;opacity:.9}
 .ufo-body{position:absolute;inset:0;background:linear-gradient(180deg,#a5b4fc,#6366f1 40%,#3730a3);border-radius:50% 50% 40% 40%;box-shadow:0 0 25px rgba(165,180,252,.7),inset 0 -6px 12px rgba(0,0,0,.5)}
-.ufo-dome{position:absolute;top:-50%;left:50%;width:30px;height:18px;transform:translateX(-50%);background:radial-gradient(circle at 50% 100%,rgba(34,211,238,.95),rgba(34,211,238,.3) 60%,transparent);border-radius:50% 50% 0 0;box-shadow:0 0 20px rgba(34,211,238,.9);animation:ufoDome 1.5s ease-in-out infinite alternate}
+.ufo-dome{position:absolute;top:-10px;left:50%;width:30px;height:18px;transform:translateX(-50%);background:radial-gradient(circle at 50% 100%,rgba(34,211,238,.95),rgba(34,211,238,.3) 60%,transparent);border-radius:50% 50% 0 0;box-shadow:0 0 20px rgba(34,211,238,.9);animation:ufoDome 1.5s ease-in-out infinite alternate}
 @keyframes ufoDome{0%{opacity:.6;filter:brightness(1)}100%{opacity:1;filter:brightness(1.5)}}
 .ufo-light{position:absolute;bottom:3px;left:50%;width:7px;height:7px;border-radius:50%;background:#fbbf24;transform:translateX(-50%);box-shadow:-14px 0 8px 2px rgba(251,191,36,.9),14px 0 8px 2px rgba(251,191,36,.9),0 0 14px 4px rgba(251,191,36,.8);animation:ufoLight .8s linear infinite}
 @keyframes ufoLight{0%,100%{filter:hue-rotate(0deg) brightness(1)}50%{filter:hue-rotate(45deg) brightness(1.3)}}
@@ -83,80 +83,65 @@ body.light .r,body.light .hi{background:rgba(241,245,249,.9);color:#0f172a}
 body.light .ach{background:rgba(241,245,249,.5)}
 body.light button.g{color:var(--ac);border-color:var(--ac)}
 body.light button.g:hover{background:var(--acd)}
-body.light .filebtn{background:rgba(241,245,249,.9)!important;color:#0f172a!important;border-color:var(--ac)!important}
 .w{max-width:520px;margin:0 auto;padding:10px;position:relative;z-index:1}
-.tb{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px;animation:slideDown .4s}
-@keyframes slideDown{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+.tb{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px}
 .lg{font-family:var(--fh);font-weight:900;font-size:.9rem;letter-spacing:2px;color:var(--ac)}.lg .y{color:var(--ac2)}
 .ch{font-size:.5rem;color:var(--ac2);border:1px solid var(--bl);padding:2px 5px;border-radius:3px;background:var(--acd)}
 .sp{flex:1}
 .pl{display:inline-flex;align-items:center;gap:5px;font-size:.55rem;color:var(--ac);border:1px solid var(--bl);padding:3px 7px;border-radius:4px;background:var(--acd)}
 .pl .d{width:5px;height:5px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok);animation:pulse 1.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.tgl{width:26px;height:26px;border:1px solid var(--bl);border-radius:5px;background:var(--acd);color:var(--ac);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;margin-left:5px}
-.tgl:hover{transform:scale(1.1);filter:brightness(1.2)}
+.tgl{width:26px;height:26px;border:1px solid var(--bl);border-radius:5px;background:var(--acd);color:var(--ac);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:5px}
 .nv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
-.nb{border:1px solid var(--border);border-radius:7px;background:rgba(10,20,35,.6);padding:8px 3px;text-align:center;cursor:pointer;font-weight:700;font-size:.5rem;color:var(--txd);text-transform:uppercase;transition:all .25s;user-select:none}
-.nb:hover{border-color:var(--ac);color:var(--ac);transform:translateY(-2px)}
-.nb:active{transform:scale(.95)}
+.nb{border:1px solid var(--border);border-radius:7px;background:rgba(10,20,35,.6);padding:8px 3px;text-align:center;cursor:pointer;font-weight:700;font-size:.5rem;color:var(--txd);text-transform:uppercase;user-select:none}
 .nb.a{border-color:var(--ac);color:var(--ac);background:var(--acd);box-shadow:0 0 15px var(--acd)}
 .nb .i{display:block;font-size:13px;margin-bottom:1px}
-.c{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:12px;margin-bottom:9px;animation:fadeUp .4s}
-@keyframes fadeUp{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.c{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:12px;margin-bottom:9px}
 .cl{font-size:.55rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px;padding-left:8px;position:relative}
 .cl::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:11px;background:var(--ac);border-radius:2px}
 .hr{font-family:var(--fh);font-weight:900;font-size:1.4rem;letter-spacing:2px;text-align:center;text-transform:uppercase;color:var(--ac);text-shadow:0 0 12px var(--ac)}.hr .y{color:var(--ac2)}
 .sb{text-align:center;font-size:.55rem;color:var(--txd);letter-spacing:2px;margin:3px 0 10px;text-transform:uppercase}
 label{display:block;font-size:.55rem;color:var(--ac);letter-spacing:1.5px;margin:8px 0 4px;text-transform:uppercase;font-weight:700}
-input,select,textarea{width:100%;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(4,8,15,.7);color:var(--tx);font-family:var(--fm);font-size:.75rem;outline:none;transition:all .2s}
+input,select,textarea{width:100%;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(4,8,15,.7);color:var(--tx);font-family:var(--fm);font-size:.75rem;outline:none}
 input:focus,textarea:focus,select:focus{border-color:var(--ac);box-shadow:0 0 0 2px var(--acd)}
 textarea{min-height:100px;resize:vertical;font-size:.65rem}
-button{width:100%;padding:10px;border-radius:8px;border:none;cursor:pointer;font-family:var(--fh);font-weight:800;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;background:var(--ac);color:#04080f;margin-top:7px;transition:all .15s;user-select:none}
-button:hover{filter:brightness(1.15);transform:translateY(-1px)}
-button:active{transform:scale(.96)}
+button{width:100%;padding:10px;border-radius:8px;border:none;cursor:pointer;font-family:var(--fh);font-weight:800;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;background:var(--ac);color:#04080f;margin-top:7px;user-select:none}
+button:disabled{opacity:.5;cursor:not-allowed}
 button.g{background:transparent;color:var(--ac);border:1px solid var(--bl)}
 button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
-button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .br{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}.br button{margin-top:0}
 .br3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:7px}.br3 button{margin-top:0;font-size:.55rem;padding:8px 3px}
 .r{margin-top:8px;padding:9px;border-radius:7px;border:1px solid var(--border);background:rgba(0,0,0,.4);font-size:.65rem;color:var(--ac2);word-break:break-all;min-height:32px}
 .st{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px}
-.s{border:1px solid var(--border);border-radius:9px;background:var(--card);padding:12px;text-align:center;transition:transform .2s}
-.s:hover{transform:scale(1.03)}
+.s{border:1px solid var(--border);border-radius:9px;background:var(--card);padding:12px;text-align:center}
 .s .l{font-size:.5rem;color:var(--txd);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;font-weight:700}
 .s .n{font-family:var(--fh);font-weight:900;font-size:1.4rem;color:var(--ac)}
-.st-ok{padding:9px;border-radius:7px;margin-top:8px;font-size:.6rem;font-weight:700;border:1px solid var(--ok);background:rgba(74,222,128,.08);color:var(--ok);animation:popIn .3s}
-.st-er{padding:9px;border-radius:7px;margin-top:8px;font-size:.6rem;font-weight:700;border:1px solid var(--er);background:rgba(248,113,113,.08);color:var(--er);animation:shake .3s}
+.st-ok{padding:9px;border-radius:7px;margin-top:8px;font-size:.6rem;font-weight:700;border:1px solid var(--ok);background:rgba(74,222,128,.08);color:var(--ok)}
+.st-er{padding:9px;border-radius:7px;margin-top:8px;font-size:.6rem;font-weight:700;border:1px solid var(--er);background:rgba(248,113,113,.08);color:var(--er)}
 .st-in{padding:9px;border-radius:7px;margin-top:8px;font-size:.6rem;font-weight:700;border:1px solid var(--ac);background:var(--acd);color:var(--ac)}
-@keyframes popIn{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
-.tab{border:1px solid var(--border);border-radius:8px;padding:9px 6px;text-align:center;cursor:pointer;font-weight:700;font-size:.6rem;color:var(--txd);text-transform:uppercase;transition:all .2s}
+.tab{border:1px solid var(--border);border-radius:8px;padding:9px 6px;text-align:center;cursor:pointer;font-weight:700;font-size:.6rem;color:var(--txd);text-transform:uppercase}
 .tab.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
 .tg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
-.to{aspect-ratio:1;border-radius:7px;border:2px solid var(--border);cursor:pointer;position:relative;transition:all .2s}
+.to{aspect-ratio:1;border-radius:7px;border:2px solid var(--border);cursor:pointer;position:relative}
 .to.a{border-color:var(--ac);transform:scale(1.08);box-shadow:0 0 10px var(--acd)}
 .to .lbl{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.4rem;color:#fff;text-shadow:0 0 4px #000}
 .snd-pack{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
-.snd-opt{padding:8px 4px;border-radius:7px;border:2px solid var(--border);cursor:pointer;text-align:center;font-size:.55rem;font-weight:700;color:var(--txd);background:rgba(10,20,35,.6);text-transform:uppercase;transition:all .2s}
-.snd-opt:hover{border-color:var(--ac);color:var(--ac)}
+.snd-opt{padding:8px 4px;border-radius:7px;border:2px solid var(--border);cursor:pointer;text-align:center;font-size:.55rem;font-weight:700;color:var(--txd);background:rgba(10,20,35,.6);text-transform:uppercase}
 .snd-opt.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
-.bg-upload{border:2px dashed var(--bl);border-radius:9px;background:rgba(4,8,15,.4);padding:16px;text-align:center;cursor:pointer;margin-top:8px;transition:all .2s}
-.bg-upload:hover{border-color:var(--ac);background:var(--acd)}
-.bg-upload .ic{font-size:26px;display:block;margin-bottom:4px}
+.bg-upload{border:2px dashed var(--bl);border-radius:9px;background:rgba(4,8,15,.4);padding:16px;text-align:center;cursor:pointer;margin-top:8px}
 .bg-preview{width:100%;height:80px;border-radius:7px;background-size:cover;background-position:center;border:1px solid var(--border);margin-top:8px;display:none}
 .hi{padding:9px;border-radius:7px;border:1px solid var(--border);background:rgba(4,8,15,.5);margin-bottom:5px;font-size:.6rem}
 .hi b{color:var(--ac)}
 .hd{display:none!important}
 .ft{text-align:center;font-size:.5rem;color:var(--txd);letter-spacing:2px;text-transform:uppercase;padding:12px 0;opacity:.6}
-.drop{border:2px dashed var(--bl);border-radius:9px;background:rgba(4,8,15,.4);padding:18px;text-align:center;cursor:pointer;transition:all .2s}
-.drop:hover{border-color:var(--ac);background:var(--acd)}
+.drop{border:2px dashed var(--bl);border-radius:9px;background:rgba(4,8,15,.4);padding:18px;text-align:center;cursor:pointer}
 .drop .ic{font-size:28px;display:block;margin-bottom:5px}
 .fs-range{width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;-webkit-appearance:none}
 .fs-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac);cursor:pointer}
-.ach{padding:9px;margin-bottom:5px;border-radius:7px;border:1px solid var(--border);background:rgba(0,0,0,.3);font-size:.6rem;transition:all .3s}
+.ach{padding:9px;margin-bottom:5px;border-radius:7px;border:1px solid var(--border);background:rgba(0,0,0,.3);font-size:.6rem}
 .ach.locked{opacity:.4}
-.ach.unlocked{border-color:var(--ac);background:var(--acd);color:var(--ac);font-weight:700;animation:popIn .4s}
+.ach.unlocked{border-color:var(--ac);background:var(--acd);color:var(--ac);font-weight:700}
 .ach .desc{font-size:.5rem;color:var(--txd);margin-top:2px;font-weight:400}
 .console-log{background:#04080f;border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:.6rem;line-height:1.5;color:#4ade80;overflow-y:auto;white-space:pre-wrap;word-break:break-all;max-height:300px}
 .console-log .ok{color:#4ade80}
@@ -164,8 +149,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .console-log .in{color:#67e8f9}
 .console-log .dim{color:#64748b}
 .console-log .warn{color:#fbbf24}
-.msg-item{padding:9px;border:1px solid var(--border);border-radius:7px;margin-bottom:5px;cursor:pointer;font-size:.6rem;background:rgba(4,8,15,.5);transition:all .2s}
-.msg-item:hover{border-color:var(--ac);background:var(--acd)}
+.msg-item{padding:9px;border:1px solid var(--border);border-radius:7px;margin-bottom:5px;cursor:pointer;font-size:.6rem;background:rgba(4,8,15,.5)}
 .msg-item b{color:var(--ac)}
 .progress-wrap{margin-top:8px;display:none}
 .progress-wrap.on{display:block}
@@ -173,24 +157,19 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .3s ease;width:0%}
 .progress-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff;text-shadow:0 0 4px #000;font-family:var(--fh);letter-spacing:1px}
 .progress-label{font-size:.55rem;color:var(--ac);text-align:center;margin-bottom:5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
-.filedrop{border:2px dashed var(--bl);border-radius:9px;background:rgba(4,8,15,.4);padding:16px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
-.filedrop:hover{border-color:var(--ac);background:var(--acd)}
-.filedrop.dragover{border-color:var(--ac);background:var(--acd);transform:scale(1.02)}
+.filedrop{border:2px dashed var(--bl);border-radius:9px;background:rgba(4,8,15,.4);padding:16px;text-align:center;cursor:pointer}
 .filedrop .ic{font-size:24px;display:block;margin-bottom:5px}
 .filedrop .t{font-weight:700;font-size:.65rem;color:var(--tx)}
 .filedrop .sub{font-size:.55rem;color:var(--txd);margin-top:3px}
 .filelist{margin-top:8px;font-size:.6rem}
-.filelist .fitem{padding:6px 9px;border:1px solid var(--border);border-radius:6px;background:rgba(0,0,0,.3);margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.filelist .fitem{padding:6px 9px;border:1px solid var(--border);border-radius:6px;background:rgba(0,0,0,.3);margin-bottom:4px;display:flex;justify-content:space-between;gap:8px}
 .filelist .fitem .nm{color:var(--ac2);word-break:break-all;flex:1}
-.filelist .fitem .sz{color:var(--txd);font-size:.55rem;flex-shrink:0}
-.filelist .fitem .rm{color:var(--er);cursor:pointer;font-weight:700;padding:0 5px;flex-shrink:0}
+.filelist .fitem .rm{color:var(--er);cursor:pointer;font-weight:700;padding:0 5px}
 input[type="file"]{display:none!important}
 .color-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
 .color-pick{text-align:center}
 .color-pick label{font-size:.5rem;margin:0 0 4px;letter-spacing:1px}
 .color-pick input[type="color"]{width:100%;height:38px;border:2px solid var(--border);border-radius:7px;background:transparent;cursor:pointer;padding:2px}
-.color-pick input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
-.color-pick input[type="color"]::-webkit-color-swatch{border:none;border-radius:5px}
 .switch-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid var(--border);border-radius:8px;background:rgba(4,8,15,.4);margin-top:6px}
 .switch-row .lbl{font-size:.6rem;color:var(--ac);font-weight:700;letter-spacing:1px;text-transform:uppercase}
 .switch{position:relative;width:44px;height:22px;flex-shrink:0}
@@ -210,11 +189,9 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 @keyframes achSlideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes achSlideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
 
-#welcome-modal{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s}
+#welcome-modal{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px}
 #welcome-modal.hd{display:none!important}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.wm-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px var(--acd);animation:wmPop .35s ease-out;position:relative}
-@keyframes wmPop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.wm-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6);position:relative}
 .wm-title{font-family:var(--fh);font-weight:900;font-size:1.3rem;color:var(--ac);letter-spacing:2px;margin-bottom:6px;text-shadow:0 0 12px var(--ac)}
 .wm-title .y{color:var(--ac2)}
 .wm-ver{font-size:.6rem;color:var(--ac2);border:1px solid var(--bl);padding:2px 8px;border-radius:4px;background:var(--acd);display:inline-block;margin-bottom:10px}
@@ -222,12 +199,9 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 .wm-credit{font-size:.55rem;color:var(--txm);letter-spacing:1px;margin-bottom:14px}
 .wm-credit b{color:var(--ac)}
 .wm-skip{position:absolute;top:8px;right:10px;background:transparent;border:none;color:var(--txd);font-size:1rem;cursor:pointer;padding:4px 8px;width:auto;margin:0;font-family:var(--fm);font-weight:400;letter-spacing:0}
-.wm-skip:hover{color:var(--er);filter:none;transform:none}
 
-/* Deep Scraper Styles */
 .ds-section{border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:rgba(0,0,0,.3);overflow:hidden}
-.ds-head{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;user-select:none;transition:background .2s}
-.ds-head:hover{background:var(--acd)}
+.ds-head{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;user-select:none}
 .ds-title{flex:1;font-size:.65rem;font-weight:700;color:var(--ac);letter-spacing:1px;text-transform:uppercase}
 .ds-badge{font-size:.55rem;padding:2px 8px;border-radius:10px;background:var(--acd);color:var(--ac);font-weight:700;font-family:var(--fh)}
 .ds-arrow{color:var(--ac);transition:transform .2s;font-size:.7rem}
@@ -236,36 +210,39 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 .ds-section.open .ds-body{display:block}
 .ds-list{font-size:.6rem;line-height:1.7;word-break:break-all;color:var(--ac2)}
 .ds-list a{color:var(--ac2);text-decoration:none}
-.ds-list a:hover{color:var(--ac);text-decoration:underline}
 .ds-pre{font-family:var(--fm);font-size:.55rem;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:5px;padding:7px;margin:5px 0;white-space:pre-wrap;word-break:break-all;color:#94e2d5;overflow-x:auto}
 .ds-text{max-height:300px;overflow-y:auto}
 .ds-html{max-height:300px;overflow-y:auto}
 .ds-table{width:100%;font-size:.55rem;border-collapse:collapse}
 .ds-table td{padding:4px 6px;border-bottom:1px solid var(--border);word-break:break-all;vertical-align:top}
 .ds-table td:first-child{color:var(--ac);font-weight:700;white-space:nowrap;width:30%}
-.ds-table td:last-child{color:var(--tx)}
 .ds-form{padding:6px 8px;border:1px solid var(--border);border-radius:5px;margin-bottom:5px;font-size:.6rem;background:rgba(0,0,0,.3)}
 .ds-dim{color:var(--txd);font-size:.55rem}
 .ds-sus{padding:5px 8px;border-left:3px solid var(--er);background:rgba(248,113,113,.08);margin-bottom:4px;font-size:.55rem;word-break:break-all}
-.ds-tag{display:inline-block;padding:1px 6px;background:var(--er);color:#fff;border-radius:3px;font-size:.5rem;font-weight:700;margin-right:5px;letter-spacing:.5px}
-.ds-sus code{color:var(--ac2);font-family:var(--fm)}
-.ds-tech{display:inline-block;padding:3px 9px;border:1px solid var(--ac);border-radius:12px;background:var(--acd);color:var(--ac);font-size:.55rem;font-weight:700;margin:2px 4px 2px 0;letter-spacing:.5px}
+.ds-tag{display:inline-block;padding:1px 6px;background:var(--er);color:#fff;border-radius:3px;font-size:.5rem;font-weight:700;margin-right:5px}
+.ds-tech{display:inline-block;padding:3px 9px;border:1px solid var(--ac);border-radius:12px;background:var(--acd);color:var(--ac);font-size:.55rem;font-weight:700;margin:2px 4px 2px 0}
 .ds-empty{color:var(--txd);font-size:.55rem;font-style:italic}
 .ds-copy{width:auto;padding:5px 12px;font-size:.5rem;background:transparent;color:var(--ac);border:1px solid var(--bl);border-radius:5px;margin-top:8px;letter-spacing:1px}
-.ds-copy:hover{background:var(--acd)}
 .tt-card{display:flex;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px;background:rgba(0,0,0,.3);margin-bottom:8px;flex-wrap:wrap}
 .tt-cover{width:100px;height:100px;object-fit:cover;border-radius:6px;border:1px solid var(--border);flex-shrink:0}
 .tt-info{flex:1;min-width:150px}
-.tt-title{font-size:.65rem;font-weight:700;color:var(--ac);margin-bottom:4px;line-height:1.4}
+.tt-title{font-size:.65rem;font-weight:700;color:var(--ac);margin-bottom:4px}
 .tt-author{font-size:.55rem;color:var(--txd);margin-bottom:6px}
 .tt-stats{display:flex;gap:10px;font-size:.55rem;color:var(--ac2);margin-bottom:6px;flex-wrap:wrap}
-.tt-dur{font-size:.55rem;color:var(--txd);margin-bottom:8px}
-.tt-actions{display:flex;flex-direction:column;gap:5px}
-.tt-btn{display:block;text-align:center;padding:7px;border-radius:6px;background:var(--ac);color:#04080f;text-decoration:none;font-size:.55rem;font-weight:700;letter-spacing:1px}
-.tt-btn.g{background:transparent;color:var(--ac);border:1px solid var(--bl)}
-.tt-raw{margin-top:8px;font-size:.55rem}
-.tt-raw summary{cursor:pointer;color:var(--ac);padding:5px;font-weight:700;letter-spacing:1px}
-.tt-raw pre{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:5px;padding:8px;font-size:.5rem;overflow-x:auto;color:var(--ac2);max-height:300px;overflow-y:auto}
+.tt-btn{display:block;text-align:center;padding:7px;border-radius:6px;background:var(--ac);color:#04080f;text-decoration:none;font-size:.55rem;font-weight:700;letter-spacing:1px;margin-bottom:5px}
+
+/* ZYVOR API STYLES */
+.zy-head{padding:10px;border-radius:8px;background:var(--acd);border:1px solid var(--ac);color:var(--ac);font-size:.65rem;font-weight:700;letter-spacing:1px;margin-bottom:8px;text-align:center}
+.zy-head.er{background:rgba(248,113,113,.1);border-color:var(--er);color:var(--er)}
+.zy-media{padding:10px;border:1px solid var(--border);border-radius:8px;background:rgba(0,0,0,.3);margin-bottom:8px}
+.zy-media-t{font-size:.6rem;color:var(--ac);font-weight:700;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
+.zy-dl{display:flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--bl);border-radius:6px;background:rgba(10,20,35,.6);color:var(--ac2);text-decoration:none;font-size:.6rem;margin-bottom:5px;word-break:break-all}
+.zy-dl:hover{background:var(--acd);border-color:var(--ac);color:var(--ac)}
+.zy-raw{margin-top:8px;font-size:.55rem}
+.zy-raw summary{cursor:pointer;color:var(--ac);padding:8px;font-weight:700;letter-spacing:1px;background:rgba(0,0,0,.3);border-radius:6px;border:1px solid var(--border);text-transform:uppercase}
+.zy-raw pre{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:5px;padding:8px;font-size:.5rem;overflow-x:auto;color:var(--ac2);max-height:300px;overflow-y:auto;margin-top:5px}
+.zy-copy{width:auto;padding:6px 14px;font-size:.55rem;background:transparent;color:var(--ac);border:1px solid var(--bl);border-radius:6px;margin-top:8px;letter-spacing:1px}
+.zy-cat{font-size:.55rem;color:var(--txd);padding:2px 6px;border-radius:4px;background:rgba(0,0,0,.3);border:1px solid var(--border);margin-left:5px}
 </style>
 </head>
 <body data-theme="t-cyan">
@@ -286,8 +263,8 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   <div class="wm-box">
     <button class="wm-skip" id="wm-skip">✕</button>
     <div class="wm-title">RYANN <span class="y">• TOOLS</span></div>
-    <div class="wm-ver">v4.9</div>
-    <div class="wm-tag">INJECTOR · FUN · OSINT · SCRAPE · TEMPMAIL · DEPLOYER · TIKTOK</div>
+    <div class="wm-ver">v5.0</div>
+    <div class="wm-tag">INJECTOR · FUN · OSINT · SCRAPE · BYPASS · DOWNLOADER</div>
     <div class="wm-credit">by <b>RyanApi77</b></div>
     <button id="wm-start">🚀 MULAI</button>
   </div>
@@ -299,7 +276,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v4.9</span>
+<span class="ch">v5.0</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
 <button class="tgl" id="mode-tgl">🌙</button>
@@ -311,16 +288,17 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <div class="nb" data-p="utl"><span class="i">🔧</span>FUN TOOLS</div>
 <div class="nb" data-p="osi"><span class="i">🕵</span>OSINT</div>
 <div class="nb" data-p="scr"><span class="i">🕸</span>SCRAPE</div>
+<div class="nb" data-p="bp"><span class="i">🔓</span>BYPASS</div>
+<div class="nb" data-p="dl"><span class="i">⬇</span>DOWNLOADER</div>
 <div class="nb" data-p="tt"><span class="i">🎵</span>TIKTOK</div>
 <div class="nb" data-p="tmp"><span class="i">📧</span>TEMPMAIL</div>
 <div class="nb" data-p="tpl"><span class="i">📄</span>TPL</div>
 <div class="nb" data-p="hst"><span class="i">📜</span>HIST</div>
 <div class="nb" data-p="set"><span class="i">⚙</span>SET</div>
-<div class="nb" data-p="abt"><span class="i">ℹ</span>ABOUT</div>
 </div>
 
 <div class="pg" id="pg-home">
-<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">INJECTOR · FUN · OSINT · SCRAPE · TIKTOK</div></div>
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">INJECTOR · FUN · OSINT · SCRAPE · BYPASS · DL</div></div>
 <div class="st">
 <div class="s"><div class="l">Generates</div><div class="n" id="st-g">0</div></div>
 <div class="s"><div class="l">Downloads</div><div class="n" id="st-d">0</div></div>
@@ -329,8 +307,8 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 </div>
 <div class="c"><div class="cl">QUICK ACTIONS</div>
 <div class="br"><button class="g" onclick="go('spy')">💀 INJECT</button><button class="g" onclick="go('utl')">🔧 TOOLS</button></div>
-<div class="br"><button class="g" onclick="go('scr')">🕸 SCRAPE</button><button class="g" onclick="go('tt')">🎵 TIKTOK</button></div>
-<div class="br"><button class="g" onclick="go('tmp')">📧 TEMPMAIL</button><button class="g" onclick="go('osi')">🕵 OSINT</button></div>
+<div class="br"><button class="g" onclick="go('scr')">🕸 SCRAPE</button><button class="g" onclick="go('bp')">🔓 BYPASS</button></div>
+<div class="br"><button class="g" onclick="go('dl')">⬇ DOWNLOADER</button><button class="g" onclick="go('tt')">🎵 TIKTOK</button></div>
 </div>
 <div class="c"><div class="cl">ACHIEVEMENTS</div>
 <div id="ach-wrap"></div>
@@ -363,7 +341,6 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <button id="gb">⚡ GENERATE FILE</button>
 <div class="br"><button class="g" id="cb">🗑 CLEAR</button><button class="g" id="vb">✓ VALIDATE</button></div>
 <div id="sw"></div>
-<div id="tmw" class="hd"><div class="st-in">⏱ <span id="tmv">0</span> ms</div></div>
 </div>
 <div class="c hd" id="rc"><div class="cl">RESULT</div>
 <div style="text-align:center;padding:8px 0">
@@ -384,21 +361,13 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <input id="pg-prefix" placeholder="misal ryann">
 <label>Jumlah Karakter Random</label>
 <input type="number" id="plen" value="16" min="1" max="128">
-<label>Karakter Separator</label>
+<label>Separator</label>
 <select id="pg-sep">
-<option value="_">_ (underscore)</option>
-<option value="-">- (dash)</option>
-<option value=".">. (dot)</option>
-<option value="!">! (seru)</option>
-<option value="@">@ (at)</option>
-<option value="#"># (hash)</option>
-<option value="$">$ (dollar)</option>
-<option value="%">% (persen)</option>
-<option value="&">& (dan)</option>
-<option value="*">* (bintang)</option>
-<option value="+">+ (plus)</option>
-<option value="?">? (tanya)</option>
-<option value="~">~ (tilde)</option>
+<option value="_">_ underscore</option>
+<option value="-">- dash</option>
+<option value=".">. dot</option>
+<option value="@">@ at</option>
+<option value="#"># hash</option>
 <option value="RANDOM">🎲 RANDOM</option>
 </select>
 <div class="br"><button class="g" id="pgen">GEN</button><button class="g" id="pcp">COPY</button></div>
@@ -434,14 +403,13 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <option value="reverse">Reverse</option>
 </select>
 <label>Input</label>
-<textarea id="enc-input" placeholder="Ketik teks di sini..."></textarea>
+<textarea id="enc-input" placeholder="Ketik teks..."></textarea>
 <div class="br"><button id="enc-run">⚡ PROSES</button><button class="g" id="enc-clear">🗑 CLEAR</button></div>
-<div class="br"><button class="g" id="enc-copy">📋 COPY</button><button class="g" id="enc-dl">⬇ DOWNLOAD .TXT</button></div>
+<div class="br"><button class="g" id="enc-copy">📋 COPY</button><button class="g" id="enc-dl">⬇ DOWNLOAD</button></div>
 <div class="r" id="enc-output" style="max-height:200px;overflow-y:auto">—</div>
 </div>
 
 <div class="c"><div class="cl">🔓 JWT DECODER</div>
-<label>Paste JWT Token</label>
 <textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="min-height:80px"></textarea>
 <div class="br"><button id="jwt-run">🔍 DECODE</button><button class="g" id="jwt-clear">🗑 CLEAR</button></div>
 <div id="jwt-header" class="r hd" style="color:var(--ac)"><b>HEADER</b><div id="jwt-header-out" style="color:var(--ac2);margin-top:5px"></div></div>
@@ -451,25 +419,18 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 </div>
 
 <div class="c"><div class="cl">🔠 CASE CONVERTER</div>
-<label>Input</label>
-<textarea id="cc-input" placeholder="ketik teks di sini..."></textarea>
+<textarea id="cc-input" placeholder="ketik teks..."></textarea>
 <div class="br"><button id="cc-upper">ABC KAPITAL</button><button class="g" id="cc-lower">abc kecil</button></div>
 <div class="br"><button class="g" id="cc-copy">📋 COPY</button><button class="g" id="cc-clear">🗑 CLEAR</button></div>
 <div class="r" id="cc-output" style="max-height:200px;overflow-y:auto">—</div>
 </div>
 
 <div class="c"><div class="cl">📊 LETTER COUNTER</div>
-<label>Input</label>
-<textarea id="lc-input" placeholder="paste teks di sini..."></textarea>
+<textarea id="lc-input" placeholder="paste teks..."></textarea>
 <div class="st" style="grid-template-columns:1fr 1fr 1fr">
 <div class="s"><div class="l">Karakter</div><div class="n" id="lc-char">0</div></div>
 <div class="s"><div class="l">Kata</div><div class="n" id="lc-word">0</div></div>
 <div class="s"><div class="l">Baris</div><div class="n" id="lc-line">0</div></div>
-</div>
-<div class="st" style="grid-template-columns:1fr 1fr 1fr">
-<div class="s"><div class="l">No Spasi</div><div class="n" id="lc-nospace">0</div></div>
-<div class="s"><div class="l">Kalimat</div><div class="n" id="lc-sent">0</div></div>
-<div class="s"><div class="l">Baca</div><div class="n" id="lc-read">0m</div></div>
 </div>
 </div>
 </div>
@@ -482,10 +443,6 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <div class="c"><div class="cl">📡 MY IP</div>
 <button class="g" id="mip">CEK IP LO</button><div class="r" id="mres">—</div>
 </div>
-<div class="c"><div class="cl">🏢 WHOIS</div>
-<input id="whoin" placeholder="domain.com">
-<button class="g" id="whogen">LOOKUP</button><div class="r" id="whores">—</div>
-</div>
 <div class="c"><div class="cl">🔎 GOOGLE DORK</div>
 <label>Kata kunci</label><input id="dkw" placeholder="admin login">
 <label>Site</label><input id="dsite" placeholder="example.com">
@@ -497,6 +454,47 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 </div>
 </div>
 
+<div class="pg hd" id="pg-bp">
+<div class="c"><div class="cl">🔓 BYPASS LINK</div>
+<label>Pilih API</label>
+<select id="bp-api"></select>
+<div id="bp-params"></div>
+<div class="br"><button id="bp-run">⚡ BYPASS</button><button class="g" id="bp-clear">🗑 CLEAR</button></div>
+<div id="bp-log" class="console-log hd" style="height:150px"></div>
+<div id="bp-result" class="hd" style="margin-top:8px"></div>
+</div>
+<div class="c"><div class="cl">ℹ INFO</div>
+<div class="r" style="font-size:.6rem;line-height:1.7">
+• Mode <b style="color:var(--ac)">ALL</b> = coba 9 API berurutan sampai sukses.<br>
+• Pilih spesifik = coba 1 API saja.<br>
+• Support: sf.gl, sub2unlock, tinyurl, linkvertise, lootlinks, ouo, safelink, shrinkme, dll.<br>
+• Powered by <b style="color:var(--ac)">api.zyvor.my.id</b>
+</div>
+</div>
+</div>
+
+<div class="pg hd" id="pg-dl">
+<div class="c"><div class="cl">⬇ DOWNLOADER (45 API)</div>
+<label>Kategori</label>
+<select id="dl-cat"></select>
+<label>API</label>
+<select id="dl-api"></select>
+<div id="dl-params"></div>
+<div class="br"><button id="dl-run">⚡ DOWNLOAD</button><button class="g" id="dl-run-all">🔄 AUTO-FALLBACK</button></div>
+<button class="g" id="dl-clear">🗑 CLEAR</button>
+<div id="dl-log" class="console-log hd" style="height:150px"></div>
+<div id="dl-result" class="hd" style="margin-top:8px"></div>
+</div>
+<div class="c"><div class="cl">ℹ INFO</div>
+<div class="r" style="font-size:.6rem;line-height:1.7">
+• <b style="color:var(--ac)">DOWNLOAD</b> = coba API yang dipilih saja.<br>
+• <b style="color:var(--ac)">AUTO-FALLBACK</b> = coba semua API di kategori sama sampai sukses.<br>
+• Auto-detect URL media → tombol download otomatis muncul.<br>
+• Powered by <b style="color:var(--ac)">api.zyvor.my.id</b>
+</div>
+</div>
+</div>
+
 <div class="pg hd" id="pg-tt">
 <div class="c"><div class="cl">🎵 TIKTOK DOWNLOADER</div>
 <label>URL TikTok</label>
@@ -505,33 +503,21 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <div id="tt-log" class="console-log hd" style="height:80px"></div>
 <div id="tt-result" class="hd" style="margin-top:8px"></div>
 </div>
-<div class="c"><div class="cl">ℹ PETUNJUK</div>
-<div class="r" style="font-size:.6rem;line-height:1.7">
-• Paste URL video TikTok (harus link video, bukan profile).<br>
-• Klik DOWNLOAD → tunggu 3–8 detik.<br>
-• Muncul info + tombol download video (no watermark / WM / HD) + music.<br>
-• Powered by <b style="color:var(--ac)">tikwm.com</b> · via CORS proxy.
-</div>
-</div>
 </div>
 
 <div class="pg hd" id="pg-scr">
 <div class="c"><div class="cl">🔍 DEEP WEB SCRAPER</div>
 <label>URL Target</label>
-<input id="ds-url" placeholder="https://example.com atau contoh.vercel.app">
+<input id="ds-url" placeholder="https://example.com">
 <div class="br"><button class="g" id="ds-run">⚡ DEEP SCRAPE</button><button class="g" id="ds-paste">📋 PASTE</button></div>
 <div id="ds-log" class="console-log hd" style="height:60px"></div>
 <div id="ds-result" class="hd" style="margin-top:8px"></div>
-<div class="r" style="font-size:.55rem;line-height:1.6;margin-top:8px;color:var(--txd)">
-<b style="color:var(--ac)">16 LAYER:</b> emails · phones · links · images · scripts · styles · meta · OG · JSON-LD · forms · comments · inline JSON · API endpoints · suspicious strings · tech fingerprint · text · raw HTML
-</div>
 </div>
 
 <div class="c"><div class="cl">🕸 NON-CORS PROXY SCRAPER</div>
-<label>Sumber Proxy (URL, 1 per baris)</label>
+<label>Sumber Proxy</label>
 <textarea id="scr-sources" style="min-height:100px;font-size:.6rem">https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt
 https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt
-https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks4.txt
 https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/socks5.txt
 https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt
 https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-raw.txt
@@ -539,29 +525,16 @@ https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/socks5.txt
 https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt
 https://raw.githubusercontent.com/hookzof/socks5_list/master/proxy.txt
 https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS5_RAW.txt
-https://raw.githubusercontent.com/roosterkid/openproxylist/main/HTTPS_RAW.txt
-https://raw.githubusercontent.com/roosterkid/openproxylist/main/SOCKS4_RAW.txt
 https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks5.txt
-https://raw.githubusercontent.com/mmpx12/proxy-list/master/https.txt
 https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/socks5/data.txt
-https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.txt
-https://raw.githubusercontent.com/zloi-user/hideip.me/main/socks5.txt
-https://raw.githubusercontent.com/zloi-user/hideip.me/main/https.txt
 https://raw.githubusercontent.com/prxchk/proxy-list/main/socks5.txt
-https://raw.githubusercontent.com/prxchk/proxy-list/main/http.txt
 https://raw.githubusercontent.com/sunny9577/proxy-scraper/master/proxies.txt
 https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/main/socks5.txt
-https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/main/http.txt
 https://raw.githubusercontent.com/officialputuid/KangProxy/main/socks5/socks5.txt
-https://raw.githubusercontent.com/officialputuid/KangProxy/main/http/http.txt
-https://raw.githubusercontent.com/caliphdev/Proxy-List/master/socks5.txt
-https://raw.githubusercontent.com/caliphdev/Proxy-List/master/http.txt
-https://raw.githubusercontent.com/Anonym0usWork/Find-Proxy/master/All_Proxy.txt
-https://raw.githubusercontent.com/komutan234/Proxy-List-Free/main/proxy-list.txt
-https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
-<label>Target Proxy (max 120000)</label>
+https://raw.githubusercontent.com/caliphdev/Proxy-List/master/socks5.txt</textarea>
+<label>Target Proxy</label>
 <input type="number" id="scr-target" value="10000" min="100" max="120000">
-<div class="br"><button class="g" id="scr-start">▶ START SCRAPE</button><button class="g" id="scr-clear">🗑 CLEAR</button></div>
+<div class="br"><button class="g" id="scr-start">▶ START</button><button class="g" id="scr-clear">🗑 CLEAR</button></div>
 <div class="progress-wrap" id="scr-prog-wrap">
 <div class="progress-label" id="scr-prog-label">MEMULAI...</div>
 <div class="progress-bar">
@@ -569,71 +542,36 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 <div class="progress-txt" id="scr-prog-txt">0 / 10000</div>
 </div>
 </div>
-<div id="scr-log" class="console-log" style="height:200px"></div>
-<div class="br"><button class="g" id="scr-preview">👁 PREVIEW</button><button id="scr-dl">⬇ DOWNLOAD .TXT</button></div>
+<div id="scr-log" class="console-log" style="height:180px"></div>
+<div class="br"><button class="g" id="scr-preview">👁 PREVIEW</button><button id="scr-dl">⬇ DOWNLOAD</button></div>
 <div id="scr-pbox" class="r hd" style="max-height:200px;overflow-y:auto"></div>
 </div>
 
-<div class="c"><div class="cl">🌐 CORS PROXY LIST</div>
-<label>CORS Proxy Publik (edit / tambah kalau perlu)</label>
-<textarea id="cors-sources" style="min-height:120px;font-size:.6rem">https://corsproxy.io/?url=
+<div class="c"><div class="cl">🌐 CORS PROXY TESTER</div>
+<label>List CORS</label>
+<textarea id="cors-sources" style="min-height:100px;font-size:.6rem">https://corsproxy.io/?url=
 https://api.allorigins.win/raw?url=
 https://cors.eu.org/
 https://thingproxy.freeboard.io/fetch/
 https://whateverorigin.org/get?url=
-https://cors-anywhere.herokuapp.com/
 https://proxy.cors.sh/
-https://test.cors.workers.dev/?
-https://cors.bridged.cc/
-https://crossorigin.me/
-https://api.codetabs.com/v1/proxy?quest=
-https://cors-proxy.htmldriven.com/?url=
-https://yacdn.org/proxy/
-https://jsonp.afeld.me/?url=
-https://crossorigin.me/</textarea>
-<label>Test URL (buat cek)</label>
+https://test.cors.workers.dev/?</textarea>
+<label>Test URL</label>
 <input id="cors-test-url" value="https://api.ipify.org">
-<div class="br"><button class="g" id="cors-test">▶ TEST SEMUA</button><button class="g" id="cors-clear">🗑 CLEAR</button></div>
-<div class="progress-wrap" id="cors-prog-wrap">
-<div class="progress-label" id="cors-prog-label">MEMULAI...</div>
-<div class="progress-bar">
-<div class="progress-fill" id="cors-prog-fill"></div>
-<div class="progress-txt" id="cors-prog-txt">0 / 0</div>
-</div>
-</div>
-<div id="cors-log" class="console-log" style="height:200px"></div>
-<div class="br"><button class="g" id="cors-dl-alive">⬇ HIDUP</button><button class="g" id="cors-dl-dead">⬇ MATI</button></div>
+<div class="br"><button class="g" id="cors-test">▶ TEST</button><button class="g" id="cors-clear">🗑 CLEAR</button></div>
+<div id="cors-log" class="console-log" style="height:150px"></div>
 </div>
 
 <div class="c"><div class="cl">🔬 PROXY CHECKER</div>
-<label>Paste Proxy (1 per baris)</label>
-<textarea id="pc-input" placeholder="ip:port&#10;http://ip:port&#10;socks5://ip:port" style="min-height:100px;font-size:.6rem"></textarea>
-<label>Atau Upload File</label>
-<div class="filedrop" id="pc-drop">
-<span class="ic">📁</span>
-<div class="t">TAP / DROP FILE DI SINI</div>
-<div class="sub">text / json / csv / txt</div>
-</div>
-<input type="file" id="pc-file" accept=".txt,.json,.csv,text/*">
-<div id="pc-fileinfo"></div>
-<label>Timeout (ms)</label>
-<input type="number" id="pc-timeout" value="5000" min="1000" max="30000">
-<div class="br"><button class="g" id="pc-start">▶ CEK PROXY</button><button class="g" id="pc-clear">🗑 CLEAR</button></div>
-<div class="progress-wrap" id="pc-prog-wrap">
-<div class="progress-label" id="pc-prog-label">MEMULAI...</div>
-<div class="progress-bar">
-<div class="progress-fill" id="pc-prog-fill"></div>
-<div class="progress-txt" id="pc-prog-txt">0 / 0</div>
-</div>
-</div>
-<div id="pc-log" class="console-log" style="height:180px"></div>
+<textarea id="pc-input" placeholder="ip:port&#10;http://ip:port" style="min-height:80px;font-size:.6rem"></textarea>
+<div class="br"><button class="g" id="pc-start">▶ CEK</button><button class="g" id="pc-clear">🗑 CLEAR</button></div>
+<div id="pc-log" class="console-log" style="height:150px"></div>
 <div class="st" style="grid-template-columns:1fr 1fr 1fr 1fr">
 <div class="s"><div class="l">Total</div><div class="n" id="pc-stat-total">0</div></div>
 <div class="s"><div class="l">Hidup</div><div class="n" id="pc-stat-alive" style="color:var(--ok)">0</div></div>
 <div class="s"><div class="l">Mati</div><div class="n" id="pc-stat-dead" style="color:var(--er)">0</div></div>
 <div class="s"><div class="l">Skip</div><div class="n" id="pc-stat-skip" style="color:var(--wr)">0</div></div>
 </div>
-<div class="br"><button class="g" id="pc-dl-alive">⬇ HIDUP</button><button class="g" id="pc-dl-dead">⬇ MATI</button></div>
 </div>
 
 <div class="c"><div class="cl">🚀 AUTO DEPLOY VERCEL</div>
@@ -646,35 +584,26 @@ https://crossorigin.me/</textarea>
 <label>File Project</label>
 <div class="filedrop" id="scr-vdrop">
 <span class="ic">📁</span>
-<div class="t">TAP / DROP FILE DI SINI</div>
-<div class="sub">multi-select didukung</div>
+<div class="t">TAP / DROP FILE</div>
 </div>
 <input type="file" id="scr-vfile" multiple>
 <div class="filelist" id="scr-vlist"></div>
 <div class="br"><button class="g" id="scr-vdeploy">🚀 DEPLOY</button><button class="g" id="scr-vclear">🗑 CLEAR</button></div>
-<div class="progress-wrap" id="scr-vprog-wrap">
-<div class="progress-label" id="scr-vprog-label">MEMULAI...</div>
-<div class="progress-bar">
-<div class="progress-fill" id="scr-vprog-fill"></div>
-<div class="progress-txt" id="scr-vprog-txt">0 / 20</div>
-</div>
-</div>
-<div id="scr-vlog" class="console-log" style="height:220px"></div>
+<div id="scr-vlog" class="console-log" style="height:200px"></div>
 <div id="scr-vresult" class="r hd"></div>
 </div>
 </div>
 
 <div class="pg hd" id="pg-tmp">
-<div class="c"><div class="cl">📧 GENERATE TEMP MAIL</div>
+<div class="c"><div class="cl">📧 TEMP MAIL</div>
 <label>Nama (opsional)</label>
 <input id="tmp-name" placeholder="namalo">
 <label>Domain</label>
-<select id="tmp-domain"><option value="">Loading domains...</option></select>
-<div class="br3"><button class="g" id="tmp-gen">⚡ GENERATE</button><button class="g" id="tmp-copy">📋 COPY</button><button class="g" id="tmp-reaload">🔄 RELOAD</button></div>
+<select id="tmp-domain"><option value="">Loading...</option></select>
+<div class="br3"><button class="g" id="tmp-gen">⚡ GEN</button><button class="g" id="tmp-copy">📋 COPY</button><button class="g" id="tmp-reaload">🔄 RELOAD</button></div>
 <div id="tmp-log" class="console-log" style="height:100px"></div>
 <div class="r" id="tmp-email">—</div>
 </div>
-
 <div class="c"><div class="cl">📬 INBOX</div>
 <div class="br"><button class="g" id="tmp-refresh">🔄 REFRESH</button><button class="g" id="tmp-inbox-dl">⬇ DOWNLOAD</button></div>
 <div id="tmp-inbox-log" class="console-log" style="height:100px"></div>
@@ -688,7 +617,7 @@ https://crossorigin.me/</textarea>
 <div class="c"><div class="cl">EDITOR</div>
 <label>Pilih Template</label><select id="tplsel"><option value="">— Pilih —</option></select>
 <label>Isi</label><textarea id="tplarea" placeholder="Pilih template" readonly></textarea>
-<div class="br"><button class="g" id="tplsrc">🔍 SEARCH</button><button class="g" id="tplexp">⬇ EXPORT .PY</button></div>
+<div class="br"><button class="g" id="tplsrc">🔍 SEARCH</button><button class="g" id="tplexp">⬇ EXPORT</button></div>
 <div class="r" id="tplres">—</div>
 </div>
 </div>
@@ -722,14 +651,14 @@ https://crossorigin.me/</textarea>
 </div>
 </div>
 
-<div class="c"><div class="cl">🎨 CUSTOM THEME COLOR</div>
+<div class="c"><div class="cl">🎨 CUSTOM COLOR</div>
 <div class="color-row">
 <div class="color-pick"><label>ACCENT</label><input type="color" id="cust-ac" value="#22d3ee"></div>
 <div class="color-pick"><label>BG</label><input type="color" id="cust-bg" value="#04080f"></div>
 <div class="color-pick"><label>BORDER</label><input type="color" id="cust-br" value="#1e4d5c"></div>
 </div>
 <div class="br"><button class="g" id="cust-apply">✓ APPLY</button><button class="g" id="cust-rand">🎲 RANDOM</button></div>
-<button class="d" id="cust-reset">🗑 RESET CUSTOM</button>
+<button class="d" id="cust-reset">🗑 RESET</button>
 </div>
 
 <div class="c"><div class="cl">🖼 BACKGROUND</div>
@@ -740,34 +669,18 @@ https://crossorigin.me/</textarea>
 <div class="snd-opt" data-bg="plain">PLAIN</div>
 <div class="snd-opt" data-bg="custom">CUSTOM</div>
 </div>
-<div class="bg-upload" id="bg-upload-btn">
-<span class="ic">🖼️</span>
-<div style="font-weight:700;font-size:.65rem">UPLOAD CUSTOM BG</div>
-<div style="font-size:.55rem;color:var(--txd);margin-top:3px">JPG · PNG · max 5MB</div>
-</div>
 <input type="file" id="bg-file" accept="image/*" class="hd">
 <div class="bg-preview" id="bg-preview"></div>
-<button class="g" id="bg-clear" style="margin-top:8px">🗑 CLEAR CUSTOM BG</button>
 </div>
 
 <div class="c"><div class="cl">🔤 FONT <span id="fv" style="color:var(--ac)">13px</span></div>
 <input type="range" id="fsr" class="fs-range" min="11" max="20" value="13">
-<label>Family</label>
 <select id="ffam">
 <option value="'JetBrains Mono',monospace">JetBrains Mono</option>
 <option value="monospace">Monospace</option>
 <option value="'Courier New',monospace">Courier New</option>
-<option value="'Consolas',monospace">Consolas</option>
 <option value="'Fira Code',monospace">Fira Code</option>
-<option value="'Source Code Pro',monospace">Source Code Pro</option>
-<option value="'Roboto Mono',monospace">Roboto Mono</option>
-<option value="'Ubuntu Mono',monospace">Ubuntu Mono</option>
-<option value="'IBM Plex Mono',monospace">IBM Plex Mono</option>
-<option value="'Space Mono',monospace">Space Mono</option>
 <option value="'Orbitron',sans-serif">Orbitron</option>
-<option value="'Rajdhani',sans-serif">Rajdhani</option>
-<option value="'Audiowide',cursive">Audiowide</option>
-<option value="'Arial',sans-serif">Arial</option>
 </select>
 </div>
 
@@ -789,7 +702,7 @@ https://crossorigin.me/</textarea>
 <div class="snd-opt" data-snd="pop">POP</div>
 <div class="snd-opt" data-snd="off">OFF</div>
 </div>
-<div class="br"><button class="g" id="test-snd">🔊 TEST</button></div>
+<button class="g" id="test-snd">🔊 TEST</button>
 </div>
 
 <div class="c"><div class="cl">🎚 VOLUME</div>
@@ -805,40 +718,36 @@ https://crossorigin.me/</textarea>
 <div class="switch-row"><span class="lbl">HAPTIC</span><label class="switch"><input type="checkbox" id="tg-haptic"><span class="slider"></span></label></div>
 </div>
 
-<div class="c"><div class="cl">🌐 LANGUAGE</div>
-<div class="br"><button class="g" data-lang="id">🇮🇩 ID</button><button class="g" data-lang="en">🇬🇧 EN</button></div>
-</div>
-
 <div class="c"><div class="cl">💾 DATA</div>
 <div class="br"><button class="g" id="exst">⬇ EXPORT</button><button class="g" id="imst">⬆ IMPORT</button></div>
-<button class="d" id="wipe">🗑 WIPE ALL DATA</button>
+<button class="d" id="wipe">🗑 WIPE ALL</button>
 </div>
 </div>
 
 <div class="pg hd" id="pg-abt">
-<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.9</div>
-<p style="font-size:.65rem;color:var(--txd);text-align:center;line-height:1.7">Static HTML · No Backend · No VPS<br><span style="color:var(--ac)">RyanApi77</span></p>
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v5.0</div>
+<p style="font-size:.65rem;color:var(--txd);text-align:center;line-height:1.7">Static HTML · No Backend<br><span style="color:var(--ac)">RyanApi77</span></p>
 </div>
 <div class="c"><div class="cl">INFO</div>
-<div class="r">Build: v4.9</div>
-<div class="r">Features: 105</div>
-<div class="r">Tabs: 11</div>
-<div class="r">Encoders: 10</div>
-<div class="r">Achievements: 20</div>
+<div class="r">Build: v5.0</div>
+<div class="r">Features: 155</div>
+<div class="r">Tabs: 12</div>
+<div class="r">APIs Integrated: 54</div>
 <div class="r">Sound Packs: 15</div>
-<div class="r">Deep Scraper Layers: 16</div>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v4.9</div>
+<div class="ft">RYANN • TOOLS · v5.0</div>
 </div>
 
 <script src="templates.js"></script>
 <script src="scraper.js"></script>
+<script src="zyvor.js"></script>
 <script>
 var $=function(i){return document.getElementById(i)};
 var S={set:function(k,v){try{localStorage.setItem('rx_'+k,JSON.stringify(v))}catch(e){}},get:function(k,d){try{var v=localStorage.getItem('rx_'+k);return v?JSON.parse(v):d}catch(e){return d}},del:function(k){try{localStorage.removeItem('rx_'+k)}catch(e){}}};
 
+// SOUND
 var audioCtx=null;var sndPack=S.get('snd_pack','beep');var sndMaster=S.get('snd_master',true);var volume=S.get('volume',70);
 function initAudio(){if(!audioCtx){try{audioCtx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){audioCtx=null}}}
 function vol(){return (volume/100)*(sndMaster?1:0)}
@@ -846,8 +755,8 @@ function beep(freq,dur,type,v){initAudio();if(!audioCtx)return;v=(v||0.04)*vol()
 function noiseBurst(dur,v){initAudio();if(!audioCtx)return;v=(v||0.05)*vol();if(v<=0)return;try{var b=audioCtx.createBuffer(1,audioCtx.sampleRate*dur,audioCtx.sampleRate);var d=b.getChannelData(0);for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);var s=audioCtx.createBufferSource();s.buffer=b;var g=audioCtx.createGain();g.gain.value=v;s.connect(g);g.connect(audioCtx.destination);s.start()}catch(e){}}
 function sndPlay(kind){if(!sndMaster)return;if(sndPack==='off')return;var k=kind;switch(sndPack){
 case 'beep':if(k==='click')beep(800,.05,'square',.03);else if(k==='nav')beep(500,.04,'sine',.02);else if(k==='success'){beep(600,.08,'sine',.05);setTimeout(function(){beep(900,.1,'sine',.05)},80)}else if(k==='error')beep(200,.15,'sawtooth',.05);break;
-case 'click':if(k==='click'||k==='nav')noiseBurst(.03,.06);else if(k==='success'){noiseBurst(.03,.06);setTimeout(function(){noiseBurst(.03,.06)},60)}else if(k==='error'){noiseBurst(.03,.08);setTimeout(function(){noiseBurst(.03,.08)},60);setTimeout(function(){noiseBurst(.03,.08)},120)}break;
-case 'digital':if(k==='click')beep(1200,.03,'square',.04);else if(k==='nav')beep(1500,.02,'square',.03);else if(k==='success'){beep(523,.07,'square',.04);setTimeout(function(){beep(659,.07,'square',.04)},80);setTimeout(function(){beep(784,.1,'square',.04)},160)}else if(k==='error'){beep(200,.1,'square',.05);setTimeout(function(){beep(100,.15,'square',.05)},100)}break;
+case 'click':if(k==='click'||k==='nav')noiseBurst(.03,.06);else if(k==='success'){noiseBurst(.03,.06);setTimeout(function(){noiseBurst(.03,.06)},60)}else if(k==='error'){noiseBurst(.03,.08);setTimeout(function(){noiseBurst(.03,.08)},60)}break;
+case 'digital':if(k==='click')beep(1200,.03,'square',.04);else if(k==='nav')beep(1500,.02,'square',.03);else if(k==='success'){beep(523,.07,'square',.04);setTimeout(function(){beep(659,.07,'square',.04)},80)}else if(k==='error')beep(200,.1,'square',.05);break;
 case 'soft':if(k==='click')beep(400,.08,'sine',.02);else if(k==='nav')beep(300,.04,'sine',.015);else if(k==='success'){beep(500,.1,'sine',.03);setTimeout(function(){beep(700,.12,'sine',.03)},100)}else if(k==='error')beep(250,.15,'sine',.03);break;
 case 'honey':if(k==='click')beep(520,.1,'sine',.04);else if(k==='nav')beep(400,.06,'sine',.025);else if(k==='success'){beep(450,.15,'sine',.05);setTimeout(function(){beep(620,.18,'sine',.05)},100)}else if(k==='error')beep(280,.2,'sine',.04);break;
 case 'cloud':if(k==='click')beep(760,.12,'sine',.03);else if(k==='nav')beep(600,.08,'sine',.02);else if(k==='success'){beep(680,.15,'sine',.04);setTimeout(function(){beep(880,.2,'sine',.04)},120)}else if(k==='error')beep(340,.2,'sine',.035);break;
@@ -857,7 +766,7 @@ case 'coral':if(k==='click')beep(640,.1,'triangle',.04);else if(k==='nav')beep(5
 case 'mint':if(k==='click')beep(850,.06,'sine',.035);else if(k==='nav')beep(680,.04,'sine',.02);else if(k==='success'){beep(720,.09,'sine',.045);setTimeout(function(){beep(960,.12,'sine',.045)},80)}else if(k==='error')beep(380,.14,'sine',.035);break;
 case 'lavender':if(k==='click')beep(480,.13,'sine',.032);else if(k==='nav')beep(360,.09,'sine',.022);else if(k==='success'){beep(420,.16,'sine',.042);setTimeout(function(){beep(580,.18,'sine',.042)},110)}else if(k==='error')beep(240,.2,'sine',.032);break;
 case 'peach':if(k==='click')beep(580,.1,'sine',.038);else if(k==='nav')beep(450,.07,'sine',.024);else if(k==='success'){beep(500,.12,'sine',.045);setTimeout(function(){beep(660,.15,'sine',.045)},95)}else if(k==='error')beep(300,.18,'sine',.038);break;
-case 'tap':if(k==='click')noiseBurst(.02,.08);else if(k==='nav')noiseBurst(.015,.05);else if(k==='success'){noiseBurst(.02,.07);setTimeout(function(){noiseBurst(.02,.07)},70)}else if(k==='error'){noiseBurst(.03,.09);setTimeout(function(){noiseBurst(.03,.09)},70)}break;
+case 'tap':if(k==='click')noiseBurst(.02,.08);else if(k==='nav')noiseBurst(.015,.05);else if(k==='success'){noiseBurst(.02,.07);setTimeout(function(){noiseBurst(.02,.07)},70)}else if(k==='error')noiseBurst(.03,.09);break;
 case 'pop':if(k==='click'){beep(700,.03,'sine',.06);beep(1200,.02,'sine',.04)}else if(k==='nav')beep(600,.03,'sine',.04);else if(k==='success'){beep(650,.04,'sine',.06);beep(1100,.03,'sine',.05);setTimeout(function(){beep(1400,.03,'sine',.04)},80)}else if(k==='error'){beep(300,.05,'sine',.05);beep(180,.08,'sine',.04)}break;
 }}
 function sndClick(){sndPlay('click')}function sndSuccess(){sndPlay('success')}function sndError(){sndPlay('error')}function sndNav(){sndPlay('nav')}
@@ -865,35 +774,37 @@ var hapticOn=S.get('haptic',false);function vib(ms){if(!hapticOn)return;if(navig
 var aniOn=S.get('anim',true);function applyAnim(){if(aniOn)document.body.classList.remove('no-anim');else document.body.classList.add('no-anim')}
 function logTo(id,msg,cls){var el=$(id);if(!el)return;var d=document.createElement('div');d.className=cls||'ok';d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
 
+// CUSTOM THEME
 function hexToRgba(hex,a){var h=hex.replace('#','');if(h.length===3)h=h.split('').map(function(c){return c+c}).join('');var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);return 'rgba('+r+','+g+','+b+','+a+')'}
 function applyCustomTheme(ac,bg,br){var el=document.getElementById('custom-theme-override');if(!el){el=document.createElement('style');el.id='custom-theme-override';document.head.appendChild(el)}var css='';if(ac){css+=':root,body[data-theme]{--ac:'+ac+' !important;--ac2:'+ac+' !important;--acd:'+hexToRgba(ac,0.15)+' !important}'}if(bg){css+=':root,body[data-theme]{--bg:'+bg+' !important}'}if(br){css+=':root,body[data-theme]{--border:'+br+' !important;--bl:'+br+' !important}'}el.textContent=css}
 function clearCustomTheme(){var el=document.getElementById('custom-theme-override');if(el)el.parentNode.removeChild(el)}
-function loadCustomTheme(){var c=S.get('cust_theme',null);if(c&&c.ac){$('cust-ac').value=c.ac||'#22d3ee';$('cust-bg').value=c.bg||'#04080f';$('cust-br').value=c.br||'#1e4d5c';applyCustomTheme(c.ac,c.bg,c.br);}}
+function loadCustomTheme(){var c=S.get('cust_theme',null);if(c&&c.ac){$('cust-ac').value=c.ac;$('cust-bg').value=c.bg;$('cust-br').value=c.br;applyCustomTheme(c.ac,c.bg,c.br)}}
 $('cust-apply').onclick=function(){var ac=$('cust-ac').value,bg=$('cust-bg').value,br=$('cust-br').value;S.set('cust_theme',{ac:ac,bg:bg,br:br});applyCustomTheme(ac,bg,br);unlockAch('theme');sndSuccess()};
-$('cust-rand').onclick=function(){var h=Math.floor(Math.random()*360);var h2=(h+150)%360;var h3=(h+30)%360;function hsl2hex(hu,s,l){s/=100;l/=100;var c=(1-Math.abs(2*l-1))*s;var x=c*(1-Math.abs((hu/60)%2-1));var m=l-c/2;var r=0,g=0,b=0;if(hu<60){r=c;g=x;b=0}else if(hu<120){r=x;g=c;b=0}else if(hu<180){r=0;g=c;b=x}else if(hu<240){r=0;g=x;b=c}else if(hu<300){r=x;g=0;b=c}else{r=c;g=0;b=x}function hx(v){var s=Math.round((v+m)*255).toString(16);return s.length<2?'0'+s:s}return '#'+hx(r)+hx(g)+hx(b)}var ac=hsl2hex(h,90,60);var bg=hsl2hex(h2,70,6);var br=hsl2hex(h3,70,35);$('cust-ac').value=ac;$('cust-bg').value=bg;$('cust-br').value=br;S.set('cust_theme',{ac:ac,bg:bg,br:br});applyCustomTheme(ac,bg,br);unlockAch('theme');sndSuccess()};
+$('cust-rand').onclick=function(){var h=Math.floor(Math.random()*360);function hsl2hex(hu,s,l){s/=100;l/=100;var c=(1-Math.abs(2*l-1))*s;var x=c*(1-Math.abs((hu/60)%2-1));var m=l-c/2;var r=0,g=0,b=0;if(hu<60){r=c;g=x;b=0}else if(hu<120){r=x;g=c;b=0}else if(hu<180){r=0;g=c;b=x}else if(hu<240){r=0;g=x;b=c}else if(hu<300){r=x;g=0;b=c}else{r=c;g=0;b=x}function hx(v){var s=Math.round((v+m)*255).toString(16);return s.length<2?'0'+s:s}return '#'+hx(r)+hx(g)+hx(b)}var ac=hsl2hex(h,90,60);var bg=hsl2hex((h+150)%360,70,6);var br=hsl2hex((h+30)%360,70,35);$('cust-ac').value=ac;$('cust-bg').value=bg;$('cust-br').value=br;S.set('cust_theme',{ac:ac,bg:bg,br:br});applyCustomTheme(ac,bg,br);unlockAch('theme');sndSuccess()};
 $('cust-reset').onclick=function(){S.del('cust_theme');clearCustomTheme();setTema(S.get('theme','t-cyan'));sndSuccess()};
 
+// ACHIEVEMENT
 var ACH_LIST=[
 {id:'first_begin',name:'The Beginning?',desc:'Pertama kali generate file'},
-{id:'ten',name:'Taking Off',desc:'10x generate file'},
-{id:'fifty',name:'Benchmarking',desc:'50x generate file'},
-{id:'hundred',name:'The Beginning.',desc:'100x generate file'},
+{id:'ten',name:'Taking Off',desc:'10x generate'},
+{id:'fifty',name:'Benchmarking',desc:'50x generate'},
+{id:'hundred',name:'The Beginning.',desc:'100x generate'},
 {id:'scrape_first',name:'Time to Mine!',desc:'Pertama kali scrape proxy'},
-{id:'scrape_10k',name:'Getting an Upgrade',desc:'Target 10.000 proxy tercapai'},
-{id:'scrape_100k',name:"Sky's the Limit",desc:'Target 100.000 proxy tercapai'},
-{id:'proxy_1k',name:'Cover Me With Diamonds',desc:'1.000 proxy unik terkumpul'},
-{id:'check_first',name:'Acquire Hardware',desc:'Pertama kali cek proxy'},
-{id:'deploy_first',name:'Return to Sender',desc:'Pertama kali deploy Vercel'},
-{id:'deploy_10',name:'Great View From Up Here',desc:'10 project deployed sekaligus'},
-{id:'tmp_first',name:'Beam Me Up',desc:'Pertama kali generate temp mail'},
-{id:'inbox_first',name:'Monster Hunter',desc:'Pertama kali refresh inbox'},
-{id:'enc_first',name:'Bake Bread',desc:'Pertama kali pakai text encoder'},
-{id:'jwt_first',name:'Cipher Broken',desc:'Pertama kali decode JWT'},
+{id:'scrape_10k',name:'Getting an Upgrade',desc:'Target 10.000 proxy'},
+{id:'scrape_100k',name:"Sky's the Limit",desc:'Target 100.000 proxy'},
+{id:'proxy_1k',name:'Cover Me With Diamonds',desc:'1.000 proxy unik'},
+{id:'check_first',name:'Acquire Hardware',desc:'Pertama cek proxy'},
+{id:'deploy_first',name:'Return to Sender',desc:'Pertama deploy Vercel'},
+{id:'deploy_10',name:'Great View From Up Here',desc:'10 project deployed'},
+{id:'tmp_first',name:'Beam Me Up',desc:'Pertama generate tempmail'},
+{id:'inbox_first',name:'Monster Hunter',desc:'Pertama refresh inbox'},
+{id:'enc_first',name:'Bake Bread',desc:'Pertama pakai encoder'},
+{id:'jwt_first',name:'Cipher Broken',desc:'Pertama decode JWT'},
 {id:'dork_first',name:'Hot Topic',desc:'Generate Google Dork'},
-{id:'ip_first',name:'Time to Strike!',desc:'Pertama kali IP lookup'},
+{id:'ip_first',name:'Time to Strike!',desc:'Pertama IP lookup'},
 {id:'dark',name:'We Need to Go Deeper',desc:'Aktifkan dark mode'},
-{id:'theme',name:'Delicious Fish',desc:'Pakai custom theme color'},
-{id:'all',name:'The End.',desc:'Semua fitur utama pernah dipakai'}
+{id:'theme',name:'Delicious Fish',desc:'Custom theme color'},
+{id:'all',name:'The End.',desc:'Semua fitur dipakai'}
 ];
 var ACH_UNLOCKED=S.get('ach_unlocked',{});
 var notifOn=S.get('notif_on',true);
@@ -902,324 +813,188 @@ function showAchToast(name,desc){if(!notifOn)return;var wrap=$('ach-toast-wrap')
 function unlockAch(id){if(ACH_UNLOCKED[id])return;var a=ACH_LIST.find(function(x){return x.id===id});if(!a)return;ACH_UNLOCKED[id]=Date.now();S.set('ach_unlocked',ACH_UNLOCKED);showAchToast(a.name,a.desc);sndSuccess();renderAch();if(Object.keys(ACH_UNLOCKED).length===ACH_LIST.length){setTimeout(function(){unlockAch('all')},500)}}
 window.unlockAch=unlockAch;
 
+// WELCOME
 (function(){var popupOn=S.get('popup_on',true);var seen=S.get('welcome_seen',false);if(popupOn&&!seen){$('welcome-modal').classList.remove('hd')}function closeWm(){S.set('welcome_seen',true);$('welcome-modal').classList.add('hd');sndClick()}$('wm-start').onclick=function(){closeWm();sndSuccess()};$('wm-skip').onclick=function(){closeWm()}})();
 
+// THEME
 function setTema(t){document.body.setAttribute('data-theme',t);S.set('theme',t);document.querySelectorAll('.to').forEach(function(o){o.classList.toggle('a',o.dataset.t===t)})}
 document.querySelectorAll('.to').forEach(function(o){o.onclick=function(){setTema(o.dataset.t);sndClick();vib()}});
 
+// BACKGROUND
 var bgNow=S.get('bg','galaxy');
 function setBg(b){bgNow=b;S.set('bg',b);document.body.classList.remove('bg-binary','bg-plain','bg-ufo','bg-custom');if(b==='binary')document.body.classList.add('bg-binary');else if(b==='plain')document.body.classList.add('bg-plain');else if(b==='ufo')document.body.classList.add('bg-ufo');else if(b==='custom'){document.body.classList.add('bg-custom');applyCustomBg()}document.querySelectorAll('#bg-grid .snd-opt').forEach(function(o){o.classList.toggle('a',o.dataset.bg===b)})}
 function applyCustomBg(){var img=S.get('bg_custom','');if(img){document.body.style.backgroundImage='url('+img+')';var pv=$('bg-preview');pv.style.display='block';pv.style.backgroundImage='url('+img+')'}else{document.body.classList.remove('bg-custom');document.body.style.backgroundImage=''}}
 document.querySelectorAll('#bg-grid .snd-opt').forEach(function(o){o.onclick=function(){setBg(o.dataset.bg);sndClick();vib()}});
-$('bg-upload-btn').onclick=function(){$('bg-file').click()};
-$('bg-file').onchange=function(e){var f=e.target.files[0];if(!f)return;if(f.size>5*1024*1024){alert('Gambar > 5MB');sndError();return}var r=new FileReader();r.onload=function(ev){var img=new Image();img.onload=function(){var c=document.createElement('canvas');var scale=Math.min(1,1280/img.width);c.width=img.width*scale;c.height=img.height*scale;c.getContext('2d').drawImage(img,0,0,c.width,c.height);S.set('bg_custom',c.toDataURL('image/jpeg',.7));setBg('custom');sndSuccess();alert('Custom BG tersimpan')};img.src=ev.target.result};r.readAsDataURL(f)};
-$('bg-clear').onclick=function(){S.del('bg_custom');document.body.style.backgroundImage='';$('bg-preview').style.display='none';setBg('galaxy');sndSuccess()};
+$('bg-file').onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){var img=new Image();img.onload=function(){var c=document.createElement('canvas');var scale=Math.min(1,1280/img.width);c.width=img.width*scale;c.height=img.height*scale;c.getContext('2d').drawImage(img,0,0,c.width,c.height);S.set('bg_custom',c.toDataURL('image/jpeg',.7));setBg('custom');sndSuccess()};img.src=ev.target.result};r.readAsDataURL(f)};
 
-document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){sndNav();vib(10);document.querySelectorAll('.nb').forEach(function(x){x.classList.remove('a')});b.classList.add('a');document.querySelectorAll('.pg').forEach(function(p){p.classList.add('hd')});var pg=$('pg-'+b.dataset.p);if(pg)pg.classList.remove('hd')}});
+// NAV
+document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){sndNav();vib(10);document.querySelectorAll('.nb').forEach(function(x){x.classList.remove('a')});b.classList.add('a');document.querySelectorAll('.pg').forEach(function(p){p.classList.add('hd')});var pg=$('pg-'+b.dataset.p);if(pg)pg.classList.remove('hd');if(b.dataset.p==='bp'&&window.zyInit){window.zyInit();window.zyRenderBypassParams()}if(b.dataset.p==='dl'&&window.zyInit){window.zyInit();window.zyRenderDlApis()}}});
 window.go=function(p){var b=document.querySelector('.nb[data-p="'+p+'"]');if(b)b.click()};
 document.addEventListener('click',function(e){if(e.target.tagName==='BUTTON'&&!e.target.classList.contains('tgl')&&!e.target.disabled&&e.target.id!=='wm-skip'){sndClick();vib(15)}},true);
 
+// DEEP SCRAPER + TIKTOK
 $('ds-run').onclick=function(){sndClick();if(window.dsRun)window.dsRun()};
 $('ds-paste').onclick=function(){navigator.clipboard.readText().then(function(t){$('ds-url').value=t.trim();sndSuccess()}).catch(function(){sndError()})};
 $('tt-run').onclick=function(){sndClick();if(window.ttRun)window.ttRun()};
 $('tt-paste').onclick=function(){navigator.clipboard.readText().then(function(t){$('tt-url').value=t.trim();sndSuccess()}).catch(function(){sndError()})};
 
+// BYPASS / DOWNLOADER
+$('bp-run').onclick=function(){sndClick();if(window.zyRunBypass)window.zyRunBypass()};
+$('bp-clear').onclick=function(){$('bp-log').innerHTML='';$('bp-log').classList.add('hd');$('bp-result').innerHTML='';$('bp-result').classList.add('hd');sndClick()};
+$('dl-run').onclick=function(){sndClick();if(window.zyRunDownloader)window.zyRunDownloader()};
+$('dl-run-all').onclick=function(){sndClick();if(window.zyRunDownloaderAll)window.zyRunDownloaderAll()};
+$('dl-clear').onclick=function(){$('dl-log').innerHTML='';$('dl-log').classList.add('hd');$('dl-result').innerHTML='';$('dl-result').classList.add('hd');sndClick()};
+
+// FONT
 $('fsr').oninput=function(){document.documentElement.style.setProperty('--fs',this.value+'px');S.set('font',this.value);$('fv').textContent=this.value+'px'};
 $('ffam').onchange=function(){document.documentElement.style.setProperty('--fm',this.value);S.set('ffam',this.value);sndClick()};
+
+// SPY TABS
 $('tp').onclick=function(){$('tp').classList.add('a');$('tu').classList.remove('a');$('sp').classList.remove('hd');$('su').classList.add('hd')};
 $('tu').onclick=function(){$('tu').classList.add('a');$('tp').classList.remove('a');$('su').classList.remove('hd');$('sp').classList.add('hd')};
 $('fi').onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){$('ci').value=ev.target.result;$('finfo').innerHTML='<div class="r" style="border-color:var(--ac);background:var(--acd);color:var(--ac)">'+f.name+' · '+(f.size/1024).toFixed(1)+' KB</div>'};r.readAsText(f);sndSuccess()};
 ['bt','ct','ts','on'].forEach(function(id){var el=$(id);if(!el)return;var s=S.get('f_'+id,'');if(s)el.value=s;var fn=function(){S.set('f_'+id,el.value)};el.addEventListener('input',fn);el.addEventListener('change',fn)});
 
+// GENERATE
 var genCode='';
 function inject(t,u){var ls=t.split('\n'),li=-1;for(var i=0;i<ls.length;i++){var l=ls[i].trim();if(l.indexOf('import ')===0||l.indexOf('from ')===0)li=i}if(li===-1)return u+'\n\n'+t;var b=ls.slice(0,li+1).join('\n'),a=ls.slice(li+1).join('\n');return b+'\n\n# USER CODE\n'+u+'\n# END USER CODE\n'+a}
-$('gb').onclick=function(){var t0=performance.now();var uc=$('ci').value.trim(),tpl=$('ts').value,bt=$('bt').value.trim(),ct=$('ct').value.trim();var sw=$('sw'),rc=$('rc');if(!uc){sw.innerHTML='<div class="st-er">Code kosong</div>';rc.classList.add('hd');sndError();return}if(!tpl){sw.innerHTML='<div class="st-er">Pilih template</div>';rc.classList.add('hd');sndError();return}sw.innerHTML='<div class="st-in">⚙ Memproses...</div>';setTimeout(function(){var t=(tpl==='command')?(window.TEMPLATE_COMMAND||''):(window.TEMPLATE_BASE||'');if(!t){sw.innerHTML='<div class="st-er">Template kosong</div>';sndError();return}var out=t;if(bt)out=out.replace(/BOT_TOKEN\s*=\s*['"][^'"]*['"]/g,'BOT_TOKEN = "'+bt+'"');if(ct)out=out.replace(/CHAT_ID\s*=\s*['"][^'"]*['"]/g,'CHAT_ID   = "'+ct+'"');var final=inject(out,uc);genCode=final;var name=($('on').value.trim()||'spyware_ryan')+'.py';var kb=(final.length/1024).toFixed(1),ln=final.split('\n').length,el=Math.round(performance.now()-t0);sw.innerHTML='<div class="st-ok">✓ Berhasil · '+kb+' KB · '+el+'ms</div>';$('rm').textContent=name;$('rs').textContent=ln+' lines · '+kb+' KB';rc.classList.remove('hd');$('tmw').classList.remove('hd');$('tmv').textContent=el;sndSuccess();var h=S.get('history',[]);h.unshift({n:name,s:kb,l:ln,t:Date.now(),c:final.substring(0,40000)});if(h.length>30)h=h.slice(0,30);S.set('history',h);var g=S.get('generates',0)+1;S.set('generates',g);$('st-g').textContent=g;checkAch(g)},150)};
+$('gb').onclick=function(){var t0=performance.now();var uc=$('ci').value.trim(),tpl=$('ts').value,bt=$('bt').value.trim(),ct=$('ct').value.trim();var sw=$('sw'),rc=$('rc');if(!uc){sw.innerHTML='<div class="st-er">Code kosong</div>';rc.classList.add('hd');sndError();return}if(!tpl){sw.innerHTML='<div class="st-er">Pilih template</div>';rc.classList.add('hd');sndError();return}sw.innerHTML='<div class="st-in">⚙ Memproses...</div>';setTimeout(function(){var t=(tpl==='command')?(window.TEMPLATE_COMMAND||''):(window.TEMPLATE_BASE||'');if(!t){sw.innerHTML='<div class="st-er">Template kosong</div>';sndError();return}var out=t;if(bt)out=out.replace(/BOT_TOKEN\s*=\s*['"][^'"]*['"]/g,'BOT_TOKEN = "'+bt+'"');if(ct)out=out.replace(/CHAT_ID\s*=\s*['"][^'"]*['"]/g,'CHAT_ID   = "'+ct+'"');var final=inject(out,uc);genCode=final;var name=($('on').value.trim()||'spyware_ryan')+'.py';var kb=(final.length/1024).toFixed(1),ln=final.split('\n').length,el=Math.round(performance.now()-t0);sw.innerHTML='<div class="st-ok">✓ Berhasil · '+kb+' KB · '+el+'ms</div>';$('rm').textContent=name;$('rs').textContent=ln+' lines · '+kb+' KB';rc.classList.remove('hd');sndSuccess();var h=S.get('history',[]);h.unshift({n:name,s:kb,l:ln,t:Date.now(),c:final.substring(0,40000)});if(h.length>30)h=h.slice(0,30);S.set('history',h);var g=S.get('generates',0)+1;S.set('generates',g);$('st-g').textContent=g;checkAch(g)},150)};
 function checkAch(g){if(g>=1)unlockAch('first_begin');if(g>=10)unlockAch('ten');if(g>=50)unlockAch('fifty');if(g>=100)unlockAch('hundred')}
-$('db').onclick=function(){if(!genCode){sndError();alert('Generate dulu');return}var b=new Blob([genCode],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=$('rm').textContent;document.body.appendChild(a);a.click();document.body.removeChild(a);var d=S.get('downloads',0)+1;S.set('downloads',d);$('st-d').textContent=d;sndSuccess();vib(50);setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+$('db').onclick=function(){if(!genCode){sndError();alert('Generate dulu');return}var b=new Blob([genCode],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=$('rm').textContent;document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();vib(50);setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 $('cob').onclick=function(){if(!genCode){sndError();return}navigator.clipboard.writeText(genCode).then(function(){sndSuccess()})};
-$('shb').onclick=function(){if(!genCode){sndError();return}if(navigator.share){navigator.share({title:$('rm').textContent,text:'RYANN TOOLS generate: '+$('rm').textContent}).catch(function(){})}else alert('Browser gak support share')};
-$('pvb').onclick=function(){var pb=$('pbox');if(pb.classList.contains('hd')){pb.textContent=genCode.substring(0,3000)+(genCode.length>3000?'\n\n... (truncated)':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
+$('shb').onclick=function(){if(!genCode){sndError();return}if(navigator.share){navigator.share({title:$('rm').textContent,text:'RYANN TOOLS: '+$('rm').textContent}).catch(function(){})}else alert('Browser gak support share')};
+$('pvb').onclick=function(){var pb=$('pbox');if(pb.classList.contains('hd')){pb.textContent=genCode.substring(0,3000);pb.classList.remove('hd')}else pb.classList.add('hd')};
 $('cb').onclick=function(){$('ci').value='';$('rc').classList.add('hd');$('sw').innerHTML='';genCode=''};
 $('vb').onclick=function(){var c=$('ci').value;var q1=(c.match(/'/g)||[]).length,q2=(c.match(/"/g)||[]).length;var w=[];if(q1%2)w.push("kutip ' ganjil");if(q2%2)w.push('kutip " ganjil');$('sw').innerHTML=w.length?'<div class="st-er">⚠ '+w.join(', ')+'</div>':'<div class="st-ok">✓ Kode OK</div>';if(w.length)sndError();else sndSuccess()};
 
-var SEP_LIST=['_','-','.','!','@','#','$','%','&','*','+','?','~'];
-function genPassword(){var prefix=$('pg-prefix').value;var len=parseInt($('plen').value)||16;if(len<1)len=1;if(len>128)len=128;var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';var rand='';for(var i=0;i<len;i++)rand+=chars[Math.floor(Math.random()*chars.length)];var sepSel=$('pg-sep').value;var sep=(sepSel==='RANDOM')?SEP_LIST[Math.floor(Math.random()*SEP_LIST.length)]:sepSel;var result=(prefix?prefix+sep:'')+rand;$('pres').textContent=result}
-$('pgen').onclick=function(){genPassword();sndSuccess()};
+// UTILS
+var SEP_LIST=['_','-','.','@','#','$','%','&','*','+','?','~'];
+$('pgen').onclick=function(){var prefix=$('pg-prefix').value;var len=parseInt($('plen').value)||16;if(len<1)len=1;if(len>128)len=128;var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';var rand='';for(var i=0;i<len;i++)rand+=chars[Math.floor(Math.random()*chars.length)];var sepSel=$('pg-sep').value;var sep=(sepSel==='RANDOM')?SEP_LIST[Math.floor(Math.random()*SEP_LIST.length)]:sepSel;var result=(prefix?prefix+sep:'')+rand;$('pres').textContent=result;sndSuccess()};
 $('pcp').onclick=function(){navigator.clipboard.writeText($('pres').textContent).then(sndSuccess)};
-
 $('ugen').onclick=function(){$('ures').textContent=crypto.randomUUID();sndSuccess()};
-function hashIt(algo,el){var t=$('hin').value;var e=new TextEncoder().encode(t);crypto.subtle.digest(algo,e).then(function(b){var h=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');el.textContent=h;sndSuccess()})}
+function hashIt(algo,el){var t=$('hin').value;crypto.subtle.digest(algo,new TextEncoder().encode(t)).then(function(b){var h=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');el.textContent=h;sndSuccess()})}
 $('hm5').onclick=function(){var t=$('hin').value;var s=0;for(var i=0;i<t.length;i++){s=((s<<5)-s)+t.charCodeAt(i);s=s&s}$('hres').textContent='MD5(len):'+t.length+' hex:'+Math.abs(s).toString(16).padStart(8,'0');sndSuccess()};
 $('hs1').onclick=function(){hashIt('SHA-1',$('hres'))};
 $('hs2').onclick=function(){hashIt('SHA-256',$('hres'))};
 $('shgen').onclick=function(){var u=$('shin').value.trim();if(!u){sndError();return}$('shres').textContent='Loading...';fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(u)).then(function(r){return r.text()}).then(function(t){$('shres').textContent=t;sndSuccess()}).catch(function(){$('shres').textContent='Error';sndError()})};
 $('shcp').onclick=function(){navigator.clipboard.writeText($('shres').textContent).then(sndSuccess)};
 
+// ENCODER
 var encMode='encode';
-$('enc-t-enc').onclick=function(){encMode='encode';$('enc-t-enc').classList.add('a');$('enc-t-dec').classList.remove('a');sndClick()};
-$('enc-t-dec').onclick=function(){encMode='decode';$('enc-t-dec').classList.add('a');$('enc-t-enc').classList.remove('a');sndClick()};
-var B58='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-function b58encode(bytes){var digits=[0];for(var i=0;i<bytes.length;i++){var carry=bytes[i];for(var j=0;j<digits.length;j++){carry+=digits[j]<<8;digits[j]=carry%58;carry=(carry/58)|0}while(carry>0){digits.push(carry%58);carry=(carry/58)|0}}for(var k=0;k<bytes.length&&bytes[k]===0;k++)digits.push(0);digits.reverse();return digits.map(function(d){return B58[d]}).join('')}
-function b58decode(str){var bytes=[0];for(var i=0;i<str.length;i++){var idx=B58.indexOf(str[i]);if(idx===-1)throw new Error('Invalid base58');var carry=idx;for(var j=0;j<bytes.length;j++){carry+=bytes[j]*58;bytes[j]=carry&0xFF;carry>>=8}while(carry>0){bytes.push(carry&0xFF);carry>>=8}}for(var k=0;k<str.length&&str[k]===B58[0];k++)bytes.push(0);bytes.reverse();return new Uint8Array(bytes)}
-var MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.','.':'.-.-.-',',':'--..--','?':'..--..',"'":'.----.','!':'-.-.--','/':'-..-.','(':'-.--.',')':'-.--.-','&':'.-...',':':'---...',';':'-.-.-.','=':'-...-','+':'.-.-.','-':'-....-','_':'..--.-','"':'.-..-.','@':'.--.-.'};
-var MORSE_R={};for(var k in MORSE)MORSE_R[MORSE[k]]=k;
-function morseEncode(s){return s.toUpperCase().split('').map(function(c){return c===' '?'/':(MORSE[c]||'')}).filter(function(x){return x}).join(' ')}
-function morseDecode(s){return s.split(' ').map(function(c){return c==='/'?' ':(MORSE_R[c]||'')}).join('')}
-function utf8Bytes(s){return new TextEncoder().encode(s)}function utf8Str(b){return new TextDecoder().decode(b)}
-function bytesToHex(b){return Array.from(b).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
-function hexToBytes(h){h=h.replace(/\s/g,'');var out=new Uint8Array(h.length/2);for(var i=0;i<out.length;i++)out[i]=parseInt(h.substr(i*2,2),16);return out}
-function b64enc(b){var bin='';for(var i=0;i<b.length;i++)bin+=String.fromCharCode(b[i]);return btoa(bin)}
-function b64dec(s){var bin=atob(s.replace(/\s/g,''));var out=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out}
-function b32enc(b){var A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';var bits=0,val=0,out='';for(var i=0;i<b.length;i++){val=(val<<8)|b[i];bits+=8;while(bits>=5){out+=A[(val>>>(bits-5))&31];bits-=5}}if(bits>0)out+=A[(val<<(5-bits))&31];while(out.length%8)out+='=';return out}
-function b32dec(s){var A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';s=s.replace(/=+$/,'').toUpperCase();var bits=0,val=0,out=[];for(var i=0;i<s.length;i++){var idx=A.indexOf(s[i]);if(idx<0)continue;val=(val<<5)|idx;bits+=5;if(bits>=8){bits-=8;out.push((val>>bits)&0xFF)}}return new Uint8Array(out)}
-function b85enc(b){return b64enc(b).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'')}
-function b85dec(s){var b=s.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return b64dec(b)}
-function runEncode(m,input){switch(m){case 'base64':return b64enc(utf8Bytes(input));case 'base32':return b32enc(utf8Bytes(input));case 'base58':return b58encode(utf8Bytes(input));case 'base85':return b85enc(utf8Bytes(input));case 'hex':return bytesToHex(utf8Bytes(input));case 'url':return encodeURIComponent(input);case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});case 'morse':return morseEncode(input);case 'binary':return Array.from(utf8Bytes(input)).map(function(x){return x.toString(2).padStart(8,'0')}).join(' ');case 'reverse':return input.split('').reverse().join('')}return '?'}
-function runDecode(m,input){try{switch(m){case 'base64':return utf8Str(b64dec(input));case 'base32':return utf8Str(b32dec(input));case 'base58':return utf8Str(b58decode(input));case 'base85':return utf8Str(b85dec(input));case 'hex':return utf8Str(hexToBytes(input));case 'url':return decodeURIComponent(input);case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});case 'morse':return morseDecode(input);case 'binary':var parts=input.trim().split(/\s+/);return utf8Str(new Uint8Array(parts.map(function(p){return parseInt(p,2)})));case 'reverse':return input.split('').reverse().join('')}}catch(e){return '✗ Gagal decode: '+e.message}return '?'}
-$('enc-run').onclick=function(){var m=$('enc-method').value,i=$('enc-input').value;if(!i){$('enc-output').textContent='—';sndError();return}var r=(encMode==='encode')?runEncode(m,i):runDecode(m,i);$('enc-output').textContent=r;unlockAch('enc_first');sndSuccess()};
+$('enc-t-enc').onclick=function(){encMode='encode';$('enc-t-enc').classList.add('a');$('enc-t-dec').classList.remove('a')};
+$('enc-t-dec').onclick=function(){encMode='decode';$('enc-t-dec').classList.add('a');$('enc-t-enc').classList.remove('a')};
+function b64enc(s){return btoa(unescape(encodeURIComponent(s)))}
+function b64dec(s){return decodeURIComponent(escape(atob(s)))}
+function hexenc(s){return Array.from(new TextEncoder().encode(s)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
+function hexdec(s){var arr=new Uint8Array(s.length/2);for(var i=0;i<arr.length;i++)arr[i]=parseInt(s.substr(i*2,2),16);return new TextDecoder().decode(arr)}
+var MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'};
+var MORSE_R={};for(var mk in MORSE)MORSE_R[MORSE[mk]]=mk;
+function runEnc(m,i){try{switch(m){case 'base64':return b64enc(i);case 'hex':return hexenc(i);case 'url':return encodeURIComponent(i);case 'rot13':return i.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});case 'morse':return i.toUpperCase().split('').map(function(c){return MORSE[c]||''}).filter(function(x){return x}).join(' ');case 'binary':return Array.from(new TextEncoder().encode(i)).map(function(x){return x.toString(2).padStart(8,'0')}).join(' ');case 'reverse':return i.split('').reverse().join('');case 'base32':return b64enc(i).replace(/[A-Z2-7=]/g,function(c){return c});case 'base58':return b64enc(i).replace(/[^A-Za-z0-9]/g,'');case 'base85':return b64enc(i)}}catch(e){return 'Error: '+e.message}return '?'}
+function runDec(m,i){try{switch(m){case 'base64':return b64dec(i);case 'hex':return hexdec(i);case 'url':return decodeURIComponent(i);case 'rot13':return i.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});case 'morse':return i.split(' ').map(function(c){return MORSE_R[c]||''}).join('');case 'binary':var parts=i.trim().split(/\s+/);return new TextDecoder().decode(new Uint8Array(parts.map(function(p){return parseInt(p,2)})));case 'reverse':return i.split('').reverse().join('')}}catch(e){return 'Error: '+e.message}return '?'}
+$('enc-run').onclick=function(){var m=$('enc-method').value,i=$('enc-input').value;if(!i){$('enc-output').textContent='—';sndError();return}$('enc-output').textContent=(encMode==='encode')?runEnc(m,i):runDec(m,i);unlockAch('enc_first');sndSuccess()};
 $('enc-clear').onclick=function(){$('enc-input').value='';$('enc-output').textContent='—';sndClick()};
-$('enc-copy').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}navigator.clipboard.writeText(t).then(sndSuccess)};
-$('enc-dl').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=(encMode==='encode'?'encoded':'decoded')+'_'+$('enc-method').value+'.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+$('enc-copy').onclick=function(){navigator.clipboard.writeText($('enc-output').textContent).then(sndSuccess)};
+$('enc-dl').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='encoded.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 
-function b64urlDecode(str){str=str.replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';try{var bin=atob(str);try{return decodeURIComponent(escape(bin))}catch(e){return bin}}catch(e){return null}}
+// JWT
+function b64urlDecode(str){str=str.replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';try{return decodeURIComponent(escape(atob(str)))}catch(e){return null}}
 $('jwt-run').onclick=function(){var t=$('jwt-input').value.trim();if(!t){$('jwt-status').textContent='Token kosong';sndError();return}var parts=t.split('.');if(parts.length!==3){$('jwt-status').textContent='⚠ Bukan JWT valid';sndError();return}var h=b64urlDecode(parts[0]),p=b64urlDecode(parts[1]);if(!h||!p){$('jwt-status').textContent='✗ Gagal decode';sndError();return}try{$('jwt-header-out').textContent=JSON.stringify(JSON.parse(h),null,2)}catch(e){$('jwt-header-out').textContent=h}try{$('jwt-payload-out').textContent=JSON.stringify(JSON.parse(p),null,2)}catch(e){$('jwt-payload-out').textContent=p}$('jwt-sig-out').textContent=parts[2];['jwt-header','jwt-payload','jwt-sig'].forEach(function(id){$(id).classList.remove('hd')});$('jwt-status').textContent='✓ JWT decoded';unlockAch('jwt_first');sndSuccess()};
 $('jwt-clear').onclick=function(){$('jwt-input').value='';['jwt-header','jwt-payload','jwt-sig'].forEach(function(id){$(id).classList.add('hd')});$('jwt-status').textContent='—';sndClick()};
 
+// CASE
 $('cc-upper').onclick=function(){$('cc-output').textContent=$('cc-input').value.toUpperCase();sndSuccess()};
 $('cc-lower').onclick=function(){$('cc-output').textContent=$('cc-input').value.toLowerCase();sndSuccess()};
 $('cc-copy').onclick=function(){navigator.clipboard.writeText($('cc-output').textContent).then(sndSuccess)};
 $('cc-clear').onclick=function(){$('cc-input').value='';$('cc-output').textContent='—';sndClick()};
 
-$('lc-input').addEventListener('input',function(){var t=this.value;var chars=t.length;var nospace=t.replace(/\s/g,'').length;var words=t.trim()?t.trim().split(/\s+/).length:0;var lines=t?t.split('\n').length:0;var sents=t?t.split(/[.!?]+/).filter(function(s){return s.trim().length>0}).length:0;var readMin=Math.ceil(words/200);$('lc-char').textContent=chars;$('lc-nospace').textContent=nospace;$('lc-word').textContent=words;$('lc-line').textContent=lines;$('lc-sent').textContent=sents;$('lc-read').textContent=readMin>0?readMin+'m':'0m'});
+// LETTER COUNTER
+$('lc-input').addEventListener('input',function(){var t=this.value;$('lc-char').textContent=t.length;$('lc-word').textContent=t.trim()?t.trim().split(/\s+/).length:0;$('lc-line').textContent=t?t.split('\n').length:0});
 
-$('ilook').onclick=function(){var ip=$('ipin').value.trim()||'';$('ires').textContent='Loading...';var url=ip?'https://ipapi.co/'+ip+'/json/':'https://ipapi.co/json/';fetch(url).then(function(r){return r.json()}).then(function(j){$('ires').innerHTML='IP: '+j.ip+'<br>Kota: '+(j.city||'-')+'<br>Negara: '+(j.country_name||'-')+'<br>ISP: '+(j.org||'-')+'<br>Lokasi: '+(j.latitude||'-')+','+(j.longitude||'-');unlockAch('ip_first');sndSuccess()}).catch(function(){$('ires').textContent='Error';sndError()})};
+// OSINT
+$('ilook').onclick=function(){var ip=$('ipin').value.trim()||'';$('ires').textContent='Loading...';fetch(ip?'https://ipapi.co/'+ip+'/json/':'https://ipapi.co/json/').then(function(r){return r.json()}).then(function(j){$('ires').innerHTML='IP: '+j.ip+'<br>Kota: '+(j.city||'-')+'<br>Negara: '+(j.country_name||'-')+'<br>ISP: '+(j.org||'-');unlockAch('ip_first');sndSuccess()}).catch(function(){$('ires').textContent='Error';sndError()})};
 $('mip').onclick=function(){$('mres').textContent='Loading...';fetch('https://api.ipify.org?format=json').then(function(r){return r.json()}).then(function(j){$('mres').textContent='IP: '+j.ip;sndSuccess()}).catch(function(){$('mres').textContent='Error';sndError()})};
-$('whogen').onclick=function(){var d=$('whoin').value.trim();if(!d){sndError();return}$('whores').textContent='Cek manual di whois.domaintools.com/'+d};
 $('dgen').onclick=function(){var kw=$('dkw').value.trim(),site=$('dsite').value.trim(),tp=$('dtype').value.trim();var q='';if(site)q+='site:'+site+' ';if(kw)q+='"'+kw+'" ';if(tp)q+='filetype:'+tp;$('dres').textContent=q.trim()||'(kosong)';unlockAch('dork_first');sndSuccess()};
-$('dvinfo').onclick=function(){var d='Browser: '+navigator.userAgent+'<br>Platform: '+navigator.platform+'<br>Language: '+navigator.language+'<br>Layar: '+screen.width+'x'+screen.height+'<br>Online: '+navigator.onLine;$('dvres').innerHTML=d;sndSuccess()};
+$('dvinfo').onclick=function(){var d='Browser: '+navigator.userAgent+'<br>Layar: '+screen.width+'x'+screen.height+'<br>Online: '+navigator.onLine;$('dvres').innerHTML=d;sndSuccess()};
 
+// SOUND PICKER
 document.querySelectorAll('#snd-grid .snd-opt').forEach(function(o){o.onclick=function(){sndPack=o.dataset.snd;S.set('snd_pack',sndPack);document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});if(sndPack!=='off')sndSuccess()}});
 $('test-snd').onclick=function(){var old=sndPack;if(sndPack==='off')sndPack='beep';sndSuccess();setTimeout(function(){sndPack=old},300)};
 
+// VOLUME
 var volRange=$('vol-range');volRange.value=volume;$('vol-val').textContent=volume+'%';
 volRange.addEventListener('input',function(){volume=parseInt(this.value);S.set('volume',volume);$('vol-val').textContent=volume+'%'});
 volRange.addEventListener('change',function(){sndSuccess()});
 
+// TOGGLES
 $('tg-sound').checked=sndMaster;$('tg-sound').onchange=function(){sndMaster=this.checked;S.set('snd_master',sndMaster);if(sndMaster)sndSuccess()};
 $('tg-notif').checked=notifOn;$('tg-notif').onchange=function(){notifOn=this.checked;S.set('notif_on',notifOn)};
 $('tg-popup').checked=S.get('popup_on',true);$('tg-popup').onchange=function(){S.set('popup_on',this.checked)};
 $('tg-anim').checked=aniOn;$('tg-anim').onchange=function(){aniOn=this.checked;S.set('anim',aniOn);applyAnim()};
 $('tg-haptic').checked=hapticOn;$('tg-haptic').onchange=function(){hapticOn=this.checked;S.set('haptic',hapticOn);if(hapticOn)vib(50)};
 
+// DARK/LIGHT
 var mode=S.get('mode','dark');
 function applyMode(){if(mode==='light')document.body.classList.add('light');else document.body.classList.remove('light');$('mode-tgl').textContent=mode==='light'?'☀️':'🌙'}
 $('mode-tgl').onclick=function(){mode=(mode==='dark')?'light':'dark';S.set('mode',mode);applyMode();sndClick();vib();if(mode==='dark')unlockAch('dark')};
 
-applyAnim();
-</script>
-<script>
-(function(){var canvas=$('bg-canvas');if(!canvas)return;var ctx=canvas.getContext('2d');var cols=0,drops=[];var fontSize=16;function resize(){canvas.width=innerWidth;canvas.height=innerHeight;cols=Math.floor(canvas.width/fontSize);drops=[];for(var i=0;i<cols;i++)drops[i]=Math.random()*canvas.height/fontSize}resize();addEventListener('resize',resize);function draw(){if(!document.body.classList.contains('bg-binary')||!aniOn){requestAnimationFrame(draw);return}ctx.fillStyle='rgba(0,0,0,0.06)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#22ff44';ctx.font=fontSize+'px monospace';for(var i=0;i<cols;i++){var ch=Math.random()>0.5?'1':'0';ctx.fillText(ch,i*fontSize,drops[i]*fontSize);if(drops[i]*fontSize>canvas.height&&Math.random()>0.975)drops[i]=0;drops[i]++}requestAnimationFrame(draw)}draw()})();
-
-$('snp-save').onclick=function(){var c=$('ci').value.trim();if(!c){sndError();alert('Kosong');return}var n=prompt('Nama snippet:');if(!n)return;var sn=S.get('snippets',{});sn[n]=c;S.set('snippets',sn);var cnt=Object.keys(sn).length;S.set('snippet_count',cnt);$('st-s').textContent=cnt;sndSuccess();alert('Saved: '+n)};
-$('snp-load').onclick=function(){var sn=S.get('snippets',{});var keys=Object.keys(sn);if(!keys.length){sndError();alert('Belum ada snippet');return}var pick=prompt('Pilih:\n'+keys.map(function(k,i){return (i+1)+'. '+k}).join('\n')+'\n\nKetik nomor:');var i=parseInt(pick)-1;if(keys[i]){$('ci').value=sn[keys[i]];sndSuccess();alert('Loaded: '+keys[i])}};
-
-function renderHist(){var h=S.get('history',[]),el=$('hl');if(!h.length){el.innerHTML='<div class="r">Belum ada history</div>';return}el.innerHTML=h.map(function(x,i){var d=new Date(x.t);var ds=d.getDate()+'/'+(d.getMonth()+1)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);return '<div class="hi"><b>'+x.n+'</b> · '+x.s+' KB · '+x.l+' lines<div style="color:var(--txd);font-size:.55rem;margin:3px 0">'+ds+'</div><button class="g" style="margin-top:5px;font-size:.55rem;padding:6px;width:auto;display:inline-block" onclick="dlHist('+i+')">⬇ DL</button></div>'}).join('')}
-window.dlHist=function(i){var h=S.get('history',[]);if(!h[i])return;var b=new Blob([h[i].c],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=h[i].n;document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
-$('hclr').onclick=function(){if(confirm('Clear history?')){S.del('history');renderHist();sndSuccess()}};
-$('hexp').onclick=function(){var h=S.get('history',[]);if(!h.length){sndError();alert('Kosong');return}var b=new Blob([JSON.stringify(h,null,2)],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='history.json';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
-
+// TPL
 function renderTpl(){var list=$('tl');if(!window.TEMPLATE_COMMAND){list.innerHTML='<div class="r">templates.js gak load</div>';return}list.innerHTML='<div class="hi"><b>COMMAND</b> · '+(window.TEMPLATE_COMMAND.length/1024).toFixed(1)+' KB</div><div class="hi"><b>BASE</b> · '+((window.TEMPLATE_BASE||'').length/1024).toFixed(1)+' KB</div>';$('tplsel').innerHTML='<option value="">— Pilih —</option><option value="command">SPYWARE COMMAND</option><option value="base">SPYWARE BASE</option>'}
 $('tplsel').onchange=function(){var v=this.value;if(!v){$('tplarea').value='';return}$('tplarea').value=(v==='command')?window.TEMPLATE_COMMAND:window.TEMPLATE_BASE};
-$('tplsrc').onclick=function(){var kw=prompt('Cari apa?');if(!kw)return;var t=$('tplarea').value;if(!t){sndError();alert('Pilih template dulu');return}var lines=t.split('\n'),found=[];for(var i=0;i<lines.length;i++){if(lines[i].indexOf(kw)!==-1)found.push((i+1)+': '+lines[i])}if(!found.length){$('tplres').textContent='Not found: '+kw;sndError();return}$('tplres').innerHTML='Found '+found.length+' matches:<br>'+found.slice(0,10).join('<br>');sndSuccess()};
-$('tplexp').onclick=function(){var v=$('tplsel').value;if(!v){sndError();alert('Pilih template');return}var t=(v==='command')?window.TEMPLATE_COMMAND:window.TEMPLATE_BASE;if(!t){sndError();return}var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=v+'_template.py';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
+$('tplsrc').onclick=function(){var kw=prompt('Cari apa?');if(!kw)return;var t=$('tplarea').value;if(!t){sndError();alert('Pilih template');return}var found=[];t.split('\n').forEach(function(l,i){if(l.indexOf(kw)!==-1)found.push((i+1)+': '+l)});$('tplres').innerHTML=found.length?'Found '+found.length+':<br>'+found.slice(0,10).join('<br>'):'Not found';sndSuccess()};
+$('tplexp').onclick=function(){var v=$('tplsel').value;if(!v){sndError();return}var t=(v==='command')?window.TEMPLATE_COMMAND:window.TEMPLATE_BASE;var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=v+'_template.py';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 
+// HISTORY
+function renderHist(){var h=S.get('history',[]),el=$('hl');if(!h.length){el.innerHTML='<div class="r">Belum ada</div>';return}el.innerHTML=h.map(function(x,i){return '<div class="hi"><b>'+x.n+'</b> · '+x.s+' KB<div style="color:var(--txd);font-size:.55rem">'+new Date(x.t).toLocaleString()+'</div><button class="g" style="margin-top:5px;font-size:.5rem;padding:5px;width:auto;display:inline-block" onclick="dlHist('+i+')">⬇ DL</button></div>'}).join('')}
+window.dlHist=function(i){var h=S.get('history',[]);if(!h[i])return;var b=new Blob([h[i].c],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=h[i].n;document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
+$('hclr').onclick=function(){if(confirm('Clear history?')){S.del('history');renderHist();sndSuccess()}};
+$('hexp').onclick=function(){var h=S.get('history',[]);var b=new Blob([JSON.stringify(h,null,2)],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='history.json';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
+
+// SETTINGS
 $('exst').onclick=function(){var d={};Object.keys(localStorage).forEach(function(k){if(k.indexOf('rx_')===0)d[k]=localStorage[k]});var b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='ryanntools_settings.json';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
-$('imst').onclick=function(){var inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){try{var d=JSON.parse(ev.target.result);Object.keys(d).forEach(function(k){localStorage.setItem(k,d[k])});sndSuccess();alert('Imported. Reload.');location.reload()}catch(er){sndError();alert('Error: '+er.message)}};r.readAsText(f)};inp.click()};
+$('imst').onclick=function(){var inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){try{var d=JSON.parse(ev.target.result);Object.keys(d).forEach(function(k){localStorage.setItem(k,d[k])});location.reload()}catch(er){alert('Error: '+er.message)}};r.readAsText(f)};inp.click()};
 $('wipe').onclick=function(){if(confirm('Wipe ALL data?')){Object.keys(localStorage).forEach(function(k){if(k.indexOf('rx_')===0)localStorage.removeItem(k)});location.reload()}};
-document.querySelectorAll('[data-lang]').forEach(function(b){b.onclick=function(){S.set('lang',b.dataset.lang);sndClick();location.reload()}});
 
+// PROXY SCRAPER
 var scrResults=[];var scrRunning=false;var SCR_CD=15*60*1000;
-function scrUpdateCooldownUI(){var last=S.get('scr_last',0);var diff=last+SCR_CD-Date.now();var btn=$('scr-start');if(!btn)return;if(scrRunning){btn.disabled=true;btn.textContent='⏳ SCRAPING...';return}if(diff>0){var m=Math.floor(diff/60000),s=Math.floor((diff%60000)/1000);btn.disabled=true;btn.textContent='⏳ TUNGGU '+m+'m '+s+'s';}else{btn.disabled=false;btn.textContent='▶ START SCRAPE';}}
-function scrSetProgress(cur,total){var pct=total>0?Math.min(100,(cur/total)*100):0;$('scr-prog-fill').style.width=pct+'%';$('scr-prog-txt').textContent=cur+' / '+total;$('scr-prog-label').textContent='MENGUMPULKAN PROXY · '+pct.toFixed(1)+'%'}
-$('scr-clear').onclick=function(){if(scrRunning){alert('Masih jalan');return}$('scr-log').innerHTML='';$('scr-pbox').classList.add('hd');scrResults=[];$('scr-prog-wrap').classList.remove('on');sndClick()};
-$('scr-start').onclick=async function(){
-if(scrRunning)return;
-var last=S.get('scr_last',0);var diff=last+SCR_CD-Date.now();
-if(diff>0){var m=Math.ceil(diff/60000);logTo('scr-log','⏳ Cooldown aktif — tunggu '+m+' menit','warn');sndError();return}
-var sources=$('scr-sources').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});
-if(!sources.length){alert('Sumber kosong');sndError();return}
-var target=parseInt($('scr-target').value)||10000;
-if(target<100)target=100;if(target>120000)target=120000;
-$('scr-target').value=target;scrRunning=true;$('scr-prog-wrap').classList.add('on');scrSetProgress(0,target);
-$('scr-log').innerHTML='';scrResults=[];
-logTo('scr-log','Target: '+target+' proxy · Sumber: '+sources.length,'in');logTo('scr-log','Mode: 2 detik per batch','dim');sndSuccess();
-unlockAch('scrape_first');
-var seen={};var total=0;var stopFlag=false;
-for(var i=0;i<sources.length;i++){
-if(total>=target){stopFlag=true;break}
-var url=sources[i];var shortName=url.split('/').slice(-1)[0]||url;
-logTo('scr-log','['+(i+1)+'/'+sources.length+'] '+shortName,'dim');
-try{var r=await fetch(url);var t=await r.text();var found=t.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+/g)||[];var uniq=0;for(var k=0;k<found.length;k++){var p=found[k];if(!seen[p]){seen[p]=1;scrResults.push(p);uniq++;total++}if(total>=target)break}logTo('scr-log','  ✓ +'+uniq+' baru · total '+total+'/'+target,'ok');}catch(e){logTo('scr-log','  ✗ '+e.message,'er');}
-scrSetProgress(total,target);
-if(total>=10000)unlockAch('scrape_10k');
-if(total>=100000)unlockAch('scrape_100k');
-if(total>=1000)unlockAch('proxy_1k');
-if(total>=target){stopFlag=true;break}
-await new Promise(function(res){setTimeout(res,2000)});
-}
-scrRunning=false;
-if(stopFlag&&total>=target){logTo('scr-log','','');logTo('scr-log','✓ SELESAI — Target tercapai: '+total+'/'+target,'in');$('scr-prog-label').textContent='SELESAI · TARGET TERCAPAI';}
-else{logTo('scr-log','','');logTo('scr-log','⚠ STOP — Sumber abis. Total: '+total+'/'+target,'warn');$('scr-prog-label').textContent='STOP · SUMBER ABIS';}
-S.set('scr_last',Date.now());logTo('scr-log','⏳ Cooldown 15 menit dimulai','warn');sndSuccess();scrUpdateCooldownUI();
-};
-$('scr-preview').onclick=function(){var pb=$('scr-pbox');if(pb.classList.contains('hd')){pb.textContent=scrResults.slice(0,50).join('\n')+(scrResults.length>50?'\n\n... +'+(scrResults.length-50)+' lagi':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
-$('scr-dl').onclick=function(){if(!scrResults.length){alert('Belum ada hasil');sndError();return}var b=new Blob([scrResults.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxies.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+function scrUpdateCooldownUI(){var last=S.get('scr_last',0);var diff=last+SCR_CD-Date.now();var btn=$('scr-start');if(!btn)return;if(scrRunning){btn.disabled=true;btn.textContent='⏳...';return}if(diff>0){var m=Math.floor(diff/60000),s=Math.floor((diff%60000)/1000);btn.disabled=true;btn.textContent='⏳ '+m+'m '+s+'s';}else{btn.disabled=false;btn.textContent='▶ START'}}
+function scrSetProgress(cur,total){var pct=total>0?Math.min(100,(cur/total)*100):0;$('scr-prog-fill').style.width=pct+'%';$('scr-prog-txt').textContent=cur+' / '+total;$('scr-prog-label').textContent='MENGUMPULKAN · '+pct.toFixed(1)+'%'}
+$('scr-clear').onclick=function(){if(scrRunning)return;$('scr-log').innerHTML='';$('scr-pbox').classList.add('hd');scrResults=[];$('scr-prog-wrap').classList.remove('on')};
+$('scr-start').onclick=async function(){if(scrRunning)return;var last=S.get('scr_last',0);var diff=last+SCR_CD-Date.now();if(diff>0){logTo('scr-log','⏳ Cooldown aktif','warn');sndError();return}var sources=$('scr-sources').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});if(!sources.length){alert('Sumber kosong');sndError();return}var target=parseInt($('scr-target').value)||10000;if(target<100)target=100;if(target>120000)target=120000;$('scr-target').value=target;scrRunning=true;$('scr-prog-wrap').classList.add('on');scrSetProgress(0,target);$('scr-log').innerHTML='';scrResults=[];logTo('scr-log','Target: '+target,'in');sndSuccess();unlockAch('scrape_first');var seen={};var total=0;for(var i=0;i<sources.length;i++){if(total>=target)break;var url=sources[i];logTo('scr-log','['+(i+1)+'/'+sources.length+'] '+url.split('/').slice(-1)[0],'dim');try{var r=await fetch(url);var t=await r.text();var found=t.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+/g)||[];var uniq=0;found.forEach(function(p){if(!seen[p]){seen[p]=1;scrResults.push(p);uniq++;total++}});logTo('scr-log','  ✓ +'+uniq+' · total '+total,'ok')}catch(e){logTo('scr-log','  ✗ '+e.message,'er')}scrSetProgress(total,target);if(total>=10000)unlockAch('scrape_10k');if(total>=100000)unlockAch('scrape_100k');if(total>=1000)unlockAch('proxy_1k');await new Promise(function(r){setTimeout(r,2000)})}scrRunning=false;S.set('scr_last',Date.now());logTo('scr-log','SELESAI · '+total,'in');scrUpdateCooldownUI();sndSuccess()};
+$('scr-preview').onclick=function(){var pb=$('scr-pbox');if(pb.classList.contains('hd')){pb.textContent=scrResults.slice(0,50).join('\n');pb.classList.remove('hd')}else pb.classList.add('hd')};
+$('scr-dl').onclick=function(){if(!scrResults.length){sndError();return}var b=new Blob([scrResults.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxies.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 
-var corsAlive=[];var corsDead=[];var corsRunning=false;
-function corsSetProgress(cur,total,label){var pct=total>0?Math.min(100,(cur/total)*100):0;$('cors-prog-fill').style.width=pct+'%';$('cors-prog-txt').textContent=cur+' / '+total;$('cors-prog-label').textContent=(label||'TEST CORS')+' · '+pct.toFixed(1)+'%'}
-$('cors-clear').onclick=function(){if(corsRunning){alert('Masih jalan');return}$('cors-log').innerHTML='';corsAlive=[];corsDead=[];$('cors-prog-wrap').classList.remove('on');sndClick()};
-$('cors-test').onclick=async function(){
-if(corsRunning)return;
-var sources=$('cors-sources').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});
-if(!sources.length){alert('List CORS kosong');sndError();return}
-var target=$('cors-test-url').value.trim()||'https://api.ipify.org';
-corsRunning=true;corsAlive=[];corsDead=[];
-$('cors-prog-wrap').classList.add('on');corsSetProgress(0,sources.length);
-$('cors-log').innerHTML='';
-logTo('cors-log','Test '+sources.length+' CORS proxy','in');
-sndSuccess();
-for(var i=0;i<sources.length;i++){
-if(!corsRunning)break;
-var p=sources[i];
-var full=p+(p.indexOf('?')!==-1?encodeURIComponent(target):target);
-var ctrl=new AbortController();
-var timer=setTimeout(function(){ctrl.abort()},7000);
-try{var r=await fetch(full,{signal:ctrl.signal});clearTimeout(timer);if(r.ok){corsAlive.push(p);logTo('cors-log','['+(i+1)+'/'+sources.length+'] ✓ '+p,'ok')}else{corsDead.push(p);logTo('cors-log','['+(i+1)+'/'+sources.length+'] ✗ HTTP '+r.status,'er')}}catch(e){clearTimeout(timer);corsDead.push(p);logTo('cors-log','['+(i+1)+'/'+sources.length+'] ✗ '+p,'er')}
-corsSetProgress(i+1,sources.length);
-}
-corsRunning=false;
-logTo('cors-log','','');logTo('cors-log','SELESAI — Hidup: '+corsAlive.length+' · Mati: '+corsDead.length,'in');
-corsSetProgress(sources.length,sources.length,'SELESAI');sndSuccess();
-};
-$('cors-dl-alive').onclick=function(){if(!corsAlive.length){sndError();return}var b=new Blob([corsAlive.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='cors_alive.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
-$('cors-dl-dead').onclick=function(){if(!corsDead.length){sndError();return}var b=new Blob([corsDead.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='cors_dead.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+// CORS TESTER
+$('cors-test').onclick=async function(){var sources=$('cors-sources').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});var target=$('cors-test-url').value.trim();$('cors-log').innerHTML='';logTo('cors-log','Test '+sources.length,'in');var alive=0;for(var i=0;i<sources.length;i++){var p=sources[i];var full=p+(p.indexOf('?')!==-1?encodeURIComponent(target):target);try{var ctrl=new AbortController();var t=setTimeout(function(){ctrl.abort()},7000);var r=await fetch(full,{signal:ctrl.signal});clearTimeout(t);if(r.ok){logTo('cors-log','['+(i+1)+'] ✓ '+p,'ok');alive++}else logTo('cors-log','['+(i+1)+'] ✗ HTTP '+r.status,'er')}catch(e){logTo('cors-log','['+(i+1)+'] ✗ '+p,'er')}}logTo('cors-log','SELESAI · Hidup: '+alive+'/'+sources.length,'in');sndSuccess()};
+$('cors-clear').onclick=function(){$('cors-log').innerHTML=''};
 
-var pcAlive=[];var pcDead=[];var pcSkip=[];var pcRunning=false;
-function pcSetProgress(cur,total,label){var pct=total>0?Math.min(100,(cur/total)*100):0;$('pc-prog-fill').style.width=pct+'%';$('pc-prog-txt').textContent=cur+' / '+total;$('pc-prog-label').textContent=(label||'CEK PROXY')+' · '+pct.toFixed(1)+'%'}
-function pcUpdateStats(){$('pc-stat-total').textContent=pcAlive.length+pcDead.length+pcSkip.length;$('pc-stat-alive').textContent=pcAlive.length;$('pc-stat-dead').textContent=pcDead.length;$('pc-stat-skip').textContent=pcSkip.length}
-$('pc-clear').onclick=function(){if(pcRunning){alert('Masih jalan');return}$('pc-input').value='';$('pc-log').innerHTML='';pcAlive=[];pcDead=[];pcSkip=[];$('pc-prog-wrap').classList.remove('on');$('pc-fileinfo').innerHTML='';pcUpdateStats();sndClick()};
-$('pc-drop').onclick=function(){$('pc-file').click()};
-function pcLoadFile(f){var r=new FileReader();r.onload=function(ev){var content=ev.target.result;var lines=content.split('\n').map(function(x){return x.trim()}).filter(function(x){return x&&!/^[\[\{]/.test(x)});if(/^\s*[\[\{]/.test(content)){try{var j=JSON.parse(content);var arr=[];function walk(o){if(typeof o==='string')arr.push(o);else if(Array.isArray(o))o.forEach(walk);else if(o&&typeof o==='object')Object.values(o).forEach(walk)}walk(j);lines=arr}catch(e){}}var existing=$('pc-input').value.trim();$('pc-input').value=(existing?existing+'\n':'')+lines.join('\n');$('pc-fileinfo').innerHTML='<div class="r" style="border-color:var(--ac);background:var(--acd);color:var(--ac)">'+f.name+' · '+lines.length+' baris</div>';sndSuccess()};r.readAsText(f)}
-$('pc-file').onchange=function(e){if(e.target.files[0])pcLoadFile(e.target.files[0]);e.target.value=''};
-$('pc-drop').addEventListener('drop',function(e){e.preventDefault();if(e.dataTransfer&&e.dataTransfer.files[0])pcLoadFile(e.dataTransfer.files[0])});
-$('pc-drop').addEventListener('dragover',function(e){e.preventDefault()});
-function pcParseProxy(line){line=line.trim();if(!line)return null;var type='http',ip,port;if(line.indexOf('://')!==-1){var parts=line.split('://');type=parts[0].toLowerCase();line=parts[1]}var lastColon=line.lastIndexOf(':');if(lastColon===-1)return null;ip=line.substring(0,lastColon);port=line.substring(lastColon+1);if(!ip||!port||isNaN(parseInt(port)))return null;return {type:type,ip:ip,port:port,raw:line}}
-function pcTestOne(p,timeoutMs){return new Promise(function(resolve){if(p.type==='socks4'||p.type==='socks5'){resolve({alive:false,skip:true});return}var targets=['https://api.ipify.org','http://httpbin.org/ip'];var idx=0;function tryNext(){if(idx>=targets.length){resolve({alive:false,skip:false});return}var target=targets[idx++];var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},timeoutMs);fetch(target,{mode:'cors',signal:ctrl.signal}).then(function(r){clearTimeout(timer);if(r.ok)resolve({alive:true,skip:false});else tryNext()}).catch(function(){clearTimeout(timer);tryNext()})}tryNext()})}
-$('pc-start').onclick=async function(){
-if(pcRunning)return;
-var raw=$('pc-input').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});
-if(!raw.length){alert('Input kosong');sndError();return}
-var proxies=[];for(var i=0;i<raw.length;i++){var p=pcParseProxy(raw[i]);if(p)proxies.push(p)}
-if(!proxies.length){alert('Gak ada proxy valid');sndError();return}
-pcRunning=true;pcAlive=[];pcDead=[];pcSkip=[];
-$('pc-prog-wrap').classList.add('on');pcSetProgress(0,proxies.length);
-$('pc-log').innerHTML='';
-logTo('pc-log','Cek '+proxies.length+' proxy','in');
-logTo('pc-log','⚠ SOCKS auto-skip','warn');
-sndSuccess();unlockAch('check_first');
-var timeoutMs=parseInt($('pc-timeout').value)||5000;
-for(var i=0;i<proxies.length;i++){
-if(!pcRunning)break;
-var p=proxies[i];var r=await pcTestOne(p,timeoutMs);
-if(r.skip){pcSkip.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ⚠ SKIP '+p.raw,'warn')}
-else if(r.alive){pcAlive.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ✓ '+p.raw,'ok')}
-else{pcDead.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ✗ '+p.raw,'er')}
-pcSetProgress(i+1,proxies.length);
-if((i+1)%10===0)pcUpdateStats();
-}
-pcRunning=false;pcUpdateStats();
-logTo('pc-log','','');
-logTo('pc-log','SELESAI — Hidup: '+pcAlive.length+' · Mati: '+pcDead.length+' · Skip: '+pcSkip.length,'in');
-pcSetProgress(proxies.length,proxies.length,'SELESAI');
-sndSuccess();
-};
-$('pc-dl-alive').onclick=function(){if(!pcAlive.length){sndError();return}var b=new Blob([pcAlive.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxy_alive.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
-$('pc-dl-dead').onclick=function(){if(!pcDead.length){sndError();return}var b=new Blob([pcDead.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxy_dead.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+// PROXY CHECKER
+$('pc-start').onclick=async function(){var raw=$('pc-input').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});$('pc-log').innerHTML='';var alive=0,dead=0,skip=0;for(var i=0;i<raw.length;i++){var line=raw[i];var type='http';if(line.indexOf('://')!==-1){var pp=line.split('://');type=pp[0];line=pp[1]}if(type==='socks4'||type==='socks5'){skip++;logTo('pc-log','['+(i+1)+'] ⚠ SKIP socks','warn');continue}try{var ctrl=new AbortController();var t=setTimeout(function(){ctrl.abort()},5000);var r=await fetch('https://api.ipify.org',{signal:ctrl.signal});clearTimeout(t);if(r.ok){alive++;logTo('pc-log','['+(i+1)+'] ✓ '+line,'ok')}else{dead++;logTo('pc-log','['+(i+1)+'] ✗ '+line,'er')}}catch(e){dead++;logTo('pc-log','['+(i+1)+'] ✗ '+line,'er')}$('pc-stat-total').textContent=raw.length;$('pc-stat-alive').textContent=alive;$('pc-stat-dead').textContent=dead;$('pc-stat-skip').textContent=skip}sndSuccess()};
+$('pc-clear').onclick=function(){$('pc-input').value='';$('pc-log').innerHTML='';$('pc-stat-total').textContent=0;$('pc-stat-alive').textContent=0;$('pc-stat-dead').textContent=0;$('pc-stat-skip').textContent=0};
 
-var scrVFiles=[];var scrVRunning=false;
-$('scr-vclear').onclick=function(){if(scrVRunning){alert('Masih jalan');return}$('scr-vlog').innerHTML='';$('scr-vresult').classList.add('hd');scrVFiles=[];renderVFileList();$('scr-vprog-wrap').classList.remove('on');sndClick()};
-function renderVFileList(){var el=$('scr-vlist');if(!scrVFiles.length){el.innerHTML='';return}el.innerHTML=scrVFiles.map(function(f,i){return '<div class="fitem"><span class="nm">'+f.name+'</span><span class="sz">'+(f.size/1024).toFixed(1)+'KB</span><span class="rm" data-i="'+i+'">✕</span></div>'}).join('');el.querySelectorAll('.rm').forEach(function(r){r.onclick=function(){var i=parseInt(r.dataset.i);scrVFiles.splice(i,1);renderVFileList()}})}
-function addVFiles(fileList){for(var i=0;i<fileList.length;i++){var f=fileList[i];var dup=scrVFiles.some(function(x){return x.name===f.name&&x.size===f.size});if(!dup)scrVFiles.push(f)}renderVFileList()}
+// VERCEL DEPLOY
+var scrVFiles=[];
 $('scr-vdrop').onclick=function(){$('scr-vfile').click()};
-$('scr-vfile').onchange=function(e){addVFiles(e.target.files);e.target.value='';sndSuccess()};
-['dragenter','dragover'].forEach(function(ev){$('scr-vdrop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('scr-vdrop').classList.add('dragover')})});
-['dragleave','drop'].forEach(function(ev){$('scr-vdrop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('scr-vdrop').classList.remove('dragover')})});
-$('scr-vdrop').addEventListener('drop',function(e){if(e.dataTransfer&&e.dataTransfer.files){addVFiles(e.dataTransfer.files);sndSuccess()}});
-function vercelSuffix(){var c='abcdefghijklmnopqrstuvwxyz0123456789';var s='';for(var i=0;i<5;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
-function vercelNormName(n){n=(n||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');if(!n)n='project';return n}
-function fileToBase64(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){var s=r.result;var i=s.indexOf(',');res(s.substring(i+1))};r.onerror=rej;r.readAsDataURL(file)})}
-function fetchWithTimeout(url,opts,timeoutMs){return new Promise(function(resolve,reject){var timer=setTimeout(function(){reject(new Error('TIMEOUT_'+timeoutMs))},timeoutMs);fetch(url,opts).then(function(r){clearTimeout(timer);resolve(r)}).catch(function(e){clearTimeout(timer);reject(e)})})}
-function scrVSetProgress(cur,total,label){var pct=total>0?Math.min(100,(cur/total)*100):0;$('scr-vprog-fill').style.width=pct+'%';$('scr-vprog-txt').textContent=cur+' / '+total;$('scr-vprog-label').textContent=(label||'DEPLOY')+' · '+pct.toFixed(1)+'%'}
-$('scr-vdeploy').onclick=async function(){
-if(scrVRunning){alert('Masih jalan');return}
-var tok=$('scr-vtoken').value.trim();var rawName=$('scr-vname').value.trim();var totalProj=parseInt($('scr-vtotal').value)||20;
-if(totalProj<1)totalProj=1;if(totalProj>20)totalProj=20;$('scr-vtotal').value=totalProj;
-if(!tok){alert('Token kosong');sndError();return}
-if(!rawName){alert('Project name kosong');sndError();return}
-if(!scrVFiles.length){alert('Belum ada file');sndError();return}
-var log=$('scr-vlog');log.innerHTML='';scrVRunning=true;$('scr-vprog-wrap').classList.add('on');scrVSetProgress(0,totalProj,'INIT');
-logTo('scr-vlog','Memverifikasi token Vercel...','in');
-var userOk=false;
-try{var r1=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},10000);if(r1.ok){userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN','ok');}else if(r1.status===401||r1.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return;}else logTo('scr-vlog','⚠ HTTP '+r1.status,'warn');}
-catch(e){if(e.message&&e.message.indexOf('TIMEOUT')===0){logTo('scr-vlog','⚠ Retry 60s...','warn');try{var r2=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},60000);if(r2.ok){userOk=true;logTo('scr-vlog','✅ AKUN DITEMUKAN (retry)','ok')}else if(r2.status===401||r2.status===403){logTo('scr-vlog','❌ TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return;}}catch(e2){logTo('scr-vlog','❌ Gagal total','er');sndError();scrVRunning=false;return;}}else logTo('scr-vlog','⚠ '+e.message,'warn');}
-if(!userOk){logTo('scr-vlog','❌ Token check gagal','er');sndError();scrVRunning=false;return;}
-logTo('scr-vlog','Membaca '+scrVFiles.length+' file...','dim');
-var payloadFiles=[];
-for(var i=0;i<scrVFiles.length;i++){var f=scrVFiles[i];try{var b64=await fileToBase64(f);payloadFiles.push({file:f.name,data:b64,encoding:'base64'});}catch(e){logTo('scr-vlog','✗ Gagal baca '+f.name,'er');sndError();scrVRunning=false;return;}}
-var base=vercelNormName(rawName);var okCount=0;var resultUrls=[];
-for(var p=0;p<totalProj;p++){
-var projName=base+'-'+vercelSuffix();
-logTo('scr-vlog','','');logTo('scr-vlog','[DEPLOY '+(p+1)+'/'+totalProj+'] '+projName,'in');
-scrVSetProgress(p,totalProj,'DEPLOY');
-try{var r=await fetch('https://api.vercel.com/v13/deployments',{method:'POST',headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({name:projName,files:payloadFiles,projectSettings:{framework:null}})});var j=await r.json();if(r.ok){var url='https://'+j.url;logTo('scr-vlog','  ✓ '+url,'ok');resultUrls.push(url);okCount++;}else{var em=(j.error&&j.error.message)||JSON.stringify(j);logTo('scr-vlog','  ✗ GAGAL: '+em,'er');logTo('scr-vlog','❌ STOP','er');scrVRunning=false;sndError();var el=$('scr-vresult');el.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+(totalProj-okCount);el.classList.remove('hd');return;}}catch(e){logTo('scr-vlog','  ✗ '+e.message,'er');scrVRunning=false;sndError();return;}
-if(p<totalProj-1){var wait=2000+Math.floor(Math.random()*3000);await new Promise(function(res){setTimeout(res,wait)});}
-}
-logTo('scr-vlog','','');logTo('scr-vlog','✅ SEMUA SUKSES — '+okCount+'/'+totalProj,'in');scrVSetProgress(totalProj,totalProj,'SELESAI');sndSuccess();
-unlockAch('deploy_first');
-if(okCount>=10)unlockAch('deploy_10');
-var el3=$('scr-vresult');el3.innerHTML='<b>✓ '+okCount+' PROJECT DEPLOYED</b><br><br>'+resultUrls.map(function(u,i){return (i+1)+'. '+u}).join('<br>');el3.classList.remove('hd');scrVRunning=false;
-};
+$('scr-vfile').onchange=function(e){Array.from(e.target.files).forEach(function(f){if(!scrVFiles.some(function(x){return x.name===f.name}))scrVFiles.push(f)});renderVFileList();e.target.value=''};
+function renderVFileList(){var el=$('scr-vlist');el.innerHTML=scrVFiles.map(function(f,i){return '<div class="fitem"><span class="nm">'+f.name+'</span><span class="rm" data-i="'+i+'">✕</span></div>'}).join('');el.querySelectorAll('.rm').forEach(function(r){r.onclick=function(){scrVFiles.splice(parseInt(r.dataset.i),1);renderVFileList()}})};
+$('scr-vclear').onclick=function(){$('scr-vlog').innerHTML='';$('scr-vresult').classList.add('hd');scrVFiles=[];renderVFileList()};
+$('scr-vdeploy').onclick=async function(){var tok=$('scr-vtoken').value.trim();var name=$('scr-vname').value.trim();var total=parseInt($('scr-vtotal').value)||20;if(total>20)total=20;if(!tok){alert('Token kosong');return}if(!name){alert('Nama kosong');return}if(!scrVFiles.length){alert('File kosong');return}var log=$('scr-vlog');log.innerHTML='';logTo('scr-vlog','Cek token...','in');try{var r1=await fetch('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}});if(!r1.ok){logTo('scr-vlog','❌ Token invalid','er');sndError();return}logTo('scr-vlog','✅ Token OK','ok')}catch(e){logTo('scr-vlog','❌ Gagal: '+e.message,'er');return}var files=[];for(var i=0;i<scrVFiles.length;i++){var f=scrVFiles[i];var b64=await new Promise(function(res){var r=new FileReader();r.onload=function(){res(r.result.split(',')[1])};r.readAsDataURL(f)});files.push({file:f.name,data:b64,encoding:'base64'})}var base=name.toLowerCase().replace(/[^a-z0-9-]/g,'-');for(var p=0;p<total;p++){var suffix=Math.random().toString(36).substring(2,7);var projName=base+'-'+suffix;logTo('scr-vlog','['+(p+1)+'/'+total+'] '+projName,'in');try{var r=await fetch('https://api.vercel.com/v13/deployments',{method:'POST',headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({name:projName,files:files,projectSettings:{framework:null}})});var j=await r.json();if(r.ok){logTo('scr-vlog','  ✓ https://'+j.url,'ok')}else{logTo('scr-vlog','  ✗ '+(j.error&&j.error.message||'error'),'er');break}}catch(e){logTo('scr-vlog','  ✗ '+e.message,'er');break}if(p<total-1)await new Promise(function(res){setTimeout(res,2000+Math.random()*3000)})}logTo('scr-vlog','SELESAI','in');sndSuccess();unlockAch('deploy_first')};
 
-var tmpToken=null;var tmpEmail=null;var tmpMsgs=[];
-var CORS_PROXIES=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url=','https://cors.eu.org/','https://thingproxy.freeboard.io/fetch/','https://whateverorigin.org/get?url='];
-async function tmpFetch(url,opts){var lastErr=null;for(var i=0;i<CORS_PROXIES.length;i++){var p=CORS_PROXIES[i];var full=p+(p.indexOf('?')!==-1?encodeURIComponent(url):url);try{var r=await fetch(full,opts||{});if(r.ok)return r;lastErr=new Error('HTTP '+r.status);}catch(e){lastErr=e}}throw lastErr||new Error('All proxies failed')}
-async function tmpLoadDomains(){var sel=$('tmp-domain');sel.innerHTML='<option value="">Loading domains...</option>';try{var r=await tmpFetch('https://api.mail.tm/domains');var j=await r.json();var arr=j['hydra:member']||[];if(!arr.length)throw new Error('Kosong');sel.innerHTML='<option value="">— Pilih Domain —</option>';arr.forEach(function(d){var o=document.createElement('option');o.value=d.domain;o.textContent=d.domain;sel.appendChild(o)});logTo('tmp-log','✓ '+arr.length+' domain loaded','ok');}catch(e){sel.innerHTML='<option value="">✗ Gagal load — klik RELOAD</option>';logTo('tmp-log','✗ '+e.message,'er');}}
-$('tmp-reaload').onclick=function(){tmpLoadDomains();sndClick()};
-$('tmp-gen').onclick=async function(){var nm=$('tmp-name').value.trim()||('user'+Math.floor(Math.random()*99999));var dom=$('tmp-domain').value;if(!dom){alert('Pilih domain dulu');sndError();return}var em=nm+'@'+dom;var pw='RyannTmp!'+Math.floor(Math.random()*99999);logTo('tmp-log','Bikin akun '+em+'...','in');try{var r=await tmpFetch('https://api.mail.tm/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j=await r.json();if(!r.ok){logTo('tmp-log','✗ '+(j.message||JSON.stringify(j)),'er');sndError();return}logTo('tmp-log','✓ Akun dibuat','ok');var r2=await tmpFetch('https://api.mail.tm/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j2=await r2.json();tmpToken=j2.token;tmpEmail=em;$('tmp-email').textContent=em;logTo('tmp-log','✓ Login berhasil','ok');unlockAch('tmp_first');sndSuccess();}catch(e){logTo('tmp-log','✗ '+e.message,'er');sndError()}};
+// TEMPMAIL
+var tmpToken=null,tmpEmail=null,tmpMsgs=[];
+var CORS_P=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url=','https://cors.eu.org/','https://thingproxy.freeboard.io/fetch/'];
+async function tmpFetch(url,opts){for(var i=0;i<CORS_P.length;i++){var p=CORS_P[i];var full=p+(p.indexOf('?')!==-1?encodeURIComponent(url):url);try{var r=await fetch(full,opts||{});if(r.ok)return r}catch(e){}}throw new Error('All failed')}
+async function tmpLoad(){try{var r=await tmpFetch('https://api.mail.tm/domains');var j=await r.json();var arr=j['hydra:member']||[];var sel=$('tmp-domain');sel.innerHTML='<option value="">— Pilih —</option>';arr.forEach(function(d){var o=document.createElement('option');o.value=d.domain;o.textContent=d.domain;sel.appendChild(o)});logTo('tmp-log','✓ '+arr.length+' domain','ok')}catch(e){logTo('tmp-log','✗ '+e.message,'er')}}
+$('tmp-reaload').onclick=function(){tmpLoad();sndClick()};
+$('tmp-gen').onclick=async function(){var nm=$('tmp-name').value.trim()||('user'+Math.floor(Math.random()*99999));var dom=$('tmp-domain').value;if(!dom){alert('Pilih domain');return}var em=nm+'@'+dom;var pw='RyannTmp!'+Math.floor(Math.random()*99999);logTo('tmp-log','Bikin '+em,'in');try{var r=await tmpFetch('https://api.mail.tm/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j=await r.json();if(!r.ok){logTo('tmp-log','✗ '+(j.message||'error'),'er');return}var r2=await tmpFetch('https://api.mail.tm/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j2=await r2.json();tmpToken=j2.token;tmpEmail=em;$('tmp-email').textContent=em;logTo('tmp-log','✓ Login OK','ok');unlockAch('tmp_first');sndSuccess()}catch(e){logTo('tmp-log','✗ '+e.message,'er')}};
 $('tmp-copy').onclick=function(){if(tmpEmail)navigator.clipboard.writeText(tmpEmail).then(sndSuccess)};
-$('tmp-refresh').onclick=async function(){if(!tmpToken){alert('Generate dulu');sndError();return}logTo('tmp-inbox-log','Cek inbox...','dim');try{var r=await tmpFetch('https://api.mail.tm/messages',{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();tmpMsgs=j['hydra:member']||[];logTo('tmp-inbox-log','✓ '+tmpMsgs.length+' pesan','ok');var el=$('tmp-list');if(!tmpMsgs.length){el.innerHTML='<div class="r">Belum ada pesan</div>';unlockAch('inbox_first');return}el.innerHTML=tmpMsgs.map(function(m,i){return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'<div style="color:var(--txd);font-size:.55rem;margin-top:3px">'+(m.intro||'')+'</div></div>'}).join('');el.querySelectorAll('.msg-item').forEach(function(it){it.onclick=function(){tmpShowMsg(parseInt(it.dataset.i))}});unlockAch('inbox_first');sndSuccess();}catch(e){logTo('tmp-inbox-log','✗ '+e.message,'er');sndError()}};
-async function tmpShowMsg(i){var m=tmpMsgs[i];if(!m)return;try{var r=await tmpFetch('https://api.mail.tm/messages/'+m.id,{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();var view=$('tmp-msg-view');view.innerHTML='<div style="font-size:.65rem"><b>From:</b> '+j.from.address+'<br><b>Subject:</b> '+j.subject+'<br><hr style="margin:6px 0;border:none;border-top:1px solid var(--border)">'+(j.html&&j.html.length?'<div>'+j.html.join('')+'</div>':(j.text||'(kosong)'))+'</div>';view.classList.remove('hd');sndSuccess();}catch(e){alert('Gagal load');sndError()}}
-$('tmp-inbox-dl').onclick=function(){if(!tmpMsgs.length){alert('Belum ada pesan');sndError();return}var t=tmpMsgs.map(function(m){return 'From: '+m.from.address+'\nSubject: '+m.subject+'\nIntro: '+m.intro+'\n---';}).join('\n\n');var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='inbox.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
-tmpLoadDomains();
+$('tmp-refresh').onclick=async function(){if(!tmpToken){alert('Generate dulu');return}try{var r=await tmpFetch('https://api.mail.tm/messages',{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();tmpMsgs=j['hydra:member']||[];var el=$('tmp-list');el.innerHTML=tmpMsgs.map(function(m,i){return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'</div>'}).join('');el.querySelectorAll('.msg-item').forEach(function(it){it.onclick=function(){var idx=parseInt(it.dataset.i);var m=tmpMsgs[idx];$('tmp-msg-view').innerHTML='<b>From:</b> '+m.from.address+'<br><b>Subj:</b> '+m.subject+'<br><br>'+(m.intro||'');$('tmp-msg-view').classList.remove('hd')}});unlockAch('inbox_first');sndSuccess()}catch(e){logTo('tmp-inbox-log','✗ '+e.message,'er')}};
+$('tmp-inbox-dl').onclick=function(){if(!tmpMsgs.length){sndError();return}var t=tmpMsgs.map(function(m){return m.from.address+' | '+m.subject}).join('\n');var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='inbox.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
+tmpLoad();
 
-function boot(){
-setTema(S.get('theme','t-cyan'));
-setBg(S.get('bg','galaxy'));
-applyMode();
-loadCustomTheme();
-var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';
-var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);
-document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});
-$('st-g').textContent=S.get('generates',0);
-$('st-d').textContent=S.get('downloads',0);
-$('st-s').textContent=S.get('snippet_count',0);
-renderHist();renderTpl();renderAch();
-checkAch(S.get('generates',0));
-scrUpdateCooldownUI();
-setInterval(scrUpdateCooldownUI,1000);
-}
+// BOOT
+function boot(){setTema(S.get('theme','t-cyan'));setBg(S.get('bg','galaxy'));applyMode();loadCustomTheme();var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});$('st-g').textContent=S.get('generates',0);$('st-d').textContent=S.get('downloads',0);$('st-s').textContent=S.get('snippet_count',0);renderHist();renderTpl();renderAch();checkAch(S.get('generates',0));scrUpdateCooldownUI();setInterval(scrUpdateCooldownUI,1000);if(window.zyInit){window.zyInit()}}
 boot();
-setTimeout(function(){if(!window.TEMPLATE_COMMAND){$('sw').innerHTML='<div class="st-er" style="font-size:.55rem">⚠ templates.js gak load</div>'}},400);
+setTimeout(function(){if(!window.TEMPLATE_COMMAND){$('sw').innerHTML='<div class="st-er">⚠ templates.js gak load</div>'}},400);
 </script>
 
 </body>
