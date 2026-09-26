@@ -157,6 +157,7 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .ach{padding:9px;margin-bottom:5px;border-radius:7px;border:1px solid var(--border);background:rgba(0,0,0,.3);font-size:.6rem;transition:all .3s}
 .ach.locked{opacity:.4}
 .ach.unlocked{border-color:var(--ac);background:var(--acd);color:var(--ac);font-weight:700;animation:popIn .4s}
+.ach .desc{font-size:.5rem;color:var(--txd);margin-top:2px;font-weight:400}
 .console-log{background:#04080f;border:1px solid var(--border);border-radius:8px;padding:10px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:.6rem;line-height:1.5;color:#4ade80;overflow-y:auto;white-space:pre-wrap;word-break:break-all;max-height:300px}
 .console-log .ok{color:#4ade80}
 .console-log .er{color:#f87171}
@@ -190,20 +191,30 @@ input[type="file"]{display:none!important}
 .color-pick input[type="color"]{width:100%;height:38px;border:2px solid var(--border);border-radius:7px;background:transparent;cursor:pointer;padding:2px}
 .color-pick input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
 .color-pick input[type="color"]::-webkit-color-swatch{border:none;border-radius:5px}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:7px;background:rgba(4,8,15,.4);margin-top:6px}
-.toggle-row span{font-size:.6rem;color:var(--ac);font-weight:700;letter-spacing:1px;text-transform:uppercase}
-.switch{position:relative;width:44px;height:22px;flex-shrink:0}
-.switch input{opacity:0;width:0;height:0}
-.switch .slider{position:absolute;cursor:pointer;inset:0;background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:22px;transition:.25s}
-.switch .slider:before{content:"";position:absolute;height:16px;width:16px;left:2px;top:2px;background:#64748b;border-radius:50%;transition:.25s}
-.switch input:checked+.slider{background:var(--acd);border-color:var(--ac)}
-.switch input:checked+.slider:before{transform:translateX(22px);background:var(--ac)}
-.jwt-part{padding:9px;border:1px solid var(--border);border-radius:7px;background:rgba(0,0,0,.4);margin-top:6px;font-size:.6rem;word-break:break-all;white-space:pre-wrap}
-.jwt-part .lbl{color:var(--ac);font-weight:700;font-size:.55rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
-.stats-grid .si{padding:9px;border:1px solid var(--border);border-radius:7px;background:rgba(0,0,0,.4);text-align:center}
-.stats-grid .si .l{font-size:.5rem;color:var(--txd);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;font-weight:700}
-.stats-grid .si .n{font-family:var(--fh);font-weight:900;font-size:1.1rem;color:var(--ac)}
+
+/* Achievement toast */
+#ach-toast-wrap{position:fixed;right:12px;bottom:12px;z-index:9999;display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none;max-width:280px}
+.ach-toast{background:var(--card);border:1.5px solid var(--ac);border-radius:10px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 20px var(--acd);animation:achSlideIn .35s ease-out;pointer-events:auto;backdrop-filter:blur(6px)}
+.ach-toast.out{animation:achSlideOut .3s ease-in forwards}
+.ach-toast .t{font-family:var(--fh);font-weight:900;font-size:.7rem;color:var(--ac);letter-spacing:1.2px;text-transform:uppercase}
+.ach-toast .d{font-size:.55rem;color:var(--txd);letter-spacing:.5px;margin-top:3px;text-transform:uppercase}
+@keyframes achSlideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes achSlideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
+
+/* Welcome modal */
+#welcome-modal{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s}
+#welcome-modal.hd{display:none!important}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.wm-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px var(--acd);animation:wmPop .35s ease-out;position:relative}
+@keyframes wmPop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.wm-title{font-family:var(--fh);font-weight:900;font-size:1.3rem;color:var(--ac);letter-spacing:2px;margin-bottom:6px;text-shadow:0 0 12px var(--ac)}
+.wm-title .y{color:var(--ac2)}
+.wm-ver{font-size:.6rem;color:var(--ac2);border:1px solid var(--bl);padding:2px 8px;border-radius:4px;background:var(--acd);display:inline-block;margin-bottom:10px}
+.wm-tag{font-size:.6rem;color:var(--txd);letter-spacing:1.2px;text-transform:uppercase;margin:10px 0}
+.wm-credit{font-size:.55rem;color:var(--txm);letter-spacing:1px;margin-bottom:14px}
+.wm-credit b{color:var(--ac)}
+.wm-skip{position:absolute;top:8px;right:10px;background:transparent;border:none;color:var(--txd);font-size:1rem;cursor:pointer;padding:4px 8px;width:auto;margin:0;font-family:var(--fm);font-weight:400;letter-spacing:0}
+.wm-skip:hover{color:var(--er);filter:none;transform:none}
 </style>
 </head>
 <body data-theme="t-cyan">
@@ -220,11 +231,24 @@ input[type="file"]{display:none!important}
   <div class="ufo u3"><div class="ufo-body"></div><div class="ufo-dome"></div><div class="ufo-light"></div></div>
 </div>
 
+<div id="welcome-modal" class="hd">
+  <div class="wm-box">
+    <button class="wm-skip" id="wm-skip">✕</button>
+    <div class="wm-title">RYANN <span class="y">• TOOLS</span></div>
+    <div class="wm-ver">v4.7</div>
+    <div class="wm-tag">INJECTOR · FUN · OSINT · SCRAPE · TEMPMAIL · DEPLOYER</div>
+    <div class="wm-credit">by <b>RyanApi77</b></div>
+    <button id="wm-start">🚀 MULAI</button>
+  </div>
+</div>
+
+<div id="ach-toast-wrap"></div>
+
 <div class="w">
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v4.6</span>
+<span class="ch">v4.7</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
 <button class="tgl" id="mode-tgl">🌙</button>
@@ -249,7 +273,7 @@ input[type="file"]{display:none!important}
 <div class="s"><div class="l">Generates</div><div class="n" id="st-g">0</div></div>
 <div class="s"><div class="l">Downloads</div><div class="n" id="st-d">0</div></div>
 <div class="s"><div class="l">Snippets</div><div class="n" id="st-s">0</div></div>
-<div class="s"><div class="l">Templates</div><div class="n" id="st-t">2</div></div>
+<div class="s"><div class="l">Achievements</div><div class="n" id="st-a">0/20</div></div>
 </div>
 <div class="c"><div class="cl">QUICK ACTIONS</div>
 <div class="br"><button class="g" onclick="go('spy')">💀 INJECT</button><button class="g" onclick="go('utl')">🔧 TOOLS</button></div>
@@ -257,12 +281,7 @@ input[type="file"]{display:none!important}
 <div class="br"><button class="g" onclick="go('osi')">🕵 OSINT</button><button class="g" onclick="go('hst')">📜 HISTORY</button></div>
 </div>
 <div class="c"><div class="cl">ACHIEVEMENTS</div>
-<div id="ach-wrap">
-<div class="ach locked" data-ach="1">🏆 First Generate</div>
-<div class="ach locked" data-ach="10">🔥 10 Generates</div>
-<div class="ach locked" data-ach="50">💎 50 Generates</div>
-<div class="ach locked" data-ach="100">👑 100 Generates</div>
-</div>
+<div id="ach-wrap"></div>
 </div>
 </div>
 
@@ -313,44 +332,22 @@ input[type="file"]{display:none!important}
 <input id="pg-prefix" placeholder="misal ryann">
 <label>Jumlah Karakter Random</label>
 <input type="number" id="plen" value="16" min="1" max="128">
-<div class="toggle-row">
-<span>Pakai Separator</span>
-<label class="switch"><input type="checkbox" id="pg-sep-toggle"><span class="slider"></span></label>
-</div>
 <label>Karakter Separator</label>
 <select id="pg-sep">
 <option value="_">_ (underscore)</option>
 <option value="-">- (dash)</option>
 <option value=".">. (dot)</option>
-<option value="/">/ (slash)</option>
-<option value=")">) (kurung tutup)</option>
-<option value="(">( (kurung buka)</option>
-<option value="$">$ (dollar)</option>
-<option value="@">@ (at)</option>
 <option value="!">! (seru)</option>
-<option value='"'>&quot; (kutip dua)</option>
-<option value=";">; (titik koma)</option>
-<option value="+">+ (plus)</option>
+<option value="@">@ (at)</option>
 <option value="#"># (hash)</option>
-<option value="?">? (tanya)</option>
-<option value="*">* (bintang)</option>
-<option value="™">™ (trademark)</option>
-<option value="©">© (copyright)</option>
-<option value="]">] (kurung siku tutup)</option>
-<option value="[">[ (kurung siku buka)</option>
+<option value="$">$ (dollar)</option>
 <option value="%">% (persen)</option>
-<option value="°">° (derajat)</option>
-<option value="√">√ (akar)</option>
+<option value="&">& (dan)</option>
+<option value="*">* (bintang)</option>
+<option value="+">+ (plus)</option>
+<option value="?">? (tanya)</option>
 <option value="~">~ (tilde)</option>
-<option value="•">• (bullet)</option>
-<option value="`">` (backtick)</option>
-<option value="×">× (kali)</option>
-<option value="¶">¶ (pilcrow)</option>
-<option value="∆">∆ (delta)</option>
-<option value="|">| (pipe)</option>
-<option value="£">£ (pound)</option>
-<option value=",">, (koma)</option>
-<option value="RANDOM">🎲 RANDOM (dari list atas)</option>
+<option value="RANDOM">🎲 RANDOM</option>
 </select>
 <div class="br"><button class="g" id="pgen">GEN</button><button class="g" id="pcp">COPY</button></div>
 <div class="r" id="pres">—</div>
@@ -393,11 +390,11 @@ input[type="file"]{display:none!important}
 
 <div class="c"><div class="cl">🔓 JWT DECODER</div>
 <label>Paste JWT Token</label>
-<textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.xxxxx" style="min-height:80px"></textarea>
+<textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="min-height:80px"></textarea>
 <div class="br"><button id="jwt-run">🔍 DECODE</button><button class="g" id="jwt-clear">🗑 CLEAR</button></div>
-<div id="jwt-header" class="jwt-part hd"><div class="lbl">HEADER</div><div id="jwt-header-out"></div></div>
-<div id="jwt-payload" class="jwt-part hd"><div class="lbl">PAYLOAD</div><div id="jwt-payload-out"></div></div>
-<div id="jwt-sig" class="jwt-part hd"><div class="lbl">SIGNATURE (raw)</div><div id="jwt-sig-out"></div></div>
+<div id="jwt-header" class="r hd" style="color:var(--ac)"><b>HEADER</b><div id="jwt-header-out" style="color:var(--ac2);margin-top:5px"></div></div>
+<div id="jwt-payload" class="r hd" style="color:var(--ac)"><b>PAYLOAD</b><div id="jwt-payload-out" style="color:var(--ac2);margin-top:5px"></div></div>
+<div id="jwt-sig" class="r hd" style="color:var(--ac)"><b>SIGNATURE</b><div id="jwt-sig-out" style="color:var(--ac2);margin-top:5px"></div></div>
 <div id="jwt-status" class="r">—</div>
 </div>
 
@@ -412,13 +409,15 @@ input[type="file"]{display:none!important}
 <div class="c"><div class="cl">📊 LETTER COUNTER</div>
 <label>Input</label>
 <textarea id="lc-input" placeholder="paste teks di sini..."></textarea>
-<div class="stats-grid">
-<div class="si"><div class="l">Karakter</div><div class="n" id="lc-char">0</div></div>
-<div class="si"><div class="l">Tanpa Spasi</div><div class="n" id="lc-nospace">0</div></div>
-<div class="si"><div class="l">Kata</div><div class="n" id="lc-word">0</div></div>
-<div class="si"><div class="l">Baris</div><div class="n" id="lc-line">0</div></div>
-<div class="si"><div class="l">Kalimat</div><div class="n" id="lc-sent">0</div></div>
-<div class="si"><div class="l">Waktu Baca</div><div class="n" id="lc-read">0m</div></div>
+<div class="st" style="grid-template-columns:1fr 1fr 1fr">
+<div class="s"><div class="l">Karakter</div><div class="n" id="lc-char">0</div></div>
+<div class="s"><div class="l">Kata</div><div class="n" id="lc-word">0</div></div>
+<div class="s"><div class="l">Baris</div><div class="n" id="lc-line">0</div></div>
+</div>
+<div class="st" style="grid-template-columns:1fr 1fr 1fr">
+<div class="s"><div class="l">No Spasi</div><div class="n" id="lc-nospace">0</div></div>
+<div class="s"><div class="l">Kalimat</div><div class="n" id="lc-sent">0</div></div>
+<div class="s"><div class="l">Baca</div><div class="n" id="lc-read">0m</div></div>
 </div>
 </div>
 </div>
@@ -497,7 +496,7 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 <div class="c"><div class="cl">🔬 PROXY CHECKER</div>
 <label>Paste Proxy (1 per baris)</label>
 <textarea id="pc-input" placeholder="ip:port&#10;http://ip:port&#10;socks5://ip:port" style="min-height:100px;font-size:.6rem"></textarea>
-<label>Atau Upload File (.txt / .json / .csv)</label>
+<label>Atau Upload File</label>
 <div class="filedrop" id="pc-drop">
 <span class="ic">📁</span>
 <div class="t">TAP / DROP FILE DI SINI</div>
@@ -516,24 +515,23 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 </div>
 </div>
 <div id="pc-log" class="console-log" style="height:180px"></div>
-<div class="stats-grid">
-<div class="si"><div class="l">Total</div><div class="n" id="pc-stat-total">0</div></div>
-<div class="si"><div class="l">Hidup</div><div class="n" id="pc-stat-alive" style="color:var(--ok)">0</div></div>
-<div class="si"><div class="l">Mati</div><div class="n" id="pc-stat-dead" style="color:var(--er)">0</div></div>
-<div class="si"><div class="l">Skip</div><div class="n" id="pc-stat-skip" style="color:var(--wr)">0</div></div>
+<div class="st" style="grid-template-columns:1fr 1fr 1fr 1fr">
+<div class="s"><div class="l">Total</div><div class="n" id="pc-stat-total">0</div></div>
+<div class="s"><div class="l">Hidup</div><div class="n" id="pc-stat-alive" style="color:var(--ok)">0</div></div>
+<div class="s"><div class="l">Mati</div><div class="n" id="pc-stat-dead" style="color:var(--er)">0</div></div>
+<div class="s"><div class="l">Skip</div><div class="n" id="pc-stat-skip" style="color:var(--wr)">0</div></div>
 </div>
 <div class="br"><button class="g" id="pc-dl-alive">⬇ HIDUP</button><button class="g" id="pc-dl-dead">⬇ MATI</button></div>
-<div id="pc-pbox" class="r hd" style="max-height:200px;overflow-y:auto"></div>
 </div>
 
 <div class="c"><div class="cl">🚀 AUTO DEPLOY VERCEL</div>
 <label>Vercel Token</label>
-<input id="scr-vtoken" placeholder="vercel token (vercel.com/account/tokens)">
+<input id="scr-vtoken" placeholder="vercel token">
 <label>Project Name Base</label>
 <input id="scr-vname" placeholder="my-project">
 <label>Total Project (max 20)</label>
 <input type="number" id="scr-vtotal" value="20" min="1" max="20">
-<label>File Project (semua tipe)</label>
+<label>File Project</label>
 <div class="filedrop" id="scr-vdrop">
 <span class="ic">📁</span>
 <div class="t">TAP / DROP FILE DI SINI</div>
@@ -618,7 +616,7 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 <div class="color-pick"><label>BG</label><input type="color" id="cust-bg" value="#04080f"></div>
 <div class="color-pick"><label>BORDER</label><input type="color" id="cust-br" value="#1e4d5c"></div>
 </div>
-<div class="br"><button class="g" id="cust-apply">✓ APPLY</button><button class="g" id="cust-rand">🎲 RANDOM MIX</button></div>
+<div class="br"><button class="g" id="cust-apply">✓ APPLY</button><button class="g" id="cust-rand">🎲 RANDOM</button></div>
 <button class="d" id="cust-reset">🗑 RESET CUSTOM</button>
 </div>
 
@@ -687,19 +685,19 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 </div>
 
 <div class="pg hd" id="pg-abt">
-<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.6</div>
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.7</div>
 <p style="font-size:.65rem;color:var(--txd);text-align:center;line-height:1.7">Static HTML · No Backend · No VPS<br><span style="color:var(--ac)">RyanApi77</span></p>
 </div>
 <div class="c"><div class="cl">INFO</div>
-<div class="r">Build: v4.6</div>
-<div class="r">Features: 95</div>
+<div class="r">Build: v4.7</div>
+<div class="r">Features: 96</div>
 <div class="r">Tabs: 10</div>
 <div class="r">Encoders: 10</div>
-<div class="r">Proxy Tools: 2</div>
+<div class="r">Achievements: 20</div>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v4.6</div>
+<div class="ft">RYANN • TOOLS · v4.7</div>
 </div>
 
 <script src="templates.js"></script>
@@ -716,16 +714,126 @@ function sndClick(){sndPlay('click')}function sndSuccess(){sndPlay('success')}fu
 var hapticOn=S.get('haptic',false);function vib(ms){if(!hapticOn)return;if(navigator.vibrate)try{navigator.vibrate(ms||20)}catch(e){}}
 var aniOn=S.get('anim',true);function applyAnim(){if(aniOn)document.body.classList.remove('no-anim');else document.body.classList.add('no-anim')}
 function logTo(id,msg,cls){var el=$(id);if(!el)return;var d=document.createElement('div');d.className=cls||'ok';d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;el.appendChild(d);el.scrollTop=el.scrollHeight}
-function setTema(t){document.body.setAttribute('data-theme',t);S.set('theme',t);document.querySelectorAll('.to').forEach(function(o){o.classList.toggle('a',o.dataset.t===t)})}
+
+// ACHIEVEMENT SYSTEM
+var ACH_LIST=[
+{id:'first_begin',name:'The Beginning?',desc:'Pertama kali generate file'},
+{id:'ten',name:'Taking Off',desc:'10x generate file'},
+{id:'fifty',name:'Benchmarking',desc:'50x generate file'},
+{id:'hundred',name:'The Beginning.',desc:'100x generate file'},
+{id:'scrape_first',name:'Time to Mine!',desc:'Pertama kali scrape proxy'},
+{id:'scrape_10k',name:'Getting an Upgrade',desc:'Target 10.000 proxy tercapai'},
+{id:'scrape_100k',name:"Sky's the Limit",desc:'Target 100.000 proxy tercapai'},
+{id:'proxy_1k',name:'Cover Me With Diamonds',desc:'1.000 proxy unik terkumpul'},
+{id:'check_first',name:'Acquire Hardware',desc:'Pertama kali cek proxy'},
+{id:'deploy_first',name:'Return to Sender',desc:'Pertama kali deploy Vercel'},
+{id:'deploy_10',name:'Great View From Up Here',desc:'10 project deployed sekaligus'},
+{id:'tmp_first',name:'Beam Me Up',desc:'Pertama kali generate temp mail'},
+{id:'inbox_first',name:'Monster Hunter',desc:'Pertama kali refresh inbox'},
+{id:'enc_first',name:'Bake Bread',desc:'Pertama kali pakai text encoder'},
+{id:'jwt_first',name:'Cipher Broken',desc:'Pertama kali decode JWT'},
+{id:'dork_first',name:'Hot Topic',desc:'Generate Google Dork'},
+{id:'ip_first',name:'Time to Strike!',desc:'Pertama kali IP lookup'},
+{id:'dark',name:'We Need to Go Deeper',desc:'Aktifkan dark mode'},
+{id:'theme',name:'Delicious Fish',desc:'Pakai custom theme color'},
+{id:'all',name:'The End.',desc:'Semua fitur utama pernah dipakai'}
+];
+var ACH_UNLOCKED=S.get('ach_unlocked',{});
+
+function renderAch(){
+var wrap=$('ach-wrap');if(!wrap)return;
+wrap.innerHTML=ACH_LIST.map(function(a){
+var u=ACH_UNLOCKED[a.id];
+return '<div class="ach '+(u?'unlocked':'locked')+'" data-ach="'+a.id+'"><div>'+a.name+'</div><div class="desc">'+a.desc+'</div></div>';
+}).join('');
+$('st-a').textContent=Object.keys(ACH_UNLOCKED).length+'/'+ACH_LIST.length;
+}
+function showAchToast(name,desc){
+var wrap=$('ach-toast-wrap');if(!wrap)return;
+var el=document.createElement('div');
+el.className='ach-toast';
+el.innerHTML='<div class="t">'+name+'</div><div class="d">'+desc+'</div>';
+wrap.appendChild(el);
+setTimeout(function(){el.classList.add('out');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},350)},3000);
+}
+function unlockAch(id){
+if(ACH_UNLOCKED[id])return;
+var a=ACH_LIST.find(function(x){return x.id===id});if(!a)return;
+ACH_UNLOCKED[id]=Date.now();
+S.set('ach_unlocked',ACH_UNLOCKED);
+showAchToast(a.name,a.desc);
+sndSuccess();
+renderAch();
+if(Object.keys(ACH_UNLOCKED).length===ACH_LIST.length){
+setTimeout(function(){unlockAch('all')},500);
+}
+}
+window.unlockAch=unlockAch;
+
+// WELCOME MODAL
+(function(){
+var seen=S.get('welcome_seen',false);
+if(!seen){$('welcome-modal').classList.remove('hd')}
+function closeWm(){S.set('welcome_seen',true);$('welcome-modal').classList.add('hd');sndClick()}
+$('wm-start').onclick=function(){closeWm();sndSuccess()};
+$('wm-skip').onclick=function(){closeWm()};
+})();
+
+// THEME
+function setTema(t){document.body.setAttribute('data-theme',t);S.set('theme',t);document.querySelectorAll('.to').forEach(function(o){o.classList.toggle('a',o.dataset.t===t)});applyCustomTheme()}
 document.querySelectorAll('.to').forEach(function(o){o.onclick=function(){setTema(o.dataset.t);sndClick();vib()}});
 
+// CUSTOM THEME
 function hexToRgba(hex,a){var h=hex.replace('#','');if(h.length===3)h=h.split('').map(function(c){return c+c}).join('');var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);return 'rgba('+r+','+g+','+b+','+a+')'}
-function applyCustomTheme(ac,bg,br){if(ac){document.documentElement.style.setProperty('--ac',ac);document.documentElement.style.setProperty('--ac2',ac);document.documentElement.style.setProperty('--acd',hexToRgba(ac,0.15));}if(bg){document.documentElement.style.setProperty('--bg',bg);document.body.style.background=bg;}if(br){document.documentElement.style.setProperty('--border',br);document.documentElement.style.setProperty('--bl',br);}S.set('cust_theme',{ac:ac,bg:bg,br:br})}
-function loadCustomTheme(){var c=S.get('cust_theme',null);if(c&&c.ac){$('cust-ac').value=c.ac||'#22d3ee';$('cust-bg').value=c.bg||'#04080f';$('cust-br').value=c.br||'#1e4d5c';applyCustomTheme(c.ac,c.bg,c.br);}}
-$('cust-apply').onclick=function(){applyCustomTheme($('cust-ac').value,$('cust-bg').value,$('cust-br').value);sndSuccess();};
-$('cust-rand').onclick=function(){var h=Math.floor(Math.random()*360);var h2=(h+150)%360;var h3=(h+30)%360;function hsl2hex(hu,s,l){s/=100;l/=100;var c=(1-Math.abs(2*l-1))*s;var x=c*(1-Math.abs((hu/60)%2-1));var m=l-c/2;var r=0,g=0,b=0;if(hu<60){r=c;g=x;b=0}else if(hu<120){r=x;g=c;b=0}else if(hu<180){r=0;g=c;b=x}else if(hu<240){r=0;g=x;b=c}else if(hu<300){r=x;g=0;b=c}else{r=c;g=0;b=x}function hx(v){var s=Math.round((v+m)*255).toString(16);return s.length<2?'0'+s:s}return '#'+hx(r)+hx(g)+hx(b)}var ac=hsl2hex(h,90,60);var bg=hsl2hex(h2,70,6);var br=hsl2hex(h3,70,35);$('cust-ac').value=ac;$('cust-bg').value=bg;$('cust-br').value=br;applyCustomTheme(ac,bg,br);sndSuccess();};
-$('cust-reset').onclick=function(){S.del('cust_theme');['--ac','--ac2','--acd','--bg','--border','--bl'].forEach(function(v){document.documentElement.style.removeProperty(v)});document.body.style.background='';setTema(S.get('theme','t-cyan'));sndSuccess();};
+function applyCustomTheme(ac,bg,br){
+var cs=S.get('cust_theme',null);
+if(!cs)return;
+if(cs.ac){
+document.documentElement.style.setProperty('--ac',cs.ac);
+document.documentElement.style.setProperty('--ac2',cs.ac);
+document.documentElement.style.setProperty('--acd',hexToRgba(cs.ac,0.15));
+}
+if(cs.bg){document.documentElement.style.setProperty('--bg',cs.bg)}
+if(cs.br){
+document.documentElement.style.setProperty('--border',cs.br);
+document.documentElement.style.setProperty('--bl',cs.br);
+}
+}
+function loadCustomTheme(){
+var c=S.get('cust_theme',null);
+if(c&&c.ac){
+$('cust-ac').value=c.ac||'#22d3ee';
+$('cust-bg').value=c.bg||'#04080f';
+$('cust-br').value=c.br||'#1e4d5c';
+applyCustomTheme();
+}
+}
+$('cust-apply').onclick=function(){
+var ac=$('cust-ac').value,bg=$('cust-bg').value,br=$('cust-br').value;
+S.set('cust_theme',{ac:ac,bg:bg,br:br});
+applyCustomTheme();
+unlockAch('theme');
+sndSuccess();
+};
+$('cust-rand').onclick=function(){
+var h=Math.floor(Math.random()*360);var h2=(h+150)%360;var h3=(h+30)%360;
+function hsl2hex(hu,s,l){s/=100;l/=100;var c=(1-Math.abs(2*l-1))*s;var x=c*(1-Math.abs((hu/60)%2-1));var m=l-c/2;var r=0,g=0,b=0;if(hu<60){r=c;g=x;b=0}else if(hu<120){r=x;g=c;b=0}else if(hu<180){r=0;g=c;b=x}else if(hu<240){r=0;g=x;b=c}else if(hu<300){r=x;g=0;b=c}else{r=c;g=0;b=x}function hx(v){var s=Math.round((v+m)*255).toString(16);return s.length<2?'0'+s:s}return '#'+hx(r)+hx(g)+hx(b)}
+var ac=hsl2hex(h,90,60);var bg=hsl2hex(h2,70,6);var br=hsl2hex(h3,70,35);
+$('cust-ac').value=ac;$('cust-bg').value=bg;$('cust-br').value=br;
+S.set('cust_theme',{ac:ac,bg:bg,br:br});
+applyCustomTheme();
+unlockAch('theme');
+sndSuccess();
+};
+$('cust-reset').onclick=function(){
+S.del('cust_theme');
+['--ac','--ac2','--acd','--bg','--border','--bl'].forEach(function(v){document.documentElement.style.removeProperty(v)});
+document.body.style.background='';
+setTema(S.get('theme','t-cyan'));
+sndSuccess();
+};
 
+// BACKGROUND
 var bgNow=S.get('bg','galaxy');
 function setBg(b){bgNow=b;S.set('bg',b);document.body.classList.remove('bg-binary','bg-plain','bg-ufo','bg-custom');if(b==='binary')document.body.classList.add('bg-binary');else if(b==='plain')document.body.classList.add('bg-plain');else if(b==='ufo')document.body.classList.add('bg-ufo');else if(b==='custom'){document.body.classList.add('bg-custom');applyCustomBg()}document.querySelectorAll('#bg-grid .snd-opt').forEach(function(o){o.classList.toggle('a',o.dataset.bg===b)})}
 function applyCustomBg(){var img=S.get('bg_custom','');if(img){document.body.style.backgroundImage='url('+img+')';var pv=$('bg-preview');pv.style.display='block';pv.style.backgroundImage='url('+img+')'}else{document.body.classList.remove('bg-custom');document.body.style.backgroundImage=''}}
@@ -736,7 +844,7 @@ $('bg-clear').onclick=function(){S.del('bg_custom');document.body.style.backgrou
 
 document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){sndNav();vib(10);document.querySelectorAll('.nb').forEach(function(x){x.classList.remove('a')});b.classList.add('a');document.querySelectorAll('.pg').forEach(function(p){p.classList.add('hd')});var pg=$('pg-'+b.dataset.p);if(pg)pg.classList.remove('hd')}});
 window.go=function(p){var b=document.querySelector('.nb[data-p="'+p+'"]');if(b)b.click()};
-document.addEventListener('click',function(e){if(e.target.tagName==='BUTTON'&&!e.target.classList.contains('tgl')&&!e.target.disabled){sndClick();vib(15)}},true);
+document.addEventListener('click',function(e){if(e.target.tagName==='BUTTON'&&!e.target.classList.contains('tgl')&&!e.target.disabled&&e.target.id!=='wm-skip'){sndClick();vib(15)}},true);
 
 $('fsr').oninput=function(){document.documentElement.style.setProperty('--fs',this.value+'px');S.set('font',this.value);$('fv').textContent=this.value+'px'};
 $('ffam').onchange=function(){document.documentElement.style.setProperty('--fm',this.value);S.set('ffam',this.value);sndClick()};
@@ -748,16 +856,15 @@ $('fi').onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new File
 var genCode='';
 function inject(t,u){var ls=t.split('\n'),li=-1;for(var i=0;i<ls.length;i++){var l=ls[i].trim();if(l.indexOf('import ')===0||l.indexOf('from ')===0)li=i}if(li===-1)return u+'\n\n'+t;var b=ls.slice(0,li+1).join('\n'),a=ls.slice(li+1).join('\n');return b+'\n\n# USER CODE\n'+u+'\n# END USER CODE\n'+a}
 $('gb').onclick=function(){var t0=performance.now();var uc=$('ci').value.trim(),tpl=$('ts').value,bt=$('bt').value.trim(),ct=$('ct').value.trim();var sw=$('sw'),rc=$('rc');if(!uc){sw.innerHTML='<div class="st-er">Code kosong</div>';rc.classList.add('hd');sndError();return}if(!tpl){sw.innerHTML='<div class="st-er">Pilih template</div>';rc.classList.add('hd');sndError();return}sw.innerHTML='<div class="st-in">⚙ Memproses...</div>';setTimeout(function(){var t=(tpl==='command')?(window.TEMPLATE_COMMAND||''):(window.TEMPLATE_BASE||'');if(!t){sw.innerHTML='<div class="st-er">Template kosong</div>';sndError();return}var out=t;if(bt)out=out.replace(/BOT_TOKEN\s*=\s*['"][^'"]*['"]/g,'BOT_TOKEN = "'+bt+'"');if(ct)out=out.replace(/CHAT_ID\s*=\s*['"][^'"]*['"]/g,'CHAT_ID   = "'+ct+'"');var final=inject(out,uc);genCode=final;var name=($('on').value.trim()||'spyware_ryan')+'.py';var kb=(final.length/1024).toFixed(1),ln=final.split('\n').length,el=Math.round(performance.now()-t0);sw.innerHTML='<div class="st-ok">✓ Berhasil · '+kb+' KB · '+el+'ms</div>';$('rm').textContent=name;$('rs').textContent=ln+' lines · '+kb+' KB';rc.classList.remove('hd');$('tmw').classList.remove('hd');$('tmv').textContent=el;sndSuccess();var h=S.get('history',[]);h.unshift({n:name,s:kb,l:ln,t:Date.now(),c:final.substring(0,40000)});if(h.length>30)h=h.slice(0,30);S.set('history',h);var g=S.get('generates',0)+1;S.set('generates',g);$('st-g').textContent=g;checkAch(g)},150)};
+function checkAch(g){if(g>=1)unlockAch('first_begin');if(g>=10)unlockAch('ten');if(g>=50)unlockAch('fifty');if(g>=100)unlockAch('hundred')}
 $('db').onclick=function(){if(!genCode){sndError();alert('Generate dulu');return}var b=new Blob([genCode],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=$('rm').textContent;document.body.appendChild(a);a.click();document.body.removeChild(a);var d=S.get('downloads',0)+1;S.set('downloads',d);$('st-d').textContent=d;sndSuccess();vib(50);setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 $('cob').onclick=function(){if(!genCode){sndError();return}navigator.clipboard.writeText(genCode).then(function(){sndSuccess()})};
 $('shb').onclick=function(){if(!genCode){sndError();return}if(navigator.share){navigator.share({title:$('rm').textContent,text:'RYANN TOOLS generate: '+$('rm').textContent}).catch(function(){})}else alert('Browser gak support share')};
 $('pvb').onclick=function(){var pb=$('pbox');if(pb.classList.contains('hd')){pb.textContent=genCode.substring(0,3000)+(genCode.length>3000?'\n\n... (truncated)':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
 $('cb').onclick=function(){$('ci').value='';$('rc').classList.add('hd');$('sw').innerHTML='';genCode=''};
 $('vb').onclick=function(){var c=$('ci').value;var q1=(c.match(/'/g)||[]).length,q2=(c.match(/"/g)||[]).length;var w=[];if(q1%2)w.push("kutip ' ganjil");if(q2%2)w.push('kutip " ganjil');$('sw').innerHTML=w.length?'<div class="st-er">⚠ '+w.join(', ')+'</div>':'<div class="st-ok">✓ Kode OK</div>';if(w.length)sndError();else sndSuccess()};
-function checkAch(g){document.querySelectorAll('.ach').forEach(function(el){var v=parseInt(el.dataset.ach);if(g>=v){if(el.classList.contains('locked')){el.classList.remove('locked');el.classList.add('unlocked');sndSuccess()}}})}
 
-// PASSWORD GEN (upgraded)
-var SEP_LIST=['_','-','.','/',')','(','$','@','!','"',';','+','#','?','*','™','©',']','[','%','°','√','~','•','`','×','¶','∆','|','£',','];
+var SEP_LIST=['_','-','.','!','@','#','$','%','&','*','+','?','~'];
 function genPassword(){
 var prefix=$('pg-prefix').value;
 var len=parseInt($('plen').value)||16;
@@ -765,14 +872,9 @@ if(len<1)len=1;if(len>128)len=128;
 var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
 var rand='';
 for(var i=0;i<len;i++)rand+=chars[Math.floor(Math.random()*chars.length)];
-var sepOn=$('pg-sep-toggle').checked;
-var sep='';
-if(sepOn){
-var sel=$('pg-sep').value;
-if(sel==='RANDOM'){sep=SEP_LIST[Math.floor(Math.random()*SEP_LIST.length)]}
-else sep=sel;
-}
-var result=(prefix?prefix:'')+(sepOn?sep:'')+rand;
+var sepSel=$('pg-sep').value;
+var sep=(sepSel==='RANDOM')?SEP_LIST[Math.floor(Math.random()*SEP_LIST.length)]:sepSel;
+var result=(prefix?prefix+sep:'')+rand;
 $('pres').textContent=result;
 }
 $('pgen').onclick=function(){genPassword();sndSuccess()};
@@ -786,13 +888,12 @@ $('hs2').onclick=function(){hashIt('SHA-256',$('hres'))};
 $('shgen').onclick=function(){var u=$('shin').value.trim();if(!u){sndError();return}$('shres').textContent='Loading...';fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(u)).then(function(r){return r.text()}).then(function(t){$('shres').textContent=t;sndSuccess()}).catch(function(){$('shres').textContent='Error';sndError()})};
 $('shcp').onclick=function(){navigator.clipboard.writeText($('shres').textContent).then(sndSuccess)};
 
-// TEXT ENCODER
 var encMode='encode';
 $('enc-t-enc').onclick=function(){encMode='encode';$('enc-t-enc').classList.add('a');$('enc-t-dec').classList.remove('a');sndClick()};
 $('enc-t-dec').onclick=function(){encMode='decode';$('enc-t-dec').classList.add('a');$('enc-t-enc').classList.remove('a');sndClick()};
 var B58='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 function b58encode(bytes){var digits=[0];for(var i=0;i<bytes.length;i++){var carry=bytes[i];for(var j=0;j<digits.length;j++){carry+=digits[j]<<8;digits[j]=carry%58;carry=(carry/58)|0}while(carry>0){digits.push(carry%58);carry=(carry/58)|0}}for(var k=0;k<bytes.length&&bytes[k]===0;k++)digits.push(0);digits.reverse();return digits.map(function(d){return B58[d]}).join('')}
-function b58decode(str){var bytes=[0];for(var i=0;i<str.length;i++){var idx=B58.indexOf(str[i]);if(idx===-1)throw new Error('Invalid base58 char: '+str[i]);var carry=idx;for(var j=0;j<bytes.length;j++){carry+=bytes[j]*58;bytes[j]=carry&0xFF;carry>>=8}while(carry>0){bytes.push(carry&0xFF);carry>>=8}}for(var k=0;k<str.length&&str[k]===B58[0];k++)bytes.push(0);bytes.reverse();return new Uint8Array(bytes)}
+function b58decode(str){var bytes=[0];for(var i=0;i<str.length;i++){var idx=B58.indexOf(str[i]);if(idx===-1)throw new Error('Invalid base58: '+str[i]);var carry=idx;for(var j=0;j<bytes.length;j++){carry+=bytes[j]*58;bytes[j]=carry&0xFF;carry>>=8}while(carry>0){bytes.push(carry&0xFF);carry>>=8}}for(var k=0;k<str.length&&str[k]===B58[0];k++)bytes.push(0);bytes.reverse();return new Uint8Array(bytes)}
 var MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.','.':'.-.-.-',',':'--..--','?':'..--..',"'":'.----.','!':'-.-.--','/':'-..-.','(':'-.--.',')':'-.--.-','&':'.-...',':':'---...',';':'-.-.-.','=':'-...-','+':'.-.-.','-':'-....-','_':'..--.-','"':'.-..-.','@':'.--.-.'};
 var MORSE_R={};for(var k in MORSE)MORSE_R[MORSE[k]]=k;
 function morseEncode(s){return s.toUpperCase().split('').map(function(c){return c===' '?'/':(MORSE[c]||'')}).filter(function(x){return x}).join(' ')}
@@ -808,39 +909,34 @@ function b85enc(b){return b64enc(b).replace(/\+/g,'-').replace(/\//g,'_').replac
 function b85dec(s){var b=s.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return b64dec(b)}
 function runEncode(m,input){switch(m){case 'base64':return b64enc(utf8Bytes(input));case 'base32':return b32enc(utf8Bytes(input));case 'base58':return b58encode(utf8Bytes(input));case 'base85':return b85enc(utf8Bytes(input));case 'hex':return bytesToHex(utf8Bytes(input));case 'url':return encodeURIComponent(input);case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});case 'morse':return morseEncode(input);case 'binary':return Array.from(utf8Bytes(input)).map(function(x){return x.toString(2).padStart(8,'0')}).join(' ');case 'reverse':return input.split('').reverse().join('')}return '?'}
 function runDecode(m,input){try{switch(m){case 'base64':return utf8Str(b64dec(input));case 'base32':return utf8Str(b32dec(input));case 'base58':return utf8Str(b58decode(input));case 'base85':return utf8Str(b85dec(input));case 'hex':return utf8Str(hexToBytes(input));case 'url':return decodeURIComponent(input);case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});case 'morse':return morseDecode(input);case 'binary':var parts=input.trim().split(/\s+/);return utf8Str(new Uint8Array(parts.map(function(p){return parseInt(p,2)})));case 'reverse':return input.split('').reverse().join('')}}catch(e){return '✗ Gagal decode: '+e.message}return '?'}
-$('enc-run').onclick=function(){var m=$('enc-method').value,i=$('enc-input').value;if(!i){$('enc-output').textContent='—';sndError();return}var r=(encMode==='encode')?runEncode(m,i):runDecode(m,i);$('enc-output').textContent=r;sndSuccess()};
+$('enc-run').onclick=function(){var m=$('enc-method').value,i=$('enc-input').value;if(!i){$('enc-output').textContent='—';sndError();return}var r=(encMode==='encode')?runEncode(m,i):runDecode(m,i);$('enc-output').textContent=r;unlockAch('enc_first');sndSuccess()};
 $('enc-clear').onclick=function(){$('enc-input').value='';$('enc-output').textContent='—';sndClick()};
 $('enc-copy').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}navigator.clipboard.writeText(t).then(sndSuccess)};
 $('enc-dl').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=(encMode==='encode'?'encoded':'decoded')+'_'+$('enc-method').value+'.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 
-// JWT DECODER
 function b64urlDecode(str){str=str.replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';try{var bin=atob(str);try{return decodeURIComponent(escape(bin))}catch(e){return bin}}catch(e){return null}}
 $('jwt-run').onclick=function(){
 var t=$('jwt-input').value.trim();
 if(!t){$('jwt-status').textContent='Token kosong';sndError();return}
 var parts=t.split('.');
-if(parts.length!==3){$('jwt-status').textContent='⚠ Bukan JWT valid (harus 3 bagian dipisah titik)';sndError();return}
-var h=b64urlDecode(parts[0]);
-var p=b64urlDecode(parts[1]);
-if(!h||!p){$('jwt-status').textContent='✗ Gagal decode JWT';sndError();return}
+if(parts.length!==3){$('jwt-status').textContent='⚠ Bukan JWT valid';sndError();return}
+var h=b64urlDecode(parts[0]),p=b64urlDecode(parts[1]);
+if(!h||!p){$('jwt-status').textContent='✗ Gagal decode';sndError();return}
 try{$('jwt-header-out').textContent=JSON.stringify(JSON.parse(h),null,2)}catch(e){$('jwt-header-out').textContent=h}
 try{$('jwt-payload-out').textContent=JSON.stringify(JSON.parse(p),null,2)}catch(e){$('jwt-payload-out').textContent=p}
 $('jwt-sig-out').textContent=parts[2];
-$('jwt-header').classList.remove('hd');
-$('jwt-payload').classList.remove('hd');
-$('jwt-sig').classList.remove('hd');
+['jwt-header','jwt-payload','jwt-sig'].forEach(function(id){$(id).classList.remove('hd')});
 $('jwt-status').textContent='✓ JWT decoded';
+unlockAch('jwt_first');
 sndSuccess();
 };
 $('jwt-clear').onclick=function(){$('jwt-input').value='';['jwt-header','jwt-payload','jwt-sig'].forEach(function(id){$(id).classList.add('hd')});$('jwt-status').textContent='—';sndClick()};
 
-// CASE CONVERTER
-$('cc-upper').onclick=function(){var t=$('cc-input').value;$('cc-output').textContent=t.toUpperCase();sndSuccess()};
-$('cc-lower').onclick=function(){var t=$('cc-input').value;$('cc-output').textContent=t.toLowerCase();sndSuccess()};
+$('cc-upper').onclick=function(){$('cc-output').textContent=$('cc-input').value.toUpperCase();sndSuccess()};
+$('cc-lower').onclick=function(){$('cc-output').textContent=$('cc-input').value.toLowerCase();sndSuccess()};
 $('cc-copy').onclick=function(){navigator.clipboard.writeText($('cc-output').textContent).then(sndSuccess)};
 $('cc-clear').onclick=function(){$('cc-input').value='';$('cc-output').textContent='—';sndClick()};
 
-// LETTER COUNTER
 $('lc-input').addEventListener('input',function(){
 var t=this.value;
 var chars=t.length;
@@ -849,19 +945,13 @@ var words=t.trim()?t.trim().split(/\s+/).length:0;
 var lines=t?t.split('\n').length:0;
 var sents=t?t.split(/[.!?]+/).filter(function(s){return s.trim().length>0}).length:0;
 var readMin=Math.ceil(words/200);
-$('lc-char').textContent=chars;
-$('lc-nospace').textContent=nospace;
-$('lc-word').textContent=words;
-$('lc-line').textContent=lines;
-$('lc-sent').textContent=sents;
-$('lc-read').textContent=readMin>0?readMin+'m':'0m';
+$('lc-char').textContent=chars;$('lc-nospace').textContent=nospace;$('lc-word').textContent=words;$('lc-line').textContent=lines;$('lc-sent').textContent=sents;$('lc-read').textContent=readMin>0?readMin+'m':'0m';
 });
 
-// OSINT
-$('ilook').onclick=function(){var ip=$('ipin').value.trim()||'';$('ires').textContent='Loading...';var url=ip?'https://ipapi.co/'+ip+'/json/':'https://ipapi.co/json/';fetch(url).then(function(r){return r.json()}).then(function(j){$('ires').innerHTML='IP: '+j.ip+'<br>Kota: '+(j.city||'-')+'<br>Negara: '+(j.country_name||'-')+'<br>ISP: '+(j.org||'-')+'<br>Lokasi: '+(j.latitude||'-')+','+(j.longitude||'-');sndSuccess()}).catch(function(){$('ires').textContent='Error';sndError()})};
+$('ilook').onclick=function(){var ip=$('ipin').value.trim()||'';$('ires').textContent='Loading...';var url=ip?'https://ipapi.co/'+ip+'/json/':'https://ipapi.co/json/';fetch(url).then(function(r){return r.json()}).then(function(j){$('ires').innerHTML='IP: '+j.ip+'<br>Kota: '+(j.city||'-')+'<br>Negara: '+(j.country_name||'-')+'<br>ISP: '+(j.org||'-')+'<br>Lokasi: '+(j.latitude||'-')+','+(j.longitude||'-');unlockAch('ip_first');sndSuccess()}).catch(function(){$('ires').textContent='Error';sndError()})};
 $('mip').onclick=function(){$('mres').textContent='Loading...';fetch('https://api.ipify.org?format=json').then(function(r){return r.json()}).then(function(j){$('mres').textContent='IP: '+j.ip;sndSuccess()}).catch(function(){$('mres').textContent='Error';sndError()})};
 $('whogen').onclick=function(){var d=$('whoin').value.trim();if(!d){sndError();return}$('whores').textContent='Cek manual di whois.domaintools.com/'+d};
-$('dgen').onclick=function(){var kw=$('dkw').value.trim(),site=$('dsite').value.trim(),tp=$('dtype').value.trim();var q='';if(site)q+='site:'+site+' ';if(kw)q+='"'+kw+'" ';if(tp)q+='filetype:'+tp;$('dres').textContent=q.trim()||'(kosong)';sndSuccess()};
+$('dgen').onclick=function(){var kw=$('dkw').value.trim(),site=$('dsite').value.trim(),tp=$('dtype').value.trim();var q='';if(site)q+='site:'+site+' ';if(kw)q+='"'+kw+'" ';if(tp)q+='filetype:'+tp;$('dres').textContent=q.trim()||'(kosong)';unlockAch('dork_first');sndSuccess()};
 $('dvinfo').onclick=function(){var d='Browser: '+navigator.userAgent+'<br>Platform: '+navigator.platform+'<br>Language: '+navigator.language+'<br>Layar: '+screen.width+'x'+screen.height+'<br>Online: '+navigator.onLine;$('dvres').innerHTML=d;sndSuccess()};
 
 document.querySelectorAll('#snd-grid .snd-opt').forEach(function(o){o.onclick=function(){sndPack=o.dataset.snd;S.set('snd_pack',sndPack);document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});if(sndPack!=='off')sndSuccess()}});
@@ -869,7 +959,7 @@ $('test-snd').onclick=function(){var old=sndPack;if(sndPack==='off')sndPack='bee
 
 var mode=S.get('mode','dark');
 function applyMode(){if(mode==='light')document.body.classList.add('light');else document.body.classList.remove('light');$('mode-tgl').textContent=mode==='light'?'☀️':'🌙'}
-$('mode-tgl').onclick=function(){mode=(mode==='dark')?'light':'dark';S.set('mode',mode);applyMode();sndClick();vib()};
+$('mode-tgl').onclick=function(){mode=(mode==='dark')?'light':'dark';S.set('mode',mode);applyMode();sndClick();vib();if(mode==='dark')unlockAch('dark')};
 
 $('haptic').onclick=function(){hapticOn=!hapticOn;S.set('haptic',hapticOn);$('haptic').textContent='📳 HAPTIC: '+(hapticOn?'ON':'OFF');if(hapticOn)vib(50)};
 $('haptic').textContent='📳 HAPTIC: '+(hapticOn?'ON':'OFF');
@@ -914,6 +1004,7 @@ if(target<100)target=100;if(target>120000)target=120000;
 $('scr-target').value=target;scrRunning=true;$('scr-prog-wrap').classList.add('on');scrSetProgress(0,target);
 $('scr-log').innerHTML='';scrResults=[];
 logTo('scr-log','Target: '+target+' proxy · Sumber: '+sources.length,'in');logTo('scr-log','Mode: 2 detik per batch','dim');sndSuccess();
+unlockAch('scrape_first');
 var seen={};var total=0;var stopFlag=false;
 for(var i=0;i<sources.length;i++){
 if(total>=target){stopFlag=true;break}
@@ -921,6 +1012,9 @@ var url=sources[i];var shortName=url.split('/').slice(-1)[0]||url;
 logTo('scr-log','['+(i+1)+'/'+sources.length+'] '+shortName,'dim');
 try{var r=await fetch(url);var t=await r.text();var found=t.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+/g)||[];var uniq=0;for(var k=0;k<found.length;k++){var p=found[k];if(!seen[p]){seen[p]=1;scrResults.push(p);uniq++;total++}if(total>=target)break}logTo('scr-log','  ✓ +'+uniq+' baru · total '+total+'/'+target,'ok');}catch(e){logTo('scr-log','  ✗ '+e.message,'er');}
 scrSetProgress(total,target);
+if(total>=10000)unlockAch('scrape_10k');
+if(total>=100000)unlockAch('scrape_100k');
+if(total>=1000)unlockAch('proxy_1k');
 if(total>=target){stopFlag=true;break}
 await new Promise(function(res){setTimeout(res,2000)});
 }
@@ -936,67 +1030,37 @@ $('scr-dl').onclick=function(){if(!scrResults.length){alert('Belum ada hasil');s
 var pcAlive=[];var pcDead=[];var pcSkip=[];var pcRunning=false;
 function pcSetProgress(cur,total,label){var pct=total>0?Math.min(100,(cur/total)*100):0;$('pc-prog-fill').style.width=pct+'%';$('pc-prog-txt').textContent=cur+' / '+total;$('pc-prog-label').textContent=(label||'CEK PROXY')+' · '+pct.toFixed(1)+'%'}
 function pcUpdateStats(){$('pc-stat-total').textContent=pcAlive.length+pcDead.length+pcSkip.length;$('pc-stat-alive').textContent=pcAlive.length;$('pc-stat-dead').textContent=pcDead.length;$('pc-stat-skip').textContent=pcSkip.length}
-$('pc-clear').onclick=function(){if(pcRunning){alert('Masih jalan');return}$('pc-input').value='';$('pc-log').innerHTML='';$('pc-pbox').classList.add('hd');pcAlive=[];pcDead=[];pcSkip=[];$('pc-prog-wrap').classList.remove('on');$('pc-fileinfo').innerHTML='';pcUpdateStats();sndClick()};
+$('pc-clear').onclick=function(){if(pcRunning){alert('Masih jalan');return}$('pc-input').value='';$('pc-log').innerHTML='';pcAlive=[];pcDead=[];pcSkip=[];$('pc-prog-wrap').classList.remove('on');$('pc-fileinfo').innerHTML='';pcUpdateStats();sndClick()};
 $('pc-drop').onclick=function(){$('pc-file').click()};
-['dragenter','dragover'].forEach(function(ev){$('pc-drop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('pc-drop').classList.add('dragover')})});
-['dragleave','drop'].forEach(function(ev){$('pc-drop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('pc-drop').classList.remove('dragover')})});
 function pcLoadFile(f){var r=new FileReader();r.onload=function(ev){var content=ev.target.result;var lines=content.split('\n').map(function(x){return x.trim()}).filter(function(x){return x&&!/^[\[\{]/.test(x)});if(/^\s*[\[\{]/.test(content)){try{var j=JSON.parse(content);var arr=[];function walk(o){if(typeof o==='string')arr.push(o);else if(Array.isArray(o))o.forEach(walk);else if(o&&typeof o==='object')Object.values(o).forEach(walk)}walk(j);lines=arr}catch(e){}}var existing=$('pc-input').value.trim();$('pc-input').value=(existing?existing+'\n':'')+lines.join('\n');$('pc-fileinfo').innerHTML='<div class="r" style="border-color:var(--ac);background:var(--acd);color:var(--ac)">'+f.name+' · '+lines.length+' baris</div>';sndSuccess()};r.readAsText(f)}
 $('pc-file').onchange=function(e){if(e.target.files[0])pcLoadFile(e.target.files[0]);e.target.value=''};
-$('pc-drop').addEventListener('drop',function(e){if(e.dataTransfer&&e.dataTransfer.files[0])pcLoadFile(e.dataTransfer.files[0])});
-function pcParseProxy(line){
-line=line.trim();if(!line)return null;
-var type='http',ip,port;
-if(line.indexOf('://')!==-1){var parts=line.split('://');type=parts[0].toLowerCase();line=parts[1]}
-var lastColon=line.lastIndexOf(':');
-if(lastColon===-1)return null;
-ip=line.substring(0,lastColon);port=line.substring(lastColon+1);
-if(!ip||!port||isNaN(parseInt(port)))return null;
-return {type:type,ip:ip,port:port,raw:line};
-}
-function pcTestOne(p,timeoutMs){
-return new Promise(function(resolve){
-// only HTTP/HTTPS testable in browser
-if(p.type==='socks4'||p.type==='socks5'){resolve({alive:false,skip:true,reason:'socks gak support di browser'});return}
-var targets=['https://api.ipify.org','http://httpbin.org/ip'];
-var idx=0;
-function tryNext(){
-if(idx>=targets.length){resolve({alive:false,skip:false});return}
-var target=targets[idx++];
-var ctrl=new AbortController();
-var timer=setTimeout(function(){ctrl.abort()},timeoutMs);
-// browser can't really set proxy, so we just do a plain fetch as "reachability check" against target
-fetch(target,{mode:'cors',signal:ctrl.signal}).then(function(r){clearTimeout(timer);if(r.ok)resolve({alive:true,skip:false});else tryNext()}).catch(function(){clearTimeout(timer);tryNext()});
-}
-tryNext();
-});
-}
+$('pc-drop').addEventListener('drop',function(e){e.preventDefault();if(e.dataTransfer&&e.dataTransfer.files[0])pcLoadFile(e.dataTransfer.files[0])});
+$('pc-drop').addEventListener('dragover',function(e){e.preventDefault()});
+function pcParseProxy(line){line=line.trim();if(!line)return null;var type='http',ip,port;if(line.indexOf('://')!==-1){var parts=line.split('://');type=parts[0].toLowerCase();line=parts[1]}var lastColon=line.lastIndexOf(':');if(lastColon===-1)return null;ip=line.substring(0,lastColon);port=line.substring(lastColon+1);if(!ip||!port||isNaN(parseInt(port)))return null;return {type:type,ip:ip,port:port,raw:line}}
+function pcTestOne(p,timeoutMs){return new Promise(function(resolve){if(p.type==='socks4'||p.type==='socks5'){resolve({alive:false,skip:true});return}var targets=['https://api.ipify.org','http://httpbin.org/ip'];var idx=0;function tryNext(){if(idx>=targets.length){resolve({alive:false,skip:false});return}var target=targets[idx++];var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort()},timeoutMs);fetch(target,{mode:'cors',signal:ctrl.signal}).then(function(r){clearTimeout(timer);if(r.ok)resolve({alive:true,skip:false});else tryNext()}).catch(function(){clearTimeout(timer);tryNext()})}tryNext()})}
 $('pc-start').onclick=async function(){
 if(pcRunning)return;
 var raw=$('pc-input').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});
 if(!raw.length){alert('Input kosong');sndError();return}
-var proxies=[];
-for(var i=0;i<raw.length;i++){var p=pcParseProxy(raw[i]);if(p)proxies.push(p)}
+var proxies=[];for(var i=0;i<raw.length;i++){var p=pcParseProxy(raw[i]);if(p)proxies.push(p)}
 if(!proxies.length){alert('Gak ada proxy valid');sndError();return}
 pcRunning=true;pcAlive=[];pcDead=[];pcSkip=[];
 $('pc-prog-wrap').classList.add('on');pcSetProgress(0,proxies.length);
 $('pc-log').innerHTML='';
-logTo('pc-log','Cek '+proxies.length+' proxy · timeout '+$('pc-timeout').value+'ms','in');
-logTo('pc-log','⚠ Browser gak support SOCKS — socks4/socks5 akan di-skip','warn');
-logTo('pc-log','⚠ Test pakai target publik, bukan proxy actual (browser gak bisa set proxy)','warn');
-sndSuccess();
+logTo('pc-log','Cek '+proxies.length+' proxy','in');
+logTo('pc-log','⚠ SOCKS auto-skip (browser gak support)','warn');
+sndSuccess();unlockAch('check_first');
 var timeoutMs=parseInt($('pc-timeout').value)||5000;
 for(var i=0;i<proxies.length;i++){
 if(!pcRunning)break;
-var p=proxies[i];
-var r=await pcTestOne(p,timeoutMs);
-if(r.skip){pcSkip.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ⚠ SKIP '+p.raw+' ('+r.reason+')','warn')}
+var p=proxies[i];var r=await pcTestOne(p,timeoutMs);
+if(r.skip){pcSkip.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ⚠ SKIP '+p.raw,'warn')}
 else if(r.alive){pcAlive.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ✓ '+p.raw,'ok')}
 else{pcDead.push(p.raw);logTo('pc-log','['+(i+1)+'/'+proxies.length+'] ✗ '+p.raw,'er')}
 pcSetProgress(i+1,proxies.length);
 if((i+1)%10===0)pcUpdateStats();
 }
-pcRunning=false;
-pcUpdateStats();
+pcRunning=false;pcUpdateStats();
 logTo('pc-log','','');
 logTo('pc-log','SELESAI — Hidup: '+pcAlive.length+' · Mati: '+pcDead.length+' · Skip: '+pcSkip.length,'in');
 pcSetProgress(proxies.length,proxies.length,'SELESAI');
@@ -1030,39 +1094,61 @@ if(!scrVFiles.length){alert('Belum ada file');sndError();return}
 var log=$('scr-vlog');log.innerHTML='';scrVRunning=true;$('scr-vprog-wrap').classList.add('on');scrVSetProgress(0,totalProj,'INIT');
 logTo('scr-vlog','Memverifikasi token Vercel...','in');
 var userOk=false;
-try{var r1=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},10000);if(r1.ok){var u=await r1.json();userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN','ok');if(u.user)logTo('scr-vlog','   User: '+(u.user.username||u.user.email||'-'),'dim');}else if(r1.status===401||r1.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');logTo('scr-vlog','   Token invalid / expired','dim');sndError();scrVRunning=false;return;}else logTo('scr-vlog','⚠ HTTP '+r1.status+' saat cek token','warn');}
-catch(e){if(e.message&&e.message.indexOf('TIMEOUT')===0){logTo('scr-vlog','⚠ Koneksi lambat, retry dengan timeout 60s...','warn');try{var r2=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},60000);if(r2.ok){userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN (retry)','ok')}else if(r2.status===401||r2.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return;}else logTo('scr-vlog','⚠ HTTP '+r2.status,'warn');}catch(e2){logTo('scr-vlog','❌ Token check gagal total (60s timeout)','er');sndError();scrVRunning=false;return;}}else logTo('scr-vlog','⚠ Fetch error: '+e.message,'warn');}
-if(!userOk){logTo('scr-vlog','❌ Token check gagal — deploy dihentikan','er');sndError();scrVRunning=false;return;}
+try{var r1=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},10000);if(r1.ok){var u=await r1.json();userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN','ok');}else if(r1.status===401||r1.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return;}else logTo('scr-vlog','⚠ HTTP '+r1.status,'warn');}
+catch(e){if(e.message&&e.message.indexOf('TIMEOUT')===0){logTo('scr-vlog','⚠ Retry 60s...','warn');try{var r2=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},60000);if(r2.ok){userOk=true;logTo('scr-vlog','✅ AKUN DITEMUKAN (retry)','ok')}else if(r2.status===401||r2.status===403){logTo('scr-vlog','❌ TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return;}}catch(e2){logTo('scr-vlog','❌ Gagal total','er');sndError();scrVRunning=false;return;}}else logTo('scr-vlog','⚠ '+e.message,'warn');}
+if(!userOk){logTo('scr-vlog','❌ Token check gagal','er');sndError();scrVRunning=false;return;}
 logTo('scr-vlog','Membaca '+scrVFiles.length+' file...','dim');
 var payloadFiles=[];
-for(var i=0;i<scrVFiles.length;i++){var f=scrVFiles[i];try{var b64=await fileToBase64(f);payloadFiles.push({file:f.name,data:b64,encoding:'base64'});logTo('scr-vlog','  · '+f.name+' ('+(f.size/1024).toFixed(1)+' KB)','ok');}catch(e){logTo('scr-vlog','  ✗ Gagal baca '+f.name,'er');sndError();scrVRunning=false;return;}}
-var hasIndex=payloadFiles.some(function(x){return x.file==='index.html'});if(!hasIndex)logTo('scr-vlog','⚠ Gak ada index.html','warn');
-var base=vercelNormName(rawName);var okCount=0;var failCount=0;var resultUrls=[];
+for(var i=0;i<scrVFiles.length;i++){var f=scrVFiles[i];try{var b64=await fileToBase64(f);payloadFiles.push({file:f.name,data:b64,encoding:'base64'});}catch(e){logTo('scr-vlog','✗ Gagal baca '+f.name,'er');sndError();scrVRunning=false;return;}}
+var base=vercelNormName(rawName);var okCount=0;var resultUrls=[];
 for(var p=0;p<totalProj;p++){
 var projName=base+'-'+vercelSuffix();
 logTo('scr-vlog','','');logTo('scr-vlog','[DEPLOY '+(p+1)+'/'+totalProj+'] '+projName,'in');
-scrVSetProgress(p,totalProj,'DEPLOY '+projName);
-try{var r=await fetch('https://api.vercel.com/v13/deployments',{method:'POST',headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({name:projName,files:payloadFiles,projectSettings:{framework:null}})});var j=await r.json();if(r.ok){var url='https://'+j.url;logTo('scr-vlog','  ✓ '+url,'ok');resultUrls.push(url);okCount++;}else{var em=(j.error&&j.error.message)||JSON.stringify(j);logTo('scr-vlog','  ✗ GAGAL: '+em,'er');failCount++;logTo('scr-vlog','','');logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' gagal.','er');logTo('scr-vlog','   Sukses: '+okCount+'/'+totalProj+' · Gagal: '+failCount+'/'+totalProj,'warn');scrVRunning=false;sndError();var el=$('scr-vresult');el.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');el.classList.remove('hd');return;}}catch(e){logTo('scr-vlog','  ✗ Fetch error: '+e.message,'er');failCount++;logTo('scr-vlog','','');logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' error.','er');scrVRunning=false;sndError();var el2=$('scr-vresult');el2.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');el2.classList.remove('hd');return;}
-if(p<totalProj-1){var wait=2000+Math.floor(Math.random()*3000);logTo('scr-vlog','  ⏳ Jeda '+wait+'ms...','dim');await new Promise(function(res){setTimeout(res,wait)});}
+scrVSetProgress(p,totalProj,'DEPLOY');
+try{var r=await fetch('https://api.vercel.com/v13/deployments',{method:'POST',headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({name:projName,files:payloadFiles,projectSettings:{framework:null}})});var j=await r.json();if(r.ok){var url='https://'+j.url;logTo('scr-vlog','  ✓ '+url,'ok');resultUrls.push(url);okCount++;}else{var em=(j.error&&j.error.message)||JSON.stringify(j);logTo('scr-vlog','  ✗ GAGAL: '+em,'er');logTo('scr-vlog','❌ STOP','er');scrVRunning=false;sndError();var el=$('scr-vresult');el.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+(totalProj-okCount);el.classList.remove('hd');return;}}catch(e){logTo('scr-vlog','  ✗ '+e.message,'er');scrVRunning=false;sndError();return;}
+if(p<totalProj-1){var wait=2000+Math.floor(Math.random()*3000);await new Promise(function(res){setTimeout(res,wait)});}
 }
-logTo('scr-vlog','','');logTo('scr-vlog','✅ SEMUA DEPLOY SUKSES — '+okCount+'/'+totalProj,'in');scrVSetProgress(totalProj,totalProj,'SELESAI');sndSuccess();
+logTo('scr-vlog','','');logTo('scr-vlog','✅ SEMUA SUKSES — '+okCount+'/'+totalProj,'in');scrVSetProgress(totalProj,totalProj,'SELESAI');sndSuccess();
+unlockAch('deploy_first');
+if(okCount>=10)unlockAch('deploy_10');
 var el3=$('scr-vresult');el3.innerHTML='<b>✓ '+okCount+' PROJECT DEPLOYED</b><br><br>'+resultUrls.map(function(u,i){return (i+1)+'. '+u}).join('<br>');el3.classList.remove('hd');scrVRunning=false;
 };
 
 // TEMP MAIL
 var tmpToken=null;var tmpEmail=null;var tmpMsgs=[];
-var CORS_PROXIES=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url=','https://cors.eu.org/'];
-async function tmpFetch(url,opts){var lastErr=null;for(var i=0;i<CORS_PROXIES.length;i++){var p=CORS_PROXIES[i];var full=p+encodeURIComponent(url);try{var r=await fetch(full,opts||{});if(r.ok)return r;lastErr=new Error('HTTP '+r.status);}catch(e){lastErr=e}}throw lastErr||new Error('All proxies failed')}
-async function tmpLoadDomains(){var sel=$('tmp-domain');sel.innerHTML='<option value="">Loading domains...</option>';try{var r=await tmpFetch('https://api.mail.tm/domains');var j=await r.json();var arr=j['hydra:member']||[];if(!arr.length)throw new Error('Domain list kosong');sel.innerHTML='<option value="">— Pilih Domain —</option>';arr.forEach(function(d){var o=document.createElement('option');o.value=d.domain;o.textContent=d.domain;sel.appendChild(o)});logTo('tmp-log','✓ '+arr.length+' domain loaded','ok');}catch(e){sel.innerHTML='<option value="">✗ Gagal load — klik RELOAD</option>';logTo('tmp-log','✗ Gagal load domain: '+e.message,'er');}}
+var CORS_PROXIES=[
+'https://corsproxy.io/?url=',
+'https://api.allorigins.win/raw?url=',
+'https://cors.eu.org/',
+'https://thingproxy.freeboard.io/fetch/',
+'https://whateverorigin.org/get?url='
+];
+async function tmpFetch(url,opts){var lastErr=null;for(var i=0;i<CORS_PROXIES.length;i++){var p=CORS_PROXIES[i];var full=p+(p.indexOf('?')!==-1?encodeURIComponent(url):url);try{var r=await fetch(full,opts||{});if(r.ok)return r;lastErr=new Error('HTTP '+r.status);}catch(e){lastErr=e}}throw lastErr||new Error('All proxies failed')}
+async function tmpLoadDomains(){var sel=$('tmp-domain');sel.innerHTML='<option value="">Loading domains...</option>';try{var r=await tmpFetch('https://api.mail.tm/domains');var j=await r.json();var arr=j['hydra:member']||[];if(!arr.length)throw new Error('Kosong');sel.innerHTML='<option value="">— Pilih Domain —</option>';arr.forEach(function(d){var o=document.createElement('option');o.value=d.domain;o.textContent=d.domain;sel.appendChild(o)});logTo('tmp-log','✓ '+arr.length+' domain loaded','ok');}catch(e){sel.innerHTML='<option value="">✗ Gagal load — klik RELOAD</option>';logTo('tmp-log','✗ '+e.message,'er');}}
 $('tmp-reaload').onclick=function(){tmpLoadDomains();sndClick()};
-$('tmp-gen').onclick=async function(){var nm=$('tmp-name').value.trim()||('user'+Math.floor(Math.random()*99999));var dom=$('tmp-domain').value;if(!dom){alert('Pilih domain dulu');sndError();return}var em=nm+'@'+dom;var pw='RyannTmp!'+Math.floor(Math.random()*99999);logTo('tmp-log','Bikin akun '+em+'...','in');try{var r=await tmpFetch('https://api.mail.tm/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j=await r.json();if(!r.ok){logTo('tmp-log','✗ '+(j.message||JSON.stringify(j)),'er');sndError();return}logTo('tmp-log','✓ Akun dibuat','ok');var r2=await tmpFetch('https://api.mail.tm/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j2=await r2.json();tmpToken=j2.token;tmpEmail=em;$('tmp-email').textContent=em;logTo('tmp-log','✓ Login berhasil · token siap','ok');sndSuccess();}catch(e){logTo('tmp-log','✗ '+e.message,'er');sndError()}};
+$('tmp-gen').onclick=async function(){var nm=$('tmp-name').value.trim()||('user'+Math.floor(Math.random()*99999));var dom=$('tmp-domain').value;if(!dom){alert('Pilih domain dulu');sndError();return}var em=nm+'@'+dom;var pw='RyannTmp!'+Math.floor(Math.random()*99999);logTo('tmp-log','Bikin akun '+em+'...','in');try{var r=await tmpFetch('https://api.mail.tm/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j=await r.json();if(!r.ok){logTo('tmp-log','✗ '+(j.message||JSON.stringify(j)),'er');sndError();return}logTo('tmp-log','✓ Akun dibuat','ok');var r2=await tmpFetch('https://api.mail.tm/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j2=await r2.json();tmpToken=j2.token;tmpEmail=em;$('tmp-email').textContent=em;logTo('tmp-log','✓ Login berhasil','ok');unlockAch('tmp_first');sndSuccess();}catch(e){logTo('tmp-log','✗ '+e.message,'er');sndError()}};
 $('tmp-copy').onclick=function(){if(tmpEmail)navigator.clipboard.writeText(tmpEmail).then(sndSuccess)};
-$('tmp-refresh').onclick=async function(){if(!tmpToken){alert('Generate dulu');sndError();return}logTo('tmp-inbox-log','Cek inbox...','dim');try{var r=await tmpFetch('https://api.mail.tm/messages',{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();tmpMsgs=j['hydra:member']||[];logTo('tmp-inbox-log','✓ '+tmpMsgs.length+' pesan','ok');var el=$('tmp-list');if(!tmpMsgs.length){el.innerHTML='<div class="r">Belum ada pesan</div>';return}el.innerHTML=tmpMsgs.map(function(m,i){return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'<div style="color:var(--txd);font-size:.55rem;margin-top:3px">'+(m.intro||'')+'</div></div>'}).join('');el.querySelectorAll('.msg-item').forEach(function(it){it.onclick=function(){tmpShowMsg(parseInt(it.dataset.i))}});sndSuccess();}catch(e){logTo('tmp-inbox-log','✗ '+e.message,'er');sndError()}};
-async function tmpShowMsg(i){var m=tmpMsgs[i];if(!m)return;try{var r=await tmpFetch('https://api.mail.tm/messages/'+m.id,{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();var view=$('tmp-msg-view');var body='<div style="font-size:.65rem"><b>From:</b> '+j.from.address+'<br><b>Subject:</b> '+j.subject+'<br><hr style="margin:6px 0;border:none;border-top:1px solid var(--border)">'+(j.html&&j.html.length?'<div>'+j.html.join('')+'</div>':(j.text||'(kosong)'))+'</div>';view.innerHTML=body;view.classList.remove('hd');sndSuccess();}catch(e){alert('Gagal load pesan');sndError()}}
+$('tmp-refresh').onclick=async function(){if(!tmpToken){alert('Generate dulu');sndError();return}logTo('tmp-inbox-log','Cek inbox...','dim');try{var r=await tmpFetch('https://api.mail.tm/messages',{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();tmpMsgs=j['hydra:member']||[];logTo('tmp-inbox-log','✓ '+tmpMsgs.length+' pesan','ok');var el=$('tmp-list');if(!tmpMsgs.length){el.innerHTML='<div class="r">Belum ada pesan</div>';unlockAch('inbox_first');return}el.innerHTML=tmpMsgs.map(function(m,i){return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'<div style="color:var(--txd);font-size:.55rem;margin-top:3px">'+(m.intro||'')+'</div></div>'}).join('');el.querySelectorAll('.msg-item').forEach(function(it){it.onclick=function(){tmpShowMsg(parseInt(it.dataset.i))}});unlockAch('inbox_first');sndSuccess();}catch(e){logTo('tmp-inbox-log','✗ '+e.message,'er');sndError()}};
+async function tmpShowMsg(i){var m=tmpMsgs[i];if(!m)return;try{var r=await tmpFetch('https://api.mail.tm/messages/'+m.id,{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();var view=$('tmp-msg-view');view.innerHTML='<div style="font-size:.65rem"><b>From:</b> '+j.from.address+'<br><b>Subject:</b> '+j.subject+'<br><hr style="margin:6px 0;border:none;border-top:1px solid var(--border)">'+(j.html&&j.html.length?'<div>'+j.html.join('')+'</div>':(j.text||'(kosong)'))+'</div>';view.classList.remove('hd');sndSuccess();}catch(e){alert('Gagal load');sndError()}}
 $('tmp-inbox-dl').onclick=function(){if(!tmpMsgs.length){alert('Belum ada pesan');sndError();return}var t=tmpMsgs.map(function(m){return 'From: '+m.from.address+'\nSubject: '+m.subject+'\nIntro: '+m.intro+'\n---';}).join('\n\n');var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='inbox.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 tmpLoadDomains();
 
-function boot(){setTema(S.get('theme','t-cyan'));setBg(S.get('bg','galaxy'));applyMode();loadCustomTheme();var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});$('st-g').textContent=S.get('generates',0);$('st-d').textContent=S.get('downloads',0);$('st-s').textContent=S.get('snippet_count',0);renderHist();renderTpl();checkAch(S.get('generates',0));scrUpdateCooldownUI();setInterval(scrUpdateCooldownUI,1000);}
+function boot(){
+setTema(S.get('theme','t-cyan'));
+setBg(S.get('bg','galaxy'));
+applyMode();
+loadCustomTheme();
+var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';
+var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);
+document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});
+$('st-g').textContent=S.get('generates',0);
+$('st-d').textContent=S.get('downloads',0);
+$('st-s').textContent=S.get('snippet_count',0);
+renderHist();renderTpl();renderAch();
+checkAch(S.get('generates',0));
+scrUpdateCooldownUI();
+setInterval(scrUpdateCooldownUI,1000);
+}
 boot();
 setTimeout(function(){if(!window.TEMPLATE_COMMAND){$('sw').innerHTML='<div class="st-er" style="font-size:.55rem">⚠ templates.js gak load</div>'}},400);
 </script>
