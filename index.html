@@ -3,7 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>RYANN • TOOLS</title>
+<title>TOOLS BY RYANNXD</title>
+<meta name="description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Tempmail · Deployer">
+<meta name="theme-color" content="#22d3ee">
+
+<!-- ===== OPEN GRAPH (share card) ===== -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ryanntools-alpha.vercel.app/">
+<meta property="og:title" content="TOOLS BY RYANNXD">
+<meta property="og:description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Tempmail · Deployer">
+<meta property="og:image" content="https://raw.githubusercontent.com/RyanApi77/ryanntools/main/banner.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:site_name" content="RYANN • TOOLS">
+
+<!-- ===== TWITTER CARD ===== -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="TOOLS BY RYANNXD">
+<meta name="twitter:description" content="RYANN • TOOLS — Injector · Fun · OSINT · Scrape · Tempmail · Deployer">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/RyanApi77/ryanntools/main/banner.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&family=Fira+Code:wght@400;700&family=Source+Code+Pro:wght@400;700&family=Roboto+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=Space+Mono&family=Ubuntu+Mono&family=Rajdhani:wght@400;700&family=Audiowide&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#04080f;--card:rgba(10,20,35,.78);--border:#1e4d5c;--bl:#2a6b7f;--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--tx:#e0f2fe;--txd:#64748b;--txm:#475569;--ok:#4ade80;--er:#f87171;--wr:#fbbf24;--fs:13px;--fh:'Orbitron',sans-serif;--fm:'JetBrains Mono',monospace}
@@ -167,6 +186,12 @@ button:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
 .filelist .fitem .sz{color:var(--txd);font-size:.55rem;flex-shrink:0}
 .filelist .fitem .rm{color:var(--er);cursor:pointer;font-weight:700;padding:0 5px;flex-shrink:0}
 input[type="file"]{display:none!important}
+.color-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
+.color-pick{text-align:center}
+.color-pick label{font-size:.5rem;margin:0 0 4px;letter-spacing:1px}
+.color-pick input[type="color"]{width:100%;height:38px;border:2px solid var(--border);border-radius:7px;background:transparent;cursor:pointer;padding:2px}
+.color-pick input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
+.color-pick input[type="color"]::-webkit-color-swatch{border:none;border-radius:5px}
 </style>
 </head>
 <body data-theme="t-cyan">
@@ -187,7 +212,7 @@ input[type="file"]{display:none!important}
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v4.4</span>
+<span class="ch">v4.5.1</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
 <button class="tgl" id="mode-tgl">🌙</button>
@@ -288,6 +313,28 @@ input[type="file"]{display:none!important}
 <input id="shin" placeholder="https://...">
 <div class="br"><button class="g" id="shgen">SHORTEN</button><button class="g" id="shcp">COPY</button></div>
 <div class="r" id="shres">—</div>
+</div>
+
+<div class="c"><div class="cl">🧬 TEXT ENCODER / DECODER</div>
+<div class="tabs"><div class="tab a" id="enc-t-enc">🔒 ENCODE</div><div class="tab" id="enc-t-dec">🔓 DECODE</div></div>
+<label>Metode</label>
+<select id="enc-method">
+<option value="base64">Base64</option>
+<option value="base32">Base32</option>
+<option value="base58">Base58</option>
+<option value="base85">Base85</option>
+<option value="hex">Hex</option>
+<option value="url">URL Encode</option>
+<option value="rot13">ROT13</option>
+<option value="morse">Morse Code</option>
+<option value="binary">Binary</option>
+<option value="reverse">Reverse</option>
+</select>
+<label>Input</label>
+<textarea id="enc-input" placeholder="Ketik teks di sini..."></textarea>
+<div class="br"><button id="enc-run">⚡ PROSES</button><button class="g" id="enc-clear">🗑 CLEAR</button></div>
+<div class="br"><button class="g" id="enc-copy">📋 COPY</button><button class="g" id="enc-dl">⬇ DOWNLOAD .TXT</button></div>
+<div class="r" id="enc-output" style="max-height:200px;overflow-y:auto">—</div>
 </div>
 </div>
 
@@ -427,7 +474,7 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 </div>
 
 <div class="pg hd" id="pg-set">
-<div class="c"><div class="cl">🎨 THEME</div>
+<div class="c"><div class="cl">🎨 THEME PRESET</div>
 <div class="tg" id="tg">
 <div class="to a" data-t="t-cyan" style="background:linear-gradient(135deg,#04080f,#22d3ee)"><span class="lbl">CYAN</span></div>
 <div class="to" data-t="t-green" style="background:linear-gradient(135deg,#04080f,#4ade80)"><span class="lbl">GRN</span></div>
@@ -446,6 +493,25 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 <div class="to" data-t="t-slate" style="background:linear-gradient(135deg,#04080f,#94a3b8)"><span class="lbl">SLT</span></div>
 <div class="to" data-t="t-mono" style="background:linear-gradient(135deg,#04080f,#e0f2fe)"><span class="lbl">MON</span></div>
 </div>
+</div>
+
+<div class="c"><div class="cl">🎨 CUSTOM THEME COLOR</div>
+<div class="color-row">
+<div class="color-pick">
+<label>ACCENT</label>
+<input type="color" id="cust-ac" value="#22d3ee">
+</div>
+<div class="color-pick">
+<label>BG</label>
+<input type="color" id="cust-bg" value="#04080f">
+</div>
+<div class="color-pick">
+<label>BORDER</label>
+<input type="color" id="cust-br" value="#1e4d5c">
+</div>
+</div>
+<div class="br"><button class="g" id="cust-apply">✓ APPLY</button><button class="g" id="cust-rand">🎲 RANDOM MIX</button></div>
+<button class="d" id="cust-reset">🗑 RESET CUSTOM</button>
 </div>
 
 <div class="c"><div class="cl">🖼 BACKGROUND</div>
@@ -513,19 +579,20 @@ https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies.txt</textarea>
 </div>
 
 <div class="pg hd" id="pg-abt">
-<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.4</div>
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">v4.5.1</div>
 <p style="font-size:.65rem;color:var(--txd);text-align:center;line-height:1.7">Static HTML · No Backend · No VPS<br><span style="color:var(--ac)">RyanApi77</span></p>
 </div>
 <div class="c"><div class="cl">INFO</div>
-<div class="r">Build: v4.4</div>
-<div class="r">Features: 82</div>
+<div class="r">Build: v4.5.1</div>
+<div class="r">Features: 88</div>
 <div class="r">Tabs: 10</div>
 <div class="r">Backgrounds: 5</div>
 <div class="r">Sound Packs: 5</div>
+<div class="r">Encoders: 10</div>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v4.4</div>
+<div class="ft">RYANN • TOOLS · v4.5.1</div>
 </div>
 
 <script src="templates.js"></script>
@@ -571,6 +638,83 @@ el.appendChild(d);el.scrollTop=el.scrollHeight;
 // THEME
 function setTema(t){document.body.setAttribute('data-theme',t);S.set('theme',t);document.querySelectorAll('.to').forEach(function(o){o.classList.toggle('a',o.dataset.t===t)})}
 document.querySelectorAll('.to').forEach(function(o){o.onclick=function(){setTema(o.dataset.t);sndClick();vib()}});
+
+// CUSTOM THEME COLOR
+function applyCustomTheme(ac,bg,br){
+if(ac){
+document.documentElement.style.setProperty('--ac',ac);
+document.documentElement.style.setProperty('--ac2',ac);
+document.documentElement.style.setProperty('--acd',hexToRgba(ac,0.15));
+}
+if(bg){
+document.documentElement.style.setProperty('--bg',bg);
+document.body.style.background=bg;
+}
+if(br){
+document.documentElement.style.setProperty('--border',br);
+document.documentElement.style.setProperty('--bl',br);
+}
+S.set('cust_theme',{ac:ac,bg:bg,br:br});
+}
+function hexToRgba(hex,a){
+var h=hex.replace('#','');
+if(h.length===3)h=h.split('').map(function(c){return c+c}).join('');
+var r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);
+return 'rgba('+r+','+g+','+b+','+a+')';
+}
+function loadCustomTheme(){
+var c=S.get('cust_theme',null);
+if(c&&c.ac){
+$('cust-ac').value=c.ac||'#22d3ee';
+$('cust-bg').value=c.bg||'#04080f';
+$('cust-br').value=c.br||'#1e4d5c';
+applyCustomTheme(c.ac,c.bg,c.br);
+}
+}
+$('cust-apply').onclick=function(){
+applyCustomTheme($('cust-ac').value,$('cust-bg').value,$('cust-br').value);
+sndSuccess();
+};
+$('cust-rand').onclick=function(){
+var h=Math.floor(Math.random()*360);
+var h2=(h+Math.floor(Math.random()*60)+150)%360;
+var h3=(h+Math.floor(Math.random()*60)+30)%360;
+function hsl2hex(hu,s,l){
+s/=100;l/=100;
+var c=(1-Math.abs(2*l-1))*s;
+var x=c*(1-Math.abs((hu/60)%2-1));
+var m=l-c/2;
+var r=0,g=0,b=0;
+if(hu<60){r=c;g=x;b=0}
+else if(hu<120){r=x;g=c;b=0}
+else if(hu<180){r=0;g=c;b=x}
+else if(hu<240){r=0;g=x;b=c}
+else if(hu<300){r=x;g=0;b=c}
+else{r=c;g=0;b=x}
+function hx(v){var s=Math.round((v+m)*255).toString(16);return s.length<2?'0'+s:s}
+return '#'+hx(r)+hx(g)+hx(b);
+}
+var ac=hsl2hex(h,90,60);
+var bg=hsl2hex(h2,70,6);
+var br=hsl2hex(h3,70,35);
+$('cust-ac').value=ac;
+$('cust-bg').value=bg;
+$('cust-br').value=br;
+applyCustomTheme(ac,bg,br);
+sndSuccess();
+};
+$('cust-reset').onclick=function(){
+S.del('cust_theme');
+document.documentElement.style.removeProperty('--ac');
+document.documentElement.style.removeProperty('--ac2');
+document.documentElement.style.removeProperty('--acd');
+document.documentElement.style.removeProperty('--bg');
+document.documentElement.style.removeProperty('--border');
+document.documentElement.style.removeProperty('--bl');
+document.body.style.background='';
+setTema(S.get('theme','t-cyan'));
+sndSuccess();
+};
 
 // BACKGROUND
 var bgNow=S.get('bg','galaxy');
@@ -671,6 +815,105 @@ $('hs2').onclick=function(){hashIt('SHA-256',$('hres'))};
 $('shgen').onclick=function(){var u=$('shin').value.trim();if(!u){sndError();return}$('shres').textContent='Loading...';fetch('https://tinyurl.com/api-create.php?url='+encodeURIComponent(u)).then(function(r){return r.text()}).then(function(t){$('shres').textContent=t;sndSuccess()}).catch(function(){$('shres').textContent='Error';sndError()})};
 $('shcp').onclick=function(){navigator.clipboard.writeText($('shres').textContent).then(sndSuccess)};
 
+// ============ TEXT ENCODER / DECODER ============
+var encMode='encode';
+$('enc-t-enc').onclick=function(){encMode='encode';$('enc-t-enc').classList.add('a');$('enc-t-dec').classList.remove('a');sndClick()};
+$('enc-t-dec').onclick=function(){encMode='decode';$('enc-t-dec').classList.add('a');$('enc-t-enc').classList.remove('a');sndClick()};
+
+var B58='123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+function b58encode(bytes){
+var digits=[0];
+for(var i=0;i<bytes.length;i++){
+var carry=bytes[i];
+for(var j=0;j<digits.length;j++){
+carry+=digits[j]<<8;
+digits[j]=carry%58;
+carry=(carry/58)|0;
+}
+while(carry>0){digits.push(carry%58);carry=(carry/58)|0}
+}
+for(var k=0;k<bytes.length&&bytes[k]===0;k++)digits.push(0);
+digits.reverse();
+return digits.map(function(d){return B58[d]}).join('');
+}
+function b58decode(str){
+var bytes=[0];
+for(var i=0;i<str.length;i++){
+var idx=B58.indexOf(str[i]);
+if(idx===-1)throw new Error('Invalid base58 char: '+str[i]);
+var carry=idx;
+for(var j=0;j<bytes.length;j++){
+carry+=bytes[j]*58;
+bytes[j]=carry&0xFF;
+carry>>=8;
+}
+while(carry>0){bytes.push(carry&0xFF);carry>>=8}
+}
+for(var k=0;k<str.length&&str[k]===B58[0];k++)bytes.push(0);
+bytes.reverse();
+return new Uint8Array(bytes);
+}
+
+var MORSE={A:'.-',B:'-...',C:'-.-.',D:'-..',E:'.',F:'..-.',G:'--.',H:'....',I:'..',J:'.---',K:'-.-',L:'.-..',M:'--',N:'-.',O:'---',P:'.--.',Q:'--.-',R:'.-.',S:'...',T:'-',U:'..-',V:'...-',W:'.--',X:'-..-',Y:'-.--',Z:'--..','0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.','.':'.-.-.-',',':'--..--','?':'..--..',"'":'.----.','!':'-.-.--','/':'-..-.','(':'-.--.',')':'-.--.-','&':'.-...',':':'---...',';':'-.-.-.','=':'-...-','+':'.-.-.','-':'-....-','_':'..--.-','"':'.-..-.','@':'.--.-.'};
+var MORSE_R={};for(var k in MORSE)MORSE_R[MORSE[k]]=k;
+function morseEncode(s){return s.toUpperCase().split('').map(function(c){return c===' '?'/':(MORSE[c]||'')}).filter(function(x){return x}).join(' ')}
+function morseDecode(s){return s.split(' ').map(function(c){return c==='/'?' ':(MORSE_R[c]||'')}).join('')}
+
+function utf8Bytes(s){return new TextEncoder().encode(s)}
+function utf8Str(b){return new TextDecoder().decode(b)}
+function bytesToHex(b){return Array.from(b).map(function(x){return x.toString(16).padStart(2,'0')}).join('')}
+function hexToBytes(h){h=h.replace(/\s/g,'');var out=new Uint8Array(h.length/2);for(var i=0;i<out.length;i++)out[i]=parseInt(h.substr(i*2,2),16);return out}
+
+function b64enc(b){var bin='';for(var i=0;i<b.length;i++)bin+=String.fromCharCode(b[i]);return btoa(bin)}
+function b64dec(s){var bin=atob(s.replace(/\s/g,''));var out=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);return out}
+function b32enc(b){var A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';var bits=0,val=0,out='';for(var i=0;i<b.length;i++){val=(val<<8)|b[i];bits+=8;while(bits>=5){out+=A[(val>>>(bits-5))&31];bits-=5}}if(bits>0)out+=A[(val<<(5-bits))&31];while(out.length%8)out+='=';return out}
+function b32dec(s){var A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';s=s.replace(/=+$/,'').toUpperCase();var bits=0,val=0,out=[];for(var i=0;i<s.length;i++){var idx=A.indexOf(s[i]);if(idx<0)continue;val=(val<<5)|idx;bits+=5;if(bits>=8){bits-=8;out.push((val>>bits)&0xFF)}}return new Uint8Array(out)}
+function b85enc(b){return b64enc(b).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'')}
+function b85dec(s){var b=s.replace(/-/g,'+').replace(/_/g,'/');while(b.length%4)b+='=';return b64dec(b)}
+
+function runEncode(method,input){
+switch(method){
+case 'base64':return b64enc(utf8Bytes(input));
+case 'base32':return b32enc(utf8Bytes(input));
+case 'base58':return b58encode(utf8Bytes(input));
+case 'base85':return b85enc(utf8Bytes(input));
+case 'hex':return bytesToHex(utf8Bytes(input));
+case 'url':return encodeURIComponent(input);
+case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});
+case 'morse':return morseEncode(input);
+case 'binary':return Array.from(utf8Bytes(input)).map(function(x){return x.toString(2).padStart(8,'0')}).join(' ');
+case 'reverse':return input.split('').reverse().join('');
+}
+return '?';
+}
+function runDecode(method,input){
+try{
+switch(method){
+case 'base64':return utf8Str(b64dec(input));
+case 'base32':return utf8Str(b32dec(input));
+case 'base58':return utf8Str(b58decode(input));
+case 'base85':return utf8Str(b85dec(input));
+case 'hex':return utf8Str(hexToBytes(input));
+case 'url':return decodeURIComponent(input);
+case 'rot13':return input.replace(/[a-zA-Z]/g,function(c){var b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)});
+case 'morse':return morseDecode(input);
+case 'binary':var parts=input.trim().split(/\s+/);return utf8Str(new Uint8Array(parts.map(function(p){return parseInt(p,2)})));
+case 'reverse':return input.split('').reverse().join('');
+}
+}catch(e){return '✗ Gagal decode: '+e.message}
+return '?';
+}
+$('enc-run').onclick=function(){
+var m=$('enc-method').value,i=$('enc-input').value;
+if(!i){$('enc-output').textContent='—';sndError();return}
+var r=(encMode==='encode')?runEncode(m,i):runDecode(m,i);
+$('enc-output').textContent=r;
+sndSuccess();
+};
+$('enc-clear').onclick=function(){$('enc-input').value='';$('enc-output').textContent='—';sndClick()};
+$('enc-copy').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}navigator.clipboard.writeText(t).then(sndSuccess)};
+$('enc-dl').onclick=function(){var t=$('enc-output').textContent;if(!t||t==='—'){sndError();return}var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=(encMode==='encode'?'encoded':'decoded')+'_'+$('enc-method').value+'.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
+
 // OSINT
 $('ilook').onclick=function(){var ip=$('ipin').value.trim()||'';$('ires').textContent='Loading...';var url=ip?'https://ipapi.co/'+ip+'/json/':'https://ipapi.co/json/';fetch(url).then(function(r){return r.json()}).then(function(j){$('ires').innerHTML='IP: '+j.ip+'<br>Kota: '+(j.city||'-')+'<br>Negara: '+(j.country_name||'-')+'<br>ISP: '+(j.org||'-')+'<br>Lokasi: '+(j.latitude||'-')+','+(j.longitude||'-');sndSuccess()}).catch(function(){$('ires').textContent='Error';sndError()})};
 $('mip').onclick=function(){$('mres').textContent='Loading...';fetch('https://api.ipify.org?format=json').then(function(r){return r.json()}).then(function(j){$('mres').textContent='IP: '+j.ip;sndSuccess()}).catch(function(){$('mres').textContent='Error';sndError()})};
@@ -751,465 +994,122 @@ $('imst').onclick=function(){var inp=document.createElement('input');inp.type='f
 $('wipe').onclick=function(){if(confirm('Wipe ALL data?')){Object.keys(localStorage).forEach(function(k){if(k.indexOf('rx_')===0)localStorage.removeItem(k)});location.reload()}};
 document.querySelectorAll('[data-lang]').forEach(function(b){b.onclick=function(){S.set('lang',b.dataset.lang);sndClick();location.reload()}});
 
-// ============================================
-// PROXY SCRAPER v4.4 — target + counter live
-// ============================================
-var scrResults=[];
-var scrRunning=false;
-var SCR_CD=15*60*1000;
-
-function scrUpdateCooldownUI(){
-var last=S.get('scr_last',0);
-var diff=last+SCR_CD-Date.now();
-var btn=$('scr-start');
-if(!btn)return;
-if(scrRunning){btn.disabled=true;btn.textContent='⏳ SCRAPING...';return}
-if(diff>0){
-var m=Math.floor(diff/60000),s=Math.floor((diff%60000)/1000);
-btn.disabled=true;
-btn.textContent='⏳ TUNGGU '+m+'m '+s+'s';
-}else{
-btn.disabled=false;
-btn.textContent='▶ START SCRAPE';
-}
-}
-
-function scrSetProgress(cur,total){
-var pct=total>0?Math.min(100,(cur/total)*100):0;
-$('scr-prog-fill').style.width=pct+'%';
-$('scr-prog-txt').textContent=cur+' / '+total;
-$('scr-prog-label').textContent='MENGUMPULKAN PROXY · '+pct.toFixed(1)+'%';
-}
-
-$('scr-clear').onclick=function(){
-if(scrRunning){alert('Masih jalan, tunggu selesai');return}
-$('scr-log').innerHTML='';$('scr-pbox').classList.add('hd');scrResults=[];
-$('scr-prog-wrap').classList.remove('on');sndClick();
-};
-
+// PROXY SCRAPER
+var scrResults=[];var scrRunning=false;var SCR_CD=15*60*1000;
+function scrUpdateCooldownUI(){var last=S.get('scr_last',0);var diff=last+SCR_CD-Date.now();var btn=$('scr-start');if(!btn)return;if(scrRunning){btn.disabled=true;btn.textContent='⏳ SCRAPING...';return}if(diff>0){var m=Math.floor(diff/60000),s=Math.floor((diff%60000)/1000);btn.disabled=true;btn.textContent='⏳ TUNGGU '+m+'m '+s+'s';}else{btn.disabled=false;btn.textContent='▶ START SCRAPE';}}
+function scrSetProgress(cur,total){var pct=total>0?Math.min(100,(cur/total)*100):0;$('scr-prog-fill').style.width=pct+'%';$('scr-prog-txt').textContent=cur+' / '+total;$('scr-prog-label').textContent='MENGUMPULKAN PROXY · '+pct.toFixed(1)+'%';}
+$('scr-clear').onclick=function(){if(scrRunning){alert('Masih jalan');return}$('scr-log').innerHTML='';$('scr-pbox').classList.add('hd');scrResults=[];$('scr-prog-wrap').classList.remove('on');sndClick()};
 $('scr-start').onclick=async function(){
-if(scrRunning){return}
-var last=S.get('scr_last',0);
-var diff=last+SCR_CD-Date.now();
+if(scrRunning)return;
+var last=S.get('scr_last',0);var diff=last+SCR_CD-Date.now();
 if(diff>0){var m=Math.ceil(diff/60000);logTo('scr-log','⏳ Cooldown aktif — tunggu '+m+' menit','warn');sndError();return}
 var sources=$('scr-sources').value.split('\n').map(function(x){return x.trim()}).filter(function(x){return x});
 if(!sources.length){alert('Sumber kosong');sndError();return}
 var target=parseInt($('scr-target').value)||10000;
 if(target<100)target=100;if(target>120000)target=120000;
 $('scr-target').value=target;
-scrRunning=true;
-$('scr-prog-wrap').classList.add('on');
-scrSetProgress(0,target);
+scrRunning=true;$('scr-prog-wrap').classList.add('on');scrSetProgress(0,target);
 $('scr-log').innerHTML='';scrResults=[];
-logTo('scr-log','Target: '+target+' proxy · Sumber: '+sources.length,'in');
-logTo('scr-log','Mode: 2 detik per batch','dim');
-sndSuccess();
+logTo('scr-log','Target: '+target+' proxy · Sumber: '+sources.length,'in');logTo('scr-log','Mode: 2 detik per batch','dim');sndSuccess();
 var seen={};var total=0;var stopFlag=false;
 for(var i=0;i<sources.length;i++){
 if(total>=target){stopFlag=true;break}
-var url=sources[i];
-var shortName=url.split('/').slice(-1)[0]||url;
+var url=sources[i];var shortName=url.split('/').slice(-1)[0]||url;
 logTo('scr-log','['+(i+1)+'/'+sources.length+'] '+shortName,'dim');
-try{
-var r=await fetch(url);
-var t=await r.text();
-var found=t.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+/g)||[];
-var uniq=0;
-for(var k=0;k<found.length;k++){
-var p=found[k];
-if(!seen[p]){seen[p]=1;scrResults.push(p);uniq++;total++;}
-if(total>=target)break;
-}
-logTo('scr-log','  ✓ +'+uniq+' baru · total '+total+'/'+target,'ok');
-}catch(e){
-logTo('scr-log','  ✗ '+e.message,'er');
-}
+try{var r=await fetch(url);var t=await r.text();var found=t.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+/g)||[];var uniq=0;for(var k=0;k<found.length;k++){var p=found[k];if(!seen[p]){seen[p]=1;scrResults.push(p);uniq++;total++;}if(total>=target)break}logTo('scr-log','  ✓ +'+uniq+' baru · total '+total+'/'+target,'ok');}catch(e){logTo('scr-log','  ✗ '+e.message,'er');}
 scrSetProgress(total,target);
 if(total>=target){stopFlag=true;break}
 await new Promise(function(res){setTimeout(res,2000)});
 }
 scrRunning=false;
-if(stopFlag&&total>=target){
-logTo('scr-log','','');
-logTo('scr-log','✓ SELESAI — Target tercapai: '+total+'/'+target,'in');
-$('scr-prog-label').textContent='SELESAI · TARGET TERCAPAI';
-}else{
-logTo('scr-log','','');
-logTo('scr-log','⚠ STOP — Sumber abis. Total: '+total+'/'+target,'warn');
-$('scr-prog-label').textContent='STOP · SUMBER ABIS';
-}
-S.set('scr_last',Date.now());
-logTo('scr-log','⏳ Cooldown 15 menit dimulai','warn');
-sndSuccess();
-scrUpdateCooldownUI();
+if(stopFlag&&total>=target){logTo('scr-log','','');logTo('scr-log','✓ SELESAI — Target tercapai: '+total+'/'+target,'in');$('scr-prog-label').textContent='SELESAI · TARGET TERCAPAI';}
+else{logTo('scr-log','','');logTo('scr-log','⚠ STOP — Sumber abis. Total: '+total+'/'+target,'warn');$('scr-prog-label').textContent='STOP · SUMBER ABIS';}
+S.set('scr_last',Date.now());logTo('scr-log','⏳ Cooldown 15 menit dimulai','warn');sndSuccess();scrUpdateCooldownUI();
 };
-
 $('scr-preview').onclick=function(){var pb=$('scr-pbox');if(pb.classList.contains('hd')){pb.textContent=scrResults.slice(0,50).join('\n')+(scrResults.length>50?'\n\n... +'+(scrResults.length-50)+' lagi':'');pb.classList.remove('hd')}else pb.classList.add('hd')};
 $('scr-dl').onclick=function(){if(!scrResults.length){alert('Belum ada hasil');sndError();return}var b=new Blob([scrResults.join('\n')],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='proxies.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();setTimeout(function(){URL.revokeObjectURL(u)},1000)};
 
-// ============================================
-// VERCEL DEPLOYER v4.4 — total project + token check + file drop
-// ============================================
-var scrVFiles=[];
-var scrVRunning=false;
-
-$('scr-vclear').onclick=function(){
-if(scrVRunning){alert('Masih jalan');return}
-$('scr-vlog').innerHTML='';$('scr-vresult').classList.add('hd');
-scrVFiles=[];renderVFileList();
-$('scr-vprog-wrap').classList.remove('on');
-sndClick();
-};
-
-function renderVFileList(){
-var el=$('scr-vlist');
-if(!scrVFiles.length){el.innerHTML='';return}
-el.innerHTML=scrVFiles.map(function(f,i){
-return '<div class="fitem"><span class="nm">'+f.name+'</span><span class="sz">'+(f.size/1024).toFixed(1)+'KB</span><span class="rm" data-i="'+i+'">✕</span></div>';
-}).join('');
-el.querySelectorAll('.rm').forEach(function(r){
-r.onclick=function(){
-var i=parseInt(r.dataset.i);
-scrVFiles.splice(i,1);
-renderVFileList();
-};
-});
-}
-
-function addVFiles(fileList){
-for(var i=0;i<fileList.length;i++){
-var f=fileList[i];
-var dup=scrVFiles.some(function(x){return x.name===f.name&&x.size===f.size});
-if(!dup)scrVFiles.push(f);
-}
-renderVFileList();
-}
-
+// VERCEL DEPLOYER
+var scrVFiles=[];var scrVRunning=false;
+$('scr-vclear').onclick=function(){if(scrVRunning){alert('Masih jalan');return}$('scr-vlog').innerHTML='';$('scr-vresult').classList.add('hd');scrVFiles=[];renderVFileList();$('scr-vprog-wrap').classList.remove('on');sndClick()};
+function renderVFileList(){var el=$('scr-vlist');if(!scrVFiles.length){el.innerHTML='';return}el.innerHTML=scrVFiles.map(function(f,i){return '<div class="fitem"><span class="nm">'+f.name+'</span><span class="sz">'+(f.size/1024).toFixed(1)+'KB</span><span class="rm" data-i="'+i+'">✕</span></div>'}).join('');el.querySelectorAll('.rm').forEach(function(r){r.onclick=function(){var i=parseInt(r.dataset.i);scrVFiles.splice(i,1);renderVFileList()}})}
+function addVFiles(fileList){for(var i=0;i<fileList.length;i++){var f=fileList[i];var dup=scrVFiles.some(function(x){return x.name===f.name&&x.size===f.size});if(!dup)scrVFiles.push(f)}renderVFileList()}
 $('scr-vdrop').onclick=function(){$('scr-vfile').click()};
 $('scr-vfile').onchange=function(e){addVFiles(e.target.files);e.target.value='';sndSuccess()};
-['dragenter','dragover'].forEach(function(ev){
-$('scr-vdrop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('scr-vdrop').classList.add('dragover')});
-});
-['dragleave','drop'].forEach(function(ev){
-$('scr-vdrop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('scr-vdrop').classList.remove('dragover')});
-});
-$('scr-vdrop').addEventListener('drop',function(e){
-if(e.dataTransfer&&e.dataTransfer.files){addVFiles(e.dataTransfer.files);sndSuccess()}
-});
-
-function vercelSuffix(){
-var c='abcdefghijklmnopqrstuvwxyz0123456789';
-var s='';
-for(var i=0;i<5;i++)s+=c[Math.floor(Math.random()*c.length)];
-return s;
-}
-function vercelNormName(n){
-n=(n||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');
-if(!n)n='project';
-return n;
-}
-function fileToBase64(file){
-return new Promise(function(res,rej){
-var r=new FileReader();
-r.onload=function(){var s=r.result;var i=s.indexOf(',');res(s.substring(i+1))};
-r.onerror=rej;
-r.readAsDataURL(file);
-});
-}
-function fetchWithTimeout(url,opts,timeoutMs){
-return new Promise(function(resolve,reject){
-var timer=setTimeout(function(){reject(new Error('TIMEOUT_'+timeoutMs))},timeoutMs);
-fetch(url,opts).then(function(r){clearTimeout(timer);resolve(r)}).catch(function(e){clearTimeout(timer);reject(e)});
-});
-}
-
-function scrVSetProgress(cur,total,label){
-var pct=total>0?Math.min(100,(cur/total)*100):0;
-$('scr-vprog-fill').style.width=pct+'%';
-$('scr-vprog-txt').textContent=cur+' / '+total;
-$('scr-vprog-label').textContent=(label||'DEPLOY')+' · '+pct.toFixed(1)+'%';
-}
-
+['dragenter','dragover'].forEach(function(ev){$('scr-vdrop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('scr-vdrop').classList.add('dragover')})});
+['dragleave','drop'].forEach(function(ev){$('scr-vdrop').addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();$('scr-vdrop').classList.remove('dragover')})});
+$('scr-vdrop').addEventListener('drop',function(e){if(e.dataTransfer&&e.dataTransfer.files){addVFiles(e.dataTransfer.files);sndSuccess()}});
+function vercelSuffix(){var c='abcdefghijklmnopqrstuvwxyz0123456789';var s='';for(var i=0;i<5;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
+function vercelNormName(n){n=(n||'').toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'');if(!n)n='project';return n}
+function fileToBase64(file){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){var s=r.result;var i=s.indexOf(',');res(s.substring(i+1))};r.onerror=rej;r.readAsDataURL(file)})}
+function fetchWithTimeout(url,opts,timeoutMs){return new Promise(function(resolve,reject){var timer=setTimeout(function(){reject(new Error('TIMEOUT_'+timeoutMs))},timeoutMs);fetch(url,opts).then(function(r){clearTimeout(timer);resolve(r)}).catch(function(e){clearTimeout(timer);reject(e)})})}
+function scrVSetProgress(cur,total,label){var pct=total>0?Math.min(100,(cur/total)*100):0;$('scr-vprog-fill').style.width=pct+'%';$('scr-vprog-txt').textContent=cur+' / '+total;$('scr-vprog-label').textContent=(label||'DEPLOY')+' · '+pct.toFixed(1)+'%'}
 $('scr-vdeploy').onclick=async function(){
 if(scrVRunning){alert('Masih jalan');return}
-var tok=$('scr-vtoken').value.trim();
-var rawName=$('scr-vname').value.trim();
-var totalProj=parseInt($('scr-vtotal').value)||20;
-if(totalProj<1)totalProj=1;if(totalProj>20)totalProj=20;
-$('scr-vtotal').value=totalProj;
+var tok=$('scr-vtoken').value.trim();var rawName=$('scr-vname').value.trim();var totalProj=parseInt($('scr-vtotal').value)||20;
+if(totalProj<1)totalProj=1;if(totalProj>20)totalProj=20;$('scr-vtotal').value=totalProj;
 if(!tok){alert('Token kosong');sndError();return}
 if(!rawName){alert('Project name kosong');sndError();return}
 if(!scrVFiles.length){alert('Belum ada file');sndError();return}
-
-var log=$('scr-vlog');log.innerHTML='';
-scrVRunning=true;
-$('scr-vprog-wrap').classList.add('on');
-scrVSetProgress(0,totalProj,'INIT');
-
-// ===== STEP 1: TOKEN CHECK =====
+var log=$('scr-vlog');log.innerHTML='';scrVRunning=true;$('scr-vprog-wrap').classList.add('on');scrVSetProgress(0,totalProj,'INIT');
 logTo('scr-vlog','Memverifikasi token Vercel...','in');
 var userOk=false;
 try{
-var r1=await fetchWithTimeout('https://api.vercel.com/v2/user',{
-headers:{'Authorization':'Bearer '+tok}
-},10000);
-if(r1.ok){
-var u=await r1.json();
-userOk=true;
-logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN','ok');
-if(u.user){logTo('scr-vlog','   User: '+(u.user.username||u.user.email||'-'),'dim')}
-}else if(r1.status===401||r1.status===403){
-logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');
-logTo('scr-vlog','   Token invalid / expired','dim');
-sndError();scrVRunning=false;return;
-}else{
-logTo('scr-vlog','⚠ HTTP '+r1.status+' saat cek token','warn');
-}
+var r1=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},10000);
+if(r1.ok){var u=await r1.json();userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN','ok');if(u.user)logTo('scr-vlog','   User: '+(u.user.username||u.user.email||'-'),'dim');}
+else if(r1.status===401||r1.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');logTo('scr-vlog','   Token invalid / expired','dim');sndError();scrVRunning=false;return;}
+else logTo('scr-vlog','⚠ HTTP '+r1.status+' saat cek token','warn');
 }catch(e){
 if(e.message&&e.message.indexOf('TIMEOUT')===0){
 logTo('scr-vlog','⚠ Koneksi lambat, retry dengan timeout 60s...','warn');
-try{
-var r2=await fetchWithTimeout('https://api.vercel.com/v2/user',{
-headers:{'Authorization':'Bearer '+tok}
-},60000);
-if(r2.ok){userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN (retry)','ok')}
-else if(r2.status===401||r2.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return}
-else{logTo('scr-vlog','⚠ HTTP '+r2.status,'warn')}
-}catch(e2){
-logTo('scr-vlog','❌ Token check gagal total (60s timeout)','er');
-sndError();scrVRunning=false;return;
+try{var r2=await fetchWithTimeout('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}},60000);if(r2.ok){userOk=true;logTo('scr-vlog','✅ AKUN VERCEL DITEMUKAN (retry)','ok')}else if(r2.status===401||r2.status===403){logTo('scr-vlog','❌ AKUN VERCEL TIDAK DITEMUKAN','er');sndError();scrVRunning=false;return;}else logTo('scr-vlog','⚠ HTTP '+r2.status,'warn');}
+catch(e2){logTo('scr-vlog','❌ Token check gagal total (60s timeout)','er');sndError();scrVRunning=false;return;}
+}else logTo('scr-vlog','⚠ Fetch error: '+e.message,'warn');
 }
-}else{
-logTo('scr-vlog','⚠ Fetch error: '+e.message,'warn');
-}
-}
-if(!userOk){
-logTo('scr-vlog','❌ Token check gagal — deploy dihentikan','er');
-sndError();scrVRunning=false;return;
-}
-
-// ===== STEP 2: READ FILES → BASE64 =====
+if(!userOk){logTo('scr-vlog','❌ Token check gagal — deploy dihentikan','er');sndError();scrVRunning=false;return;}
 logTo('scr-vlog','Membaca '+scrVFiles.length+' file...','dim');
 var payloadFiles=[];
-for(var i=0;i<scrVFiles.length;i++){
-var f=scrVFiles[i];
-try{
-var b64=await fileToBase64(f);
-payloadFiles.push({file:f.name,data:b64,encoding:'base64'});
-logTo('scr-vlog','  · '+f.name+' ('+(f.size/1024).toFixed(1)+' KB)','ok');
-}catch(e){
-logTo('scr-vlog','  ✗ Gagal baca '+f.name,'er');
-sndError();scrVRunning=false;return;
-}
-}
-var hasIndex=payloadFiles.some(function(x){return x.file==='index.html'});
-if(!hasIndex){logTo('scr-vlog','⚠ Gak ada index.html','warn')}
-
-// ===== STEP 3: DEPLOY LOOP =====
-var base=vercelNormName(rawName);
-var okCount=0;var failCount=0;
-var resultUrls=[];
-
+for(var i=0;i<scrVFiles.length;i++){var f=scrVFiles[i];try{var b64=await fileToBase64(f);payloadFiles.push({file:f.name,data:b64,encoding:'base64'});logTo('scr-vlog','  · '+f.name+' ('+(f.size/1024).toFixed(1)+' KB)','ok');}catch(e){logTo('scr-vlog','  ✗ Gagal baca '+f.name,'er');sndError();scrVRunning=false;return;}}
+var hasIndex=payloadFiles.some(function(x){return x.file==='index.html'});if(!hasIndex)logTo('scr-vlog','⚠ Gak ada index.html','warn');
+var base=vercelNormName(rawName);var okCount=0;var failCount=0;var resultUrls=[];
 for(var p=0;p<totalProj;p++){
 var projName=base+'-'+vercelSuffix();
-logTo('scr-vlog','','');
-logTo('scr-vlog','[DEPLOY '+(p+1)+'/'+totalProj+'] '+projName,'in');
+logTo('scr-vlog','','');logTo('scr-vlog','[DEPLOY '+(p+1)+'/'+totalProj+'] '+projName,'in');
 scrVSetProgress(p,totalProj,'DEPLOY '+projName);
-
 try{
-var r=await fetch('https://api.vercel.com/v13/deployments',{
-method:'POST',
-headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},
-body:JSON.stringify({
-name:projName,
-files:payloadFiles,
-projectSettings:{framework:null}
-})
-});
+var r=await fetch('https://api.vercel.com/v13/deployments',{method:'POST',headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({name:projName,files:payloadFiles,projectSettings:{framework:null}})});
 var j=await r.json();
-if(r.ok){
-var url='https://'+j.url;
-logTo('scr-vlog','  ✓ '+url,'ok');
-resultUrls.push(url);
-okCount++;
-}else{
-var em=(j.error&&j.error.message)||JSON.stringify(j);
-logTo('scr-vlog','  ✗ GAGAL: '+em,'er');
-failCount++;
-logTo('scr-vlog','','');
-logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' gagal.','er');
-logTo('scr-vlog','   Sukses: '+okCount+'/'+totalProj+' · Gagal: '+failCount+'/'+totalProj,'warn');
-scrVRunning=false;
-sndError();
-var el=$('scr-vresult');
-el.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');
-el.classList.remove('hd');
-return;
+if(r.ok){var url='https://'+j.url;logTo('scr-vlog','  ✓ '+url,'ok');resultUrls.push(url);okCount++;}
+else{var em=(j.error&&j.error.message)||JSON.stringify(j);logTo('scr-vlog','  ✗ GAGAL: '+em,'er');failCount++;logTo('scr-vlog','','');logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' gagal.','er');logTo('scr-vlog','   Sukses: '+okCount+'/'+totalProj+' · Gagal: '+failCount+'/'+totalProj,'warn');scrVRunning=false;sndError();var el=$('scr-vresult');el.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');el.classList.remove('hd');return;}
+}catch(e){logTo('scr-vlog','  ✗ Fetch error: '+e.message,'er');failCount++;logTo('scr-vlog','','');logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' error.','er');scrVRunning=false;sndError();var el2=$('scr-vresult');el2.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');el2.classList.remove('hd');return;}
+if(p<totalProj-1){var wait=2000+Math.floor(Math.random()*3000);logTo('scr-vlog','  ⏳ Jeda '+wait+'ms...','dim');await new Promise(function(res){setTimeout(res,wait)});}
 }
-}catch(e){
-logTo('scr-vlog','  ✗ Fetch error: '+e.message,'er');
-failCount++;
-logTo('scr-vlog','','');
-logTo('scr-vlog','❌ STOP — Deploy #'+(p+1)+' error.','er');
-scrVRunning=false;
-sndError();
-var el2=$('scr-vresult');
-el2.innerHTML='<b>STOPPED</b><br>Sukses: '+okCount+'<br>Gagal: '+failCount+'<br><br>'+resultUrls.map(function(u){return '✓ '+u}).join('<br>');
-el2.classList.remove('hd');
-return;
-}
-
-if(p<totalProj-1){
-var wait=2000+Math.floor(Math.random()*3000);
-logTo('scr-vlog','  ⏳ Jeda '+wait+'ms...','dim');
-await new Promise(function(res){setTimeout(res,wait)});
-}
-}
-
-// ===== DONE =====
-logTo('scr-vlog','','');
-logTo('scr-vlog','✅ SEMUA DEPLOY SUKSES — '+okCount+'/'+totalProj,'in');
-scrVSetProgress(totalProj,totalProj,'SELESAI');
-sndSuccess();
-var el3=$('scr-vresult');
-el3.innerHTML='<b>✓ '+okCount+' PROJECT DEPLOYED</b><br><br>'+resultUrls.map(function(u,i){return (i+1)+'. '+u}).join('<br>');
-el3.classList.remove('hd');
-scrVRunning=false;
+logTo('scr-vlog','','');logTo('scr-vlog','✅ SEMUA DEPLOY SUKSES — '+okCount+'/'+totalProj,'in');scrVSetProgress(totalProj,totalProj,'SELESAI');sndSuccess();
+var el3=$('scr-vresult');el3.innerHTML='<b>✓ '+okCount+' PROJECT DEPLOYED</b><br><br>'+resultUrls.map(function(u,i){return (i+1)+'. '+u}).join('<br>');el3.classList.remove('hd');scrVRunning=false;
 };
 
-// ============================================================
-// TEMP MAIL — mail.tm via CORS proxy fallback
-// ============================================================
-var tmpToken=null;
-var tmpEmail=null;
-var tmpMsgs=[];
-var CORS_PROXIES=[
-'https://corsproxy.io/?url=',
-'https://api.allorigins.win/raw?url=',
-'https://cors.eu.org/'
-];
-
-async function tmpFetch(url,opts){
-var lastErr=null;
-for(var i=0;i<CORS_PROXIES.length;i++){
-var p=CORS_PROXIES[i];
-var full=p+encodeURIComponent(url);
-try{
-var r=await fetch(full,opts||{});
-if(r.ok)return r;
-lastErr=new Error('HTTP '+r.status);
-}catch(e){lastErr=e}
-}
-throw lastErr||new Error('All proxies failed');
-}
-
-async function tmpLoadDomains(){
-var sel=$('tmp-domain');
-sel.innerHTML='<option value="">Loading domains...</option>';
-try{
-var r=await tmpFetch('https://api.mail.tm/domains');
-var j=await r.json();
-var arr=j['hydra:member']||[];
-if(!arr.length)throw new Error('Domain list kosong');
-sel.innerHTML='<option value="">— Pilih Domain —</option>';
-arr.forEach(function(d){
-var o=document.createElement('option');
-o.value=d.domain;o.textContent=d.domain;
-sel.appendChild(o);
-});
-logTo('tmp-log','✓ '+arr.length+' domain loaded','ok');
-}catch(e){
-sel.innerHTML='<option value="">✗ Gagal load — klik RELOAD</option>';
-logTo('tmp-log','✗ Gagal load domain: '+e.message,'er');
-}
-}
+// TEMP MAIL
+var tmpToken=null;var tmpEmail=null;var tmpMsgs=[];
+var CORS_PROXIES=['https://corsproxy.io/?url=','https://api.allorigins.win/raw?url=','https://cors.eu.org/'];
+async function tmpFetch(url,opts){var lastErr=null;for(var i=0;i<CORS_PROXIES.length;i++){var p=CORS_PROXIES[i];var full=p+encodeURIComponent(url);try{var r=await fetch(full,opts||{});if(r.ok)return r;lastErr=new Error('HTTP '+r.status);}catch(e){lastErr=e}}throw lastErr||new Error('All proxies failed')}
+async function tmpLoadDomains(){var sel=$('tmp-domain');sel.innerHTML='<option value="">Loading domains...</option>';try{var r=await tmpFetch('https://api.mail.tm/domains');var j=await r.json();var arr=j['hydra:member']||[];if(!arr.length)throw new Error('Domain list kosong');sel.innerHTML='<option value="">— Pilih Domain —</option>';arr.forEach(function(d){var o=document.createElement('option');o.value=d.domain;o.textContent=d.domain;sel.appendChild(o)});logTo('tmp-log','✓ '+arr.length+' domain loaded','ok');}catch(e){sel.innerHTML='<option value="">✗ Gagal load — klik RELOAD</option>';logTo('tmp-log','✗ Gagal load domain: '+e.message,'er');}}
 $('tmp-reaload').onclick=function(){tmpLoadDomains();sndClick()};
-
-$('tmp-gen').onclick=async function(){
-var nm=$('tmp-name').value.trim()||('user'+Math.floor(Math.random()*99999));
-var dom=$('tmp-domain').value;
-if(!dom){alert('Pilih domain dulu');sndError();return}
-var em=nm+'@'+dom;
-var pw='RyannTmp!'+Math.floor(Math.random()*99999);
-logTo('tmp-log','Bikin akun '+em+'...','in');
-try{
-var r=await tmpFetch('https://api.mail.tm/accounts',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({address:em,password:pw})
-});
-var j=await r.json();
-if(!r.ok){logTo('tmp-log','✗ '+(j.message||JSON.stringify(j)),'er');sndError();return}
-logTo('tmp-log','✓ Akun dibuat','ok');
-var r2=await tmpFetch('https://api.mail.tm/token',{
-method:'POST',
-headers:{'Content-Type':'application/json'},
-body:JSON.stringify({address:em,password:pw})
-});
-var j2=await r2.json();
-tmpToken=j2.token;tmpEmail=em;
-$('tmp-email').textContent=em;
-logTo('tmp-log','✓ Login berhasil · token siap','ok');
-sndSuccess();
-}catch(e){logTo('tmp-log','✗ '+e.message,'er');sndError()}
-};
-
+$('tmp-gen').onclick=async function(){var nm=$('tmp-name').value.trim()||('user'+Math.floor(Math.random()*99999));var dom=$('tmp-domain').value;if(!dom){alert('Pilih domain dulu');sndError();return}var em=nm+'@'+dom;var pw='RyannTmp!'+Math.floor(Math.random()*99999);logTo('tmp-log','Bikin akun '+em+'...','in');try{var r=await tmpFetch('https://api.mail.tm/accounts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j=await r.json();if(!r.ok){logTo('tmp-log','✗ '+(j.message||JSON.stringify(j)),'er');sndError();return}logTo('tmp-log','✓ Akun dibuat','ok');var r2=await tmpFetch('https://api.mail.tm/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:em,password:pw})});var j2=await r2.json();tmpToken=j2.token;tmpEmail=em;$('tmp-email').textContent=em;logTo('tmp-log','✓ Login berhasil · token siap','ok');sndSuccess();}catch(e){logTo('tmp-log','✗ '+e.message,'er');sndError()}};
 $('tmp-copy').onclick=function(){if(tmpEmail)navigator.clipboard.writeText(tmpEmail).then(sndSuccess)};
-
-$('tmp-refresh').onclick=async function(){
-if(!tmpToken){alert('Generate dulu');sndError();return}
-logTo('tmp-inbox-log','Cek inbox...','dim');
-try{
-var r=await tmpFetch('https://api.mail.tm/messages',{headers:{'Authorization':'Bearer '+tmpToken}});
-var j=await r.json();
-tmpMsgs=j['hydra:member']||[];
-logTo('tmp-inbox-log','✓ '+tmpMsgs.length+' pesan','ok');
-var el=$('tmp-list');
-if(!tmpMsgs.length){el.innerHTML='<div class="r">Belum ada pesan</div>';return}
-el.innerHTML=tmpMsgs.map(function(m,i){
-return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'<div style="color:var(--txd);font-size:.55rem;margin-top:3px">'+(m.intro||'')+'</div></div>';
-}).join('');
-el.querySelectorAll('.msg-item').forEach(function(it){it.onclick=function(){tmpShowMsg(parseInt(it.dataset.i))}});
-sndSuccess();
-}catch(e){logTo('tmp-inbox-log','✗ '+e.message,'er');sndError()}
-};
-
-async function tmpShowMsg(i){
-var m=tmpMsgs[i];if(!m)return;
-try{
-var r=await tmpFetch('https://api.mail.tm/messages/'+m.id,{headers:{'Authorization':'Bearer '+tmpToken}});
-var j=await r.json();
-var view=$('tmp-msg-view');
-var body='<div style="font-size:.65rem"><b>From:</b> '+j.from.address+'<br><b>Subject:</b> '+j.subject+'<br><hr style="margin:6px 0;border:none;border-top:1px solid var(--border)">'+(j.html&&j.html.length?'<div>'+j.html.join('')+'</div>':(j.text||'(kosong)'))+'</div>';
-view.innerHTML=body;
-view.classList.remove('hd');
-sndSuccess();
-}catch(e){alert('Gagal load pesan');sndError()}
-}
-
-$('tmp-inbox-dl').onclick=function(){
-if(!tmpMsgs.length){alert('Belum ada pesan');sndError();return}
-var t=tmpMsgs.map(function(m){return 'From: '+m.from.address+'\nSubject: '+m.subject+'\nIntro: '+m.intro+'\n---';}).join('\n\n');
-var b=new Blob([t],{type:'text/plain'});
-var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='inbox.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess();
-};
-
+$('tmp-refresh').onclick=async function(){if(!tmpToken){alert('Generate dulu');sndError();return}logTo('tmp-inbox-log','Cek inbox...','dim');try{var r=await tmpFetch('https://api.mail.tm/messages',{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();tmpMsgs=j['hydra:member']||[];logTo('tmp-inbox-log','✓ '+tmpMsgs.length+' pesan','ok');var el=$('tmp-list');if(!tmpMsgs.length){el.innerHTML='<div class="r">Belum ada pesan</div>';return}el.innerHTML=tmpMsgs.map(function(m,i){return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'<div style="color:var(--txd);font-size:.55rem;margin-top:3px">'+(m.intro||'')+'</div></div>'}).join('');el.querySelectorAll('.msg-item').forEach(function(it){it.onclick=function(){tmpShowMsg(parseInt(it.dataset.i))}});sndSuccess();}catch(e){logTo('tmp-inbox-log','✗ '+e.message,'er');sndError()}};
+async function tmpShowMsg(i){var m=tmpMsgs[i];if(!m)return;try{var r=await tmpFetch('https://api.mail.tm/messages/'+m.id,{headers:{'Authorization':'Bearer '+tmpToken}});var j=await r.json();var view=$('tmp-msg-view');var body='<div style="font-size:.65rem"><b>From:</b> '+j.from.address+'<br><b>Subject:</b> '+j.subject+'<br><hr style="margin:6px 0;border:none;border-top:1px solid var(--border)">'+(j.html&&j.html.length?'<div>'+j.html.join('')+'</div>':(j.text||'(kosong)'))+'</div>';view.innerHTML=body;view.classList.remove('hd');sndSuccess();}catch(e){alert('Gagal load pesan');sndError()}}
+$('tmp-inbox-dl').onclick=function(){if(!tmpMsgs.length){alert('Belum ada pesan');sndError();return}var t=tmpMsgs.map(function(m){return 'From: '+m.from.address+'\nSubject: '+m.subject+'\nIntro: '+m.intro+'\n---';}).join('\n\n');var b=new Blob([t],{type:'text/plain'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='inbox.txt';document.body.appendChild(a);a.click();document.body.removeChild(a);sndSuccess()};
 tmpLoadDomains();
 
 // BOOT
 function boot(){
-setTema(S.get('theme','t-cyan'));
-setBg(S.get('bg','galaxy'));
-applyMode();
+setTema(S.get('theme','t-cyan'));setBg(S.get('bg','galaxy'));applyMode();loadCustomTheme();
 var f=S.get('font',13);$('fsr').value=f;document.documentElement.style.setProperty('--fs',f+'px');$('fv').textContent=f+'px';
 var ff=S.get('ffam',"'JetBrains Mono',monospace");$('ffam').value=ff;document.documentElement.style.setProperty('--fm',ff);
 document.querySelectorAll('#snd-grid .snd-opt').forEach(function(x){x.classList.toggle('a',x.dataset.snd===sndPack)});
-$('st-g').textContent=S.get('generates',0);
-$('st-d').textContent=S.get('downloads',0);
-$('st-s').textContent=S.get('snippet_count',0);
+$('st-g').textContent=S.get('generates',0);$('st-d').textContent=S.get('downloads',0);$('st-s').textContent=S.get('snippet_count',0);
 renderHist();renderTpl();checkAch(S.get('generates',0));
-scrUpdateCooldownUI();
-setInterval(scrUpdateCooldownUI,1000);
+scrUpdateCooldownUI();setInterval(scrUpdateCooldownUI,1000);
 }
 boot();
 setTimeout(function(){if(!window.TEMPLATE_COMMAND){$('sw').innerHTML='<div class="st-er" style="font-size:.55rem">⚠ templates.js gak load</div>'}},400);
