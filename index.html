@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>TOOLS BY RYANNXD · v5.7</title>
+<title>TOOLS BY RYANNXD · v5.8</title>
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,31 +32,49 @@ body[data-theme="t-fuchsia"]{--ac:#e879f9;--ac2:#f0abfc;--acd:rgba(232,121,249,.
 body[data-theme="t-slate"]{--ac:#94a3b8;--ac2:#cbd5e1;--acd:rgba(148,163,184,.15);--bl:#4a5c73;--border:#334155}
 body[data-theme="t-mono"]{--ac:#e0f2fe;--ac2:#f8fafc;--acd:rgba(224,242,254,.15);--bl:#4a5c73;--border:#334155}
 
-/* ===== BACKGROUND ENGINE ===== */
+/* ===== BACKGROUND ENGINE v5.8 ===== */
 .bg-layer{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.bg-layer .stars,.bg-layer .bin-col,.bg-layer .ufo-wrap{position:absolute;pointer-events:none}
 
-/* GALAXY — shooting stars + star field */
-body.bg-galaxy::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg)}
-body.bg-galaxy .bg-layer::before{content:"";position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 75% 40%,#a5f3fc,transparent),radial-gradient(1px 1px at 90% 80%,#fff,transparent),radial-gradient(1.5px 1.5px at 15% 85%,#e0f2fe,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
-body.bg-galaxy .bg-layer::after{content:"";position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff,0 0 16px #67e8f9;animation:shootingStar 7s linear infinite}
+/* GALAXY — starfield + 2 shooting stars */
+body.bg-galaxy::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg);transition:background .4s}
+body.bg-galaxy .stars{inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 75% 40%,#a5f3fc,transparent),radial-gradient(1px 1px at 90% 80%,#fff,transparent),radial-gradient(1.5px 1.5px at 15% 85%,#e0f2fe,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
+body.bg-galaxy .stars::after{content:"";position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff,0 0 16px var(--ac);animation:shootingStar 7s linear infinite}
+body.bg-galaxy .stars::before{content:"";position:absolute;top:30%;left:-15%;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff;animation:shootingStar 9s linear infinite 2s}
 @keyframes shootingStar{0%{transform:translate(0,0);opacity:0}3%{opacity:1}85%{opacity:1}100%{transform:translate(120vw,80vh);opacity:0}}
 @keyframes starTwinkle{0%,100%{opacity:.5}50%{opacity:1}}
 
-/* BINARY — matrix green rain top→bottom */
-body.bg-binary::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#031008,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#051a0c,transparent 55%),#020805}
-body.bg-binary .bg-layer::before{content:"01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100 00100000 01000010 01101001 01101110 01100001 01110010 01111001 00100000 01010010 01100001 01101001 01101110 00100000 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00100000 01001101 01100001 01110100 01110010 01101001 01111000 00100000 01000101 01100110 01100110 01100101 01100011 01110100";position:absolute;top:-120%;left:0;right:0;font-family:'JetBrains Mono',monospace;font-size:15px;line-height:1.6;color:rgba(74,222,128,.6);word-break:break-all;padding:0 14px;animation:binaryFall 9s linear infinite;text-shadow:0 0 8px rgba(74,222,128,.8),0 0 2px rgba(74,222,128,1);letter-spacing:1px}
-body.bg-binary .bg-layer::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,8,5,.9),transparent 15%,transparent 85%,rgba(2,8,5,.9));pointer-events:none}
-@keyframes binaryFall{from{transform:translateY(0)}to{transform:translateY(120%)}}
+/* BINARY — 4 kolom hujan angka 0/1 dari atas ke bawah */
+body.bg-binary::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#02100a,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#041c10,transparent 55%),#020805;transition:background .4s}
+body.bg-binary .stars{display:none}
+body.bg-binary .bin-col{top:-100%;font-family:'JetBrains Mono',monospace;font-weight:700;color:rgba(74,222,128,.85);text-shadow:0 0 8px rgba(74,222,128,.9),0 0 2px rgba(74,222,128,1);word-break:break-all;line-height:1.3;letter-spacing:2px;white-space:pre-wrap;padding:0 8px;user-select:none}
+body.bg-binary .bin-col:nth-child(1){left:0;width:24%;font-size:15px;animation:binFall 8s linear infinite}
+body.bg-binary .bin-col:nth-child(2){left:25%;width:24%;font-size:12px;color:rgba(74,222,128,.55);text-shadow:0 0 6px rgba(74,222,128,.65);animation:binFall 12s linear infinite;animation-delay:-4s}
+body.bg-binary .bin-col:nth-child(3){left:51%;width:24%;font-size:13px;color:rgba(74,222,128,.75);animation:binFall 10s linear infinite;animation-delay:-6s}
+body.bg-binary .bin-col:nth-child(4){left:76%;width:24%;font-size:14px;animation:binFall 13s linear infinite;animation-delay:-2s}
+body.bg-binary .bg-layer::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,8,5,.9),transparent 10%,transparent 90%,rgba(2,8,5,.9));pointer-events:none}
+@keyframes binFall{from{transform:translateY(0)}to{transform:translateY(200%)}}
 
-/* UFO — shooting stars + UFO + alien realistis */
-body.bg-ufo::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a0520,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#14082a,transparent 55%),#050210}
-body.bg-ufo .bg-layer::before{content:"";position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 68% 18%,#fff,transparent),radial-gradient(1px 1px at 88% 65%,#a5f3fc,transparent),radial-gradient(1px 1px at 22% 78%,#fff,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
-body.bg-ufo .bg-layer::after{content:"";position:absolute;top:12%;left:50%;width:80px;height:34px;margin-left:-40px;border-radius:50% 50% 45% 45%;background:radial-gradient(ellipse at 50% 35%,#a5f3fc 0%,#67e8f9 25%,#0891b2 60%,#164e63 100%);box-shadow:0 0 30px #67e8f9,0 0 60px rgba(103,232,249,.5),inset 0 -8px 12px rgba(0,0,0,.4);animation:ufoHover 6s ease-in-out infinite;z-index:2}
-body.bg-ufo .ufo-beam{position:absolute;top:calc(12% + 28px);left:50%;width:70px;height:180px;margin-left:-35px;background:linear-gradient(180deg,rgba(103,232,249,.55),rgba(103,232,249,.15) 40%,transparent);clip-path:polygon(35% 0,65% 0,100% 100%,0 100%);animation:ufoBeam 6s ease-in-out infinite;z-index:1;filter:blur(1px)}
-body.bg-ufo .ufo-alien{position:absolute;top:calc(12% + 34px);left:50%;margin-left:-14px;width:28px;height:34px;animation:ufoHover 6s ease-in-out infinite;z-index:3}
-body.bg-ufo .ufo-alien svg{width:100%;height:100%;filter:drop-shadow(0 0 6px rgba(103,232,249,.7))}
-@keyframes ufoHover{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(3deg)}}
-@keyframes ufoBeam{0%,100%{opacity:.4;transform:scaleY(1)}50%{opacity:.75;transform:scaleY(1.1)}}
+/* UFO — starfield + 3 UFO + alien realistis + beam nyala-mati */
+body.bg-ufo::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a0520,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#14082a,transparent 55%),#050210;transition:background .4s}
+body.bg-ufo .stars{inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 68% 18%,#fff,transparent),radial-gradient(1px 1px at 88% 65%,#a5f3fc,transparent),radial-gradient(1px 1px at 22% 78%,#fff,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
+body.bg-ufo .stars::after{content:"";position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff,0 0 16px var(--ac);animation:shootingStar 8s linear infinite}
+body.bg-ufo .stars::before{content:"";position:absolute;top:40%;left:-15%;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff;animation:shootingStar 11s linear infinite 3s}
+
+/* UFO besar (utama) */
+body.bg-ufo .ufo-wrap .ufo-main{position:absolute;top:12%;left:50%;width:120px;height:70px;margin-left:-60px;animation:ufoFloat 6s ease-in-out infinite;z-index:2;filter:drop-shadow(0 0 20px var(--ac))}
+body.bg-ufo .ufo-wrap .ufo-main svg{width:100%;height:auto}
+body.bg-ufo .ufo-wrap .ufo-beam{position:absolute;top:calc(12% + 58px);left:50%;width:100px;height:220px;margin-left:-50px;background:linear-gradient(180deg,var(--acd),transparent 80%);clip-path:polygon(38% 0,62% 0,100% 100%,0 100%);animation:beamFlicker 6s ease-in-out infinite;z-index:1;filter:blur(2px);opacity:.75}
+/* UFO kecil 1 (kiri, depth) */
+body.bg-ufo .ufo-wrap .ufo-small-1{position:absolute;top:8%;left:12%;width:50px;height:30px;opacity:.65;animation:ufoFloatSmall 8s ease-in-out infinite 1s;z-index:1;filter:drop-shadow(0 0 10px var(--ac2))}
+body.bg-ufo .ufo-wrap .ufo-small-1 svg{width:100%;height:auto}
+/* UFO kecil 2 (kanan, depth) */
+body.bg-ufo .ufo-wrap .ufo-small-2{position:absolute;top:22%;right:8%;width:40px;height:24px;opacity:.5;animation:ufoFloatSmall 10s ease-in-out infinite 2.5s;z-index:1;filter:drop-shadow(0 0 8px var(--ac2))}
+body.bg-ufo .ufo-wrap .ufo-small-2 svg{width:100%;height:auto}
+
+@keyframes ufoFloat{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-8px) rotate(-2deg)}50%{transform:translateY(-18px) rotate(0)}75%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes ufoFloatSmall{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-12px) translateX(8px)}}
+@keyframes beamFlicker{0%,100%{opacity:.35;transform:scaleY(1)}50%{opacity:.85;transform:scaleY(1.15)}}
 
 /* PLAIN — polos, warna ikut theme */
 body.bg-plain::before{background:var(--bg);transition:background .4s}
@@ -80,6 +98,7 @@ body.light .zy-select-btn{background:#fff;color:#0f172a}
 body.light .zy-select-panel{background:#fff}
 body.light .zy-select-opt{color:#0f172a}
 body.light .nv{background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(241,245,249,.99));border-color:#cbd5e1}
+body.light .nb{color:#64748b}
 
 /* ===== LAYOUT ===== */
 .w{max-width:520px;margin:0 auto;padding:10px;position:relative;z-index:1}
@@ -99,17 +118,22 @@ body.light .nv{background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(241,
 @keyframes pageIn{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes pageOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-10px) scale(.985)}}
 
-/* ===== NAV BAWAH ===== */
+/* ===== NAV BAWAH v5.8 ===== */
 .nv{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);display:flex;justify-content:space-between;align-items:stretch;gap:0;width:calc(100% - 20px);max-width:500px;padding:5px;border-radius:999px;background:linear-gradient(180deg,rgba(15,25,42,.97),rgba(8,15,28,.99));border:1px solid var(--border);box-shadow:0 -6px 30px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);z-index:500;overflow:hidden;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:background .3s,border-color .3s}
-.nv::before{content:"";position:absolute;left:8px;right:8px;top:50%;height:1px;background:linear-gradient(90deg,transparent,var(--bl),transparent);opacity:.35;pointer-events:none}
-.nb{position:relative;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:8px 1px 7px;border:none;border-radius:999px;background:transparent;color:var(--txd);font-family:var(--fm);font-size:.4rem;font-weight:700;letter-spacing:.2px;text-transform:uppercase;cursor:pointer;user-select:none;z-index:2;white-space:nowrap;overflow:hidden;transition:color .25s,transform .3s cubic-bezier(.5,.1,.3,1.4)}
-.nb:active{transform:scale(.92)}
-.nb .i{display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;width:24px;height:24px;border-radius:50%;transition:background .35s cubic-bezier(.5,.1,.3,1.4),color .3s,transform .45s cubic-bezier(.5,.1,.3,1.4),box-shadow .35s}
-.nb.a{color:#fff}
-.nb.a .i{background:var(--ac);color:#04080f;box-shadow:0 0 18px var(--ac),0 0 6px var(--ac2);transform:scale(1.15);animation:iconPop .45s cubic-bezier(.5,.1,.3,1.6)}
-@keyframes iconPop{0%{transform:scale(.7)}50%{transform:scale(1.4)}100%{transform:scale(1.15)}}
-.nav-spot{position:absolute;top:4px;height:calc(100% - 8px);width:calc((100% - 10px) / 11);left:5px;border-radius:999px;background:radial-gradient(circle at 50% 50%,rgba(239,68,68,.32),rgba(239,68,68,0) 75%);border:1.5px solid rgba(239,68,68,.6);box-shadow:0 0 24px rgba(239,68,68,.45),inset 0 0 20px rgba(239,68,68,.1);pointer-events:none;transition:transform .45s cubic-bezier(.5,.1,.3,1.4),width .3s;z-index:1}
-.nav-spot::after{content:"";position:absolute;left:50%;top:-3px;width:6px;height:6px;border-radius:50%;background:#ef4444;transform:translateX(-50%);box-shadow:0 0 10px #ef4444}
+.nb{position:relative;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:9px 1px 8px;border:none;border-radius:999px;background:transparent;color:var(--txd);font-family:var(--fm);font-size:.4rem;font-weight:700;letter-spacing:.2px;text-transform:uppercase;cursor:pointer;user-select:none;z-index:3;white-space:nowrap;overflow:hidden;transition:color .3s,transform .3s cubic-bezier(.5,.1,.3,1.4)}
+.nb:active{transform:scale(.9)}
+.nb .i{display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;width:26px;height:26px;border-radius:50%;position:relative;transition:background .4s cubic-bezier(.5,.1,.3,1.4),color .3s,transform .5s cubic-bezier(.5,.1,.3,1.4),box-shadow .4s;color:var(--txd)}
+.nb .i svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s,transform .4s cubic-bezier(.5,.1,.3,1.4)}
+.nb:hover{color:var(--ac2)}
+.nb:hover .i svg{stroke:var(--ac2)}
+.nb.a{color:var(--ac)}
+.nb.a .i{background:var(--ac);color:#04080f;box-shadow:0 0 14px var(--ac),0 0 4px var(--ac2);transform:scale(1.15)}
+.nb.a .i svg{stroke:#04080f;animation:iconPop .5s cubic-bezier(.5,.1,.3,1.6)}
+@keyframes iconPop{0%{transform:scale(.7) rotate(-12deg)}60%{transform:scale(1.2) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
+
+/* NAV SPOT — glow tipis, ikut accent */
+.nav-spot{position:absolute;top:4px;height:calc(100% - 8px);width:calc((100% - 10px) / 11);left:5px;border-radius:999px;background:radial-gradient(ellipse at 50% 100%,var(--acd),transparent 70%);box-shadow:0 -2px 24px var(--acd),inset 0 -1px 12px var(--acd);pointer-events:none;transition:transform .5s cubic-bezier(.5,.1,.3,1.4),width .4s,background .35s,box-shadow .35s;z-index:1}
+.nav-spot::before{content:"";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:14px;height:2px;border-radius:2px;background:var(--ac);box-shadow:0 0 10px var(--ac),0 0 20px var(--ac);transition:background .3s,box-shadow .3s}
 
 /* ===== CARD ===== */
 .c{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:12px;margin-bottom:9px;transition:background .3s,border-color .3s}
@@ -196,7 +220,7 @@ input[type="file"]{display:none!important}
 input[type="range"].vol-range{width:100%;height:4px;border-radius:2px;background:var(--border);outline:none;-webkit-appearance:none;padding:0}
 input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ac);cursor:pointer}
 
-/* ===== CUSTOM SELECT (ganti native) ===== */
+/* ===== CUSTOM SELECT ===== */
 .zy-select-wrap{position:relative;margin-top:4px}
 .zy-select-btn{width:100%;padding:10px 12px;border-radius:7px;border:1px solid var(--border);background:rgba(4,8,15,.7);color:var(--tx);font-family:var(--fm);font-size:.7rem;text-align:left;display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin:0;text-transform:none;letter-spacing:0;font-weight:400;transition:border-color .2s,background .2s}
 .zy-select-btn:hover{border-color:var(--ac)}
@@ -261,7 +285,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 .gulp[data-state="done"] .gulp_bin circle{stroke:#4ade80;stroke-width:1.6;stroke-dasharray:100;stroke-dashoffset:0;animation:ringSeal .7s ease-out forwards}
 @keyframes ringSeal{from{stroke-dashoffset:100;opacity:.2}to{stroke-dashoffset:0;opacity:1}}
 
-/* ===== ZYVOR MEDIA / DS / misc (dipertahankan) ===== */
+/* ===== ZYVOR / DS / misc ===== */
 .ds-section{border:1px solid var(--border);border-radius:8px;margin-bottom:6px;background:rgba(0,0,0,.3);overflow:hidden}
 .ds-head{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;user-select:none}
 .ds-title{flex:1;font-size:.65rem;font-weight:700;color:var(--ac);letter-spacing:1px;text-transform:uppercase}
@@ -321,20 +345,69 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="bg-layer">
   <div class="stars"></div>
-  <div class="ufo-beam"></div>
-  <div class="ufo-alien">
-    <svg viewBox="0 0 28 34" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="14" cy="20" rx="10" ry="12" fill="#1a1a2e" stroke="#67e8f9" stroke-width="1"/>
-      <ellipse cx="10" cy="18" rx="3" ry="4.5" fill="#0a0a1a" stroke="#67e8f9" stroke-width=".8"/>
-      <ellipse cx="18" cy="18" rx="3" ry="4.5" fill="#0a0a1a" stroke="#67e8f9" stroke-width=".8"/>
-      <circle cx="10" cy="17" r="1.2" fill="#67e8f9"/>
-      <circle cx="18" cy="17" r="1.2" fill="#67e8f9"/>
-      <ellipse cx="14" cy="7" rx="6" ry="8" fill="#1a1a2e" stroke="#67e8f9" stroke-width="1"/>
-      <ellipse cx="11" cy="6" rx="1.8" ry="2.4" fill="#0a0a1a"/>
-      <ellipse cx="17" cy="6" rx="1.8" ry="2.4" fill="#0a0a1a"/>
-      <circle cx="11" cy="5.5" r=".8" fill="#67e8f9"/>
-      <circle cx="17" cy="5.5" r=".8" fill="#67e8f9"/>
-    </svg>
+
+  <div class="bin-col">01001001 01101110 01101010 01100101 01100011 01110100 00100000 01100010 01101001 01101110 01100001 01110010 01111001 00100000 01110010 01100001 01101001 01101110 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01100101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100011 01101111 01100100 01100101</div>
+  <div class="bin-col">01101000 01100001 01100011 01101011 01101001 01101110 01100111 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100010 01101001 01101110 01100001 01110010 01111001 00100000 01100011 01101111 01100100 01100101</div>
+  <div class="bin-col">01000010 01101001 01101110 01100001 01110010 01111001 00100000 01100011 01101111 01100100 01100101 00100000 01101001 01101110 01101010 01100101 01100011 01110100 01101001 01101111 01101110 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01110011 01110100 01110010 01100101 01100001 01101101</div>
+  <div class="bin-col">01110100 01100101 01110010 01101101 01101001 01101110 01100001 01101100 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110</div>
+
+  <div class="ufo-wrap">
+    <div class="ufo-beam"></div>
+
+    <div class="ufo-main">
+      <svg viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="domeGrad" cx="50%" cy="35%" r="55%">
+            <stop offset="0%" stop-color="rgba(165,243,252,.95)"/>
+            <stop offset="40%" stop-color="rgba(103,232,249,.7)"/>
+            <stop offset="100%" stop-color="rgba(8,145,178,.4)"/>
+          </radialGradient>
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#a5f3fc"/>
+            <stop offset="40%" stop-color="#67e8f9"/>
+            <stop offset="100%" stop-color="#0891b2"/>
+          </linearGradient>
+          <radialGradient id="lightGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fff"/>
+            <stop offset="50%" stop-color="#67e8f9"/>
+            <stop offset="100%" stop-color="rgba(103,232,249,0)"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="60" cy="32" rx="42" ry="8" fill="url(#bodyGrad)" opacity=".85"/>
+        <ellipse cx="60" cy="45" rx="52" ry="14" fill="url(#bodyGrad)"/>
+        <ellipse cx="60" cy="46" rx="52" ry="14" fill="none" stroke="#164e63" stroke-width="1" opacity=".6"/>
+        <ellipse cx="60" cy="48" rx="42" ry="10" fill="#164e63" opacity=".5"/>
+        <path d="M32 40 Q60 12 88 40 Q60 30 32 40 Z" fill="url(#domeGrad)" stroke="#a5f3fc" stroke-width="1"/>
+        <ellipse cx="45" cy="45" rx="3" ry="3" fill="#fff" opacity=".9"/>
+        <ellipse cx="60" cy="46" rx="3" ry="3" fill="#fff" opacity=".9"/>
+        <ellipse cx="75" cy="45" rx="3" ry="3" fill="#fff" opacity=".9"/>
+        <circle cx="45" cy="45" r="6" fill="url(#lightGrad)"/>
+        <circle cx="60" cy="46" r="6" fill="url(#lightGrad)"/>
+        <circle cx="75" cy="45" r="6" fill="url(#lightGrad)"/>
+      </svg>
+    </div>
+
+    <div class="ufo-small-1">
+      <svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="20" rx="24" ry="7" fill="#67e8f9" opacity=".7"/>
+        <ellipse cx="30" cy="22" rx="20" ry="5" fill="#164e63" opacity=".7"/>
+        <path d="M16 18 Q30 4 44 18 Q30 12 16 18 Z" fill="#a5f3fc" opacity=".8"/>
+        <circle cx="22" cy="20" r="1.5" fill="#fff"/>
+        <circle cx="30" cy="21" r="1.5" fill="#fff"/>
+        <circle cx="38" cy="20" r="1.5" fill="#fff"/>
+      </svg>
+    </div>
+
+    <div class="ufo-small-2">
+      <svg viewBox="0 0 60 36" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="20" rx="24" ry="7" fill="#67e8f9" opacity=".55"/>
+        <ellipse cx="30" cy="22" rx="20" ry="5" fill="#164e63" opacity=".6"/>
+        <path d="M16 18 Q30 4 44 18 Q30 12 16 18 Z" fill="#a5f3fc" opacity=".7"/>
+        <circle cx="22" cy="20" r="1.5" fill="#fff"/>
+        <circle cx="30" cy="21" r="1.5" fill="#fff"/>
+        <circle cx="38" cy="20" r="1.5" fill="#fff"/>
+      </svg>
+    </div>
   </div>
 </div>
 
@@ -342,10 +415,10 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   <div class="wm-box">
     <button class="wm-skip" id="wm-skip">✕</button>
     <div class="wm-title">RYANN <span class="y">• TOOLS</span></div>
-    <div class="wm-ver">v5.7</div>
+    <div class="wm-ver">v5.8</div>
     <div class="wm-tag">INJECTOR · FUN · OSINT · SCRAPE · BYPASS · DL</div>
     <div class="wm-credit">by <b>RyanApi77</b></div>
-    <button id="wm-start">🚀 MULAI</button>
+    <button id="wm-start">MULAI</button>
   </div>
 </div>
 
@@ -355,7 +428,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v5.7</span>
+<span class="ch">v5.8</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
 <button class="tgl" id="mode-tgl">🌙</button>
@@ -371,9 +444,9 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <div class="s"><div class="l">Achievements</div><div class="n" id="st-a">0/20</div></div>
 </div>
 <div class="c"><div class="cl">QUICK ACTIONS</div>
-<div class="br"><button class="g" onclick="go('spy')">💀 INJECT</button><button class="g" onclick="go('utl')">🔧 TOOLS</button></div>
-<div class="br"><button class="g" onclick="go('scr')">🕸 SCRAPE</button><button class="g" onclick="go('bp')">🔓 BYPASS</button></div>
-<div class="br"><button class="g" onclick="go('dl')">⬇ DOWNLOADER</button><button class="g" onclick="go('tmp')">📧 TEMPMAIL</button></div>
+<div class="br"><button class="g" onclick="go('spy')">INJECT</button><button class="g" onclick="go('utl')">TOOLS</button></div>
+<div class="br"><button class="g" onclick="go('scr')">SCRAPE</button><button class="g" onclick="go('bp')">BYPASS</button></div>
+<div class="br"><button class="g" onclick="go('dl')">DOWNLOADER</button><button class="g" onclick="go('tmp')">TEMPMAIL</button></div>
 </div>
 <div class="c"><div class="cl">ACHIEVEMENTS</div>
 <div id="ach-wrap"></div>
@@ -383,7 +456,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <!-- ===== SPY ===== -->
 <div class="pg hd" id="pg-spy">
 <div class="c"><div class="cl">INPUT CODE</div>
-<div class="tabs"><div class="tab a" id="tp">📋 PASTE</div><div class="tab" id="tu">📁 UPLOAD</div></div>
+<div class="tabs"><div class="tab a" id="tp">PASTE</div><div class="tab" id="tu">UPLOAD</div></div>
 <div id="sp"><textarea id="ci" placeholder="# Paste code python..."></textarea></div>
 <div id="su" class="hd">
 <div class="drop" onclick="document.getElementById('fi').click()">
@@ -395,7 +468,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 </div>
 </div>
 <div class="c"><div class="cl">SNIPPET</div>
-<div class="br"><button class="g" id="snp-save">💾 SAVE</button><button class="g" id="snp-load">📂 LOAD</button></div>
+<div class="br"><button class="g" id="snp-save">SAVE</button><button class="g" id="snp-load">LOAD</button></div>
 </div>
 <div class="c"><div class="cl">CONFIG</div>
 <label>Bot Token</label><input id="bt" placeholder="123456:ABC...">
@@ -425,7 +498,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 </button>
 <input type="hidden" id="gb">
 <input type="hidden" id="ts" value="">
-<div class="br"><button class="g" id="cb">🗑 CLEAR</button><button class="g" id="vb">✓ VALIDATE</button></div>
+<div class="br"><button class="g" id="cb">CLEAR</button><button class="g" id="vb">VALIDATE</button></div>
 <div id="sw"></div>
 </div>
 <div class="c hd" id="rc"><div class="cl">RESULT</div>
@@ -435,15 +508,15 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <div style="font-size:.6rem;color:var(--txd)" id="rm">spyware_ryan.py</div>
 <div style="font-size:.6rem;color:var(--txd);margin-top:4px" id="rs">0 lines · 0 KB</div>
 </div>
-<div class="br"><button id="db">⬇ DOWNLOAD .PY</button><button class="g" id="cob">📋 COPY</button></div>
-<button class="g" id="shb">📤 BAGIKAN FILE</button>
+<div class="br"><button id="db">DOWNLOAD .PY</button><button class="g" id="cob">COPY</button></div>
+<button class="g" id="shb">BAGIKAN FILE</button>
 <div id="pbox" class="r hd" style="max-height:200px;overflow-y:auto"></div>
 </div>
 </div>
 
 <!-- ===== UTILITIES ===== -->
 <div class="pg hd" id="pg-utl">
-<div class="c"><div class="cl">🔐 PASSWORD GENERATOR</div>
+<div class="c"><div class="cl">PASSWORD GENERATOR</div>
 <label>Prefix (opsional)</label>
 <input id="pg-prefix" placeholder="misal ryann">
 <label>Jumlah Karakter Random</label>
@@ -453,44 +526,44 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <div class="br"><button class="g" id="pgen">GEN</button><button class="g" id="pcp">COPY</button></div>
 <div class="r" id="pres">—</div>
 </div>
-<div class="c"><div class="cl">🆔 UUID</div>
+<div class="c"><div class="cl">UUID</div>
 <button class="g" id="ugen">GENERATE</button><div class="r" id="ures">—</div>
 </div>
-<div class="c"><div class="cl">🔑 HASH</div>
+<div class="c"><div class="cl">HASH</div>
 <input id="hin" placeholder="text to hash">
 <div class="br3"><button class="g" id="hm5">MD5</button><button class="g" id="hs1">SHA-1</button><button class="g" id="hs2">SHA-256</button></div>
 <div class="r" id="hres">—</div>
 </div>
-<div class="c"><div class="cl">🔗 URL SHORTENER</div>
+<div class="c"><div class="cl">URL SHORTENER</div>
 <input id="shin" placeholder="https://...">
 <div class="br"><button class="g" id="shgen">SHORTEN</button><button class="g" id="shcp">COPY</button></div>
 <div class="r" id="shres">—</div>
 </div>
-<div class="c"><div class="cl">🧬 TEXT ENCODER / DECODER</div>
-<div class="tabs"><div class="tab a" id="enc-t-enc">🔒 ENCODE</div><div class="tab" id="enc-t-dec">🔓 DECODE</div></div>
+<div class="c"><div class="cl">TEXT ENCODER / DECODER</div>
+<div class="tabs"><div class="tab a" id="enc-t-enc">ENCODE</div><div class="tab" id="enc-t-dec">DECODE</div></div>
 <label>Metode</label>
 <div class="zy-select-wrap" id="sel-enc"></div>
 <textarea id="enc-input" placeholder="Ketik teks..."></textarea>
-<div class="br"><button id="enc-run">⚡ PROSES</button><button class="g" id="enc-clear">🗑 CLEAR</button></div>
-<div class="br"><button class="g" id="enc-copy">📋 COPY</button><button class="g" id="enc-dl">⬇ DOWNLOAD</button></div>
+<div class="br"><button id="enc-run">PROSES</button><button class="g" id="enc-clear">CLEAR</button></div>
+<div class="br"><button class="g" id="enc-copy">COPY</button><button class="g" id="enc-dl">DOWNLOAD</button></div>
 <div class="r" id="enc-output" style="max-height:200px;overflow-y:auto">—</div>
 <input type="hidden" id="enc-method" value="base64">
 </div>
-<div class="c"><div class="cl">🔓 JWT DECODER</div>
+<div class="c"><div class="cl">JWT DECODER</div>
 <textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIs..." style="min-height:80px"></textarea>
-<div class="br"><button id="jwt-run">🔍 DECODE</button><button class="g" id="jwt-clear">🗑 CLEAR</button></div>
+<div class="br"><button id="jwt-run">DECODE</button><button class="g" id="jwt-clear">CLEAR</button></div>
 <div id="jwt-header" class="r hd"><b>HEADER</b><div id="jwt-header-out" style="color:var(--ac2);margin-top:5px"></div></div>
 <div id="jwt-payload" class="r hd"><b>PAYLOAD</b><div id="jwt-payload-out" style="color:var(--ac2);margin-top:5px"></div></div>
 <div id="jwt-sig" class="r hd"><b>SIGNATURE</b><div id="jwt-sig-out" style="color:var(--ac2);margin-top:5px"></div></div>
 <div id="jwt-status" class="r">—</div>
 </div>
-<div class="c"><div class="cl">🔠 CASE CONVERTER</div>
+<div class="c"><div class="cl">CASE CONVERTER</div>
 <textarea id="cc-input" placeholder="ketik teks..."></textarea>
 <div class="br"><button id="cc-upper">ABC</button><button class="g" id="cc-lower">abc</button></div>
-<div class="br"><button class="g" id="cc-copy">📋 COPY</button><button class="g" id="cc-clear">🗑 CLEAR</button></div>
+<div class="br"><button class="g" id="cc-copy">COPY</button><button class="g" id="cc-clear">CLEAR</button></div>
 <div class="r" id="cc-output">—</div>
 </div>
-<div class="c"><div class="cl">📊 LETTER COUNTER</div>
+<div class="c"><div class="cl">LETTER COUNTER</div>
 <textarea id="lc-input" placeholder="paste teks..."></textarea>
 <div class="st" style="grid-template-columns:1fr 1fr 1fr">
 <div class="s"><div class="l">Karakter</div><div class="n" id="lc-char">0</div></div>
@@ -502,35 +575,35 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <!-- ===== OSINT ===== -->
 <div class="pg hd" id="pg-osi">
-<div class="c"><div class="cl">🌍 IP LOOKUP</div>
+<div class="c"><div class="cl">IP LOOKUP</div>
 <input id="ipin" placeholder="8.8.8.8">
 <button class="g" id="ilook">LOOKUP</button><div class="r" id="ires">—</div>
 </div>
-<div class="c"><div class="cl">📡 MY IP</div>
+<div class="c"><div class="cl">MY IP</div>
 <button class="g" id="mip">CEK IP</button><div class="r" id="mres">—</div>
 </div>
-<div class="c"><div class="cl">🔎 GOOGLE DORK</div>
+<div class="c"><div class="cl">GOOGLE DORK</div>
 <label>Kata kunci</label><input id="dkw" placeholder="admin login">
 <label>Site</label><input id="dsite" placeholder="example.com">
 <label>File type</label><input id="dtype" placeholder="pdf">
 <button class="g" id="dgen">GENERATE</button><div class="r" id="dres">—</div>
 </div>
-<div class="c"><div class="cl">📱 DEVICE INFO</div>
+<div class="c"><div class="cl">DEVICE INFO</div>
 <button class="g" id="dvinfo">CEK DEVICE</button><div class="r" id="dvres">—</div>
 </div>
 </div>
 
 <!-- ===== BYPASS ===== -->
 <div class="pg hd" id="pg-bp">
-<div class="c"><div class="cl">🔓 BYPASS LINK</div>
+<div class="c"><div class="cl">BYPASS LINK</div>
 <label>Pilih API</label>
 <div id="bp-api-custom" class="zy-select-wrap"></div>
 <div id="bp-params"></div>
-<div class="br"><button id="bp-run">⚡ BYPASS</button><button class="g" id="bp-clear">🗑 CLEAR</button></div>
+<div class="br"><button id="bp-run">BYPASS</button><button class="g" id="bp-clear">CLEAR</button></div>
 <div id="bp-log" class="console-log hd" style="height:150px"></div>
 <div id="bp-result" class="hd" style="margin-top:8px"></div>
 </div>
-<div class="c"><div class="cl">ℹ INFO</div>
+<div class="c"><div class="cl">INFO</div>
 <div class="r" style="font-size:.6rem;line-height:1.7">
 • Mode <b style="color:var(--ac)">ALL</b> = coba 9 API berurutan sampai sukses.<br>
 • Support: sf.gl, sub2unlock, tinyurl, linkvertise, lootlinks, ouo, safelink, shrinkme.<br>
@@ -541,18 +614,18 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <!-- ===== DOWNLOADER ===== -->
 <div class="pg hd" id="pg-dl">
-<div class="c"><div class="cl">⬇ DOWNLOADER</div>
+<div class="c"><div class="cl">DOWNLOADER</div>
 <label>Kategori</label>
 <div id="dl-cat-custom" class="zy-select-wrap"></div>
 <label>API</label>
 <div id="dl-api-custom" class="zy-select-wrap"></div>
 <div id="dl-params"></div>
-<div class="br"><button id="dl-run">⚡ DOWNLOAD</button><button class="g" id="dl-run-all">🔄 AUTO-FALLBACK</button></div>
-<button class="g" id="dl-clear">🗑 CLEAR</button>
+<div class="br"><button id="dl-run">DOWNLOAD</button><button class="g" id="dl-run-all">AUTO-FALLBACK</button></div>
+<button class="g" id="dl-clear">CLEAR</button>
 <div id="dl-log" class="console-log hd" style="height:150px"></div>
 <div id="dl-result" class="hd" style="margin-top:8px"></div>
 </div>
-<div class="c"><div class="cl">ℹ INFO</div>
+<div class="c"><div class="cl">INFO</div>
 <div class="r" style="font-size:.6rem;line-height:1.7">
 • <b style="color:var(--ac)">DOWNLOAD</b> = coba 1 API.<br>
 • <b style="color:var(--ac)">AUTO-FALLBACK</b> = coba semua API di kategori sampai sukses.<br>
@@ -564,14 +637,14 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <!-- ===== SCRAPE ===== -->
 <div class="pg hd" id="pg-scr">
-<div class="c"><div class="cl">🔍 DEEP WEB SCRAPER</div>
+<div class="c"><div class="cl">DEEP WEB SCRAPER</div>
 <label>URL Target</label>
 <input id="ds-url" placeholder="https://example.com">
-<div class="br"><button class="g" id="ds-run">⚡ DEEP SCRAPE</button><button class="g" id="ds-paste">📋 PASTE</button></div>
+<div class="br"><button class="g" id="ds-run">DEEP SCRAPE</button><button class="g" id="ds-paste">PASTE</button></div>
 <div id="ds-log" class="console-log hd" style="height:60px"></div>
 <div id="ds-result" class="hd" style="margin-top:8px"></div>
 </div>
-<div class="c"><div class="cl">🕸 NON-CORS PROXY SCRAPER</div>
+<div class="c"><div class="cl">NON-CORS PROXY SCRAPER</div>
 <label>Sumber Proxy</label>
 <textarea id="scr-sources" style="min-height:100px;font-size:.6rem">https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/socks5.txt
 https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt
@@ -591,7 +664,7 @@ https://raw.githubusercontent.com/officialputuid/KangProxy/main/socks5/socks5.tx
 https://raw.githubusercontent.com/caliphdev/Proxy-List/master/socks5.txt</textarea>
 <label>Target Proxy</label>
 <input type="number" id="scr-target" value="10000" min="100" max="120000">
-<div class="br"><button class="g" id="scr-start">▶ START</button><button class="g" id="scr-clear">🗑 CLEAR</button></div>
+<div class="br"><button class="g" id="scr-start">START</button><button class="g" id="scr-clear">CLEAR</button></div>
 <div class="progress-wrap" id="scr-prog-wrap">
 <div class="progress-label" id="scr-prog-label">MEMULAI...</div>
 <div class="progress-bar">
@@ -600,10 +673,10 @@ https://raw.githubusercontent.com/caliphdev/Proxy-List/master/socks5.txt</textar
 </div>
 </div>
 <div id="scr-log" class="console-log" style="height:180px"></div>
-<div class="br"><button class="g" id="scr-preview">👁 PREVIEW</button><button id="scr-dl">⬇ DOWNLOAD</button></div>
+<div class="br"><button class="g" id="scr-preview">PREVIEW</button><button id="scr-dl">DOWNLOAD</button></div>
 <div id="scr-pbox" class="r hd" style="max-height:200px;overflow-y:auto"></div>
 </div>
-<div class="c"><div class="cl">🌐 CORS PROXY TESTER</div>
+<div class="c"><div class="cl">CORS PROXY TESTER</div>
 <textarea id="cors-sources" style="min-height:100px;font-size:.6rem">https://corsproxy.io/?url=
 https://api.allorigins.win/raw?url=
 https://cors.eu.org/
@@ -613,12 +686,12 @@ https://proxy.cors.sh/
 https://test.cors.workers.dev/?</textarea>
 <label>Test URL</label>
 <input id="cors-test-url" value="https://api.ipify.org">
-<div class="br"><button class="g" id="cors-test">▶ TEST</button><button class="g" id="cors-clear">🗑 CLEAR</button></div>
+<div class="br"><button class="g" id="cors-test">TEST</button><button class="g" id="cors-clear">CLEAR</button></div>
 <div id="cors-log" class="console-log" style="height:150px"></div>
 </div>
-<div class="c"><div class="cl">🔬 PROXY CHECKER</div>
+<div class="c"><div class="cl">PROXY CHECKER</div>
 <textarea id="pc-input" placeholder="ip:port" style="min-height:80px;font-size:.6rem"></textarea>
-<div class="br"><button class="g" id="pc-start">▶ CEK</button><button class="g" id="pc-clear">🗑 CLEAR</button></div>
+<div class="br"><button class="g" id="pc-start">CEK</button><button class="g" id="pc-clear">CLEAR</button></div>
 <div id="pc-log" class="console-log" style="height:150px"></div>
 <div class="st" style="grid-template-columns:1fr 1fr 1fr 1fr">
 <div class="s"><div class="l">Total</div><div class="n" id="pc-stat-total">0</div></div>
@@ -627,7 +700,7 @@ https://test.cors.workers.dev/?</textarea>
 <div class="s"><div class="l">Skip</div><div class="n" id="pc-stat-skip" style="color:var(--wr)">0</div></div>
 </div>
 </div>
-<div class="c"><div class="cl">🚀 AUTO DEPLOY VERCEL</div>
+<div class="c"><div class="cl">AUTO DEPLOY VERCEL</div>
 <label>Vercel Token</label>
 <input id="scr-vtoken" placeholder="vercel token">
 <label>Project Name Base</label>
@@ -638,7 +711,7 @@ https://test.cors.workers.dev/?</textarea>
 <div class="filedrop" id="scr-vdrop"><span class="ic">📁</span><div class="t">TAP / DROP FILE</div></div>
 <input type="file" id="scr-vfile" multiple>
 <div class="filelist" id="scr-vlist"></div>
-<div class="br"><button class="g" id="scr-vdeploy">🚀 DEPLOY</button><button class="g" id="scr-vclear">🗑 CLEAR</button></div>
+<div class="br"><button class="g" id="scr-vdeploy">DEPLOY</button><button class="g" id="scr-vclear">CLEAR</button></div>
 <div id="scr-vlog" class="console-log" style="height:200px"></div>
 <div id="scr-vresult" class="r hd"></div>
 </div>
@@ -646,18 +719,18 @@ https://test.cors.workers.dev/?</textarea>
 
 <!-- ===== TEMPMAIL ===== -->
 <div class="pg hd" id="pg-tmp">
-<div class="c"><div class="cl">📧 TEMP MAIL</div>
+<div class="c"><div class="cl">TEMP MAIL</div>
 <label>Nama (opsional)</label>
 <input id="tmp-name" placeholder="namalo">
 <label>Domain</label>
 <div class="zy-select-wrap" id="sel-tmpdom"></div>
 <input type="hidden" id="tmp-domain" value="">
-<div class="br3"><button class="g" id="tmp-gen">⚡ GEN</button><button class="g" id="tmp-copy">📋 COPY</button><button class="g" id="tmp-reaload">🔄 RELOAD</button></div>
+<div class="br3"><button class="g" id="tmp-gen">GEN</button><button class="g" id="tmp-copy">COPY</button><button class="g" id="tmp-reaload">RELOAD</button></div>
 <div id="tmp-log" class="console-log" style="height:100px"></div>
 <div class="r" id="tmp-email">—</div>
 </div>
-<div class="c"><div class="cl">📬 INBOX</div>
-<div class="br"><button class="g" id="tmp-refresh">🔄 REFRESH</button><button class="g" id="tmp-inbox-dl">⬇ DOWNLOAD</button></div>
+<div class="c"><div class="cl">INBOX</div>
+<div class="br"><button class="g" id="tmp-refresh">REFRESH</button><button class="g" id="tmp-inbox-dl">DOWNLOAD</button></div>
 <div id="tmp-inbox-log" class="console-log" style="height:100px"></div>
 <div id="tmp-list" style="margin-top:8px"></div>
 <div id="tmp-msg-view" class="r hd" style="max-height:300px;overflow-y:auto"></div>
@@ -672,7 +745,7 @@ https://test.cors.workers.dev/?</textarea>
 <div class="zy-select-wrap" id="sel-tpl"></div>
 <input type="hidden" id="tplsel" value="">
 <textarea id="tplarea" placeholder="Pilih template" readonly></textarea>
-<div class="br"><button class="g" id="tplsrc">🔍 SEARCH</button><button class="g" id="tplexp">⬇ EXPORT</button></div>
+<div class="br"><button class="g" id="tplsrc">SEARCH</button><button class="g" id="tplexp">EXPORT</button></div>
 <div class="r" id="tplres">—</div>
 </div>
 </div>
@@ -681,13 +754,13 @@ https://test.cors.workers.dev/?</textarea>
 <div class="pg hd" id="pg-hst">
 <div class="c"><div class="cl">HISTORY</div>
 <div id="hl">Belum ada</div>
-<div class="br"><button class="g" id="hexp">⬇ EXPORT</button><button class="d" id="hclr">🗑 CLEAR</button></div>
+<div class="br"><button class="g" id="hexp">EXPORT</button><button class="d" id="hclr">CLEAR</button></div>
 </div>
 </div>
 
 <!-- ===== SETTINGS ===== -->
 <div class="pg hd" id="pg-set">
-<div class="c"><div class="cl">🎨 THEME PRESET (16)</div>
+<div class="c"><div class="cl">THEME PRESET (16)</div>
 <div class="tg" id="tg">
 <div class="to a" data-t="t-cyan" style="background:linear-gradient(135deg,#04080f,#22d3ee)"><span class="lbl">CYAN</span></div>
 <div class="to" data-t="t-green" style="background:linear-gradient(135deg,#04080f,#4ade80)"><span class="lbl">GRN</span></div>
@@ -707,34 +780,34 @@ https://test.cors.workers.dev/?</textarea>
 <div class="to" data-t="t-mono" style="background:linear-gradient(135deg,#04080f,#e0f2fe)"><span class="lbl">MON</span></div>
 </div>
 </div>
-<div class="c"><div class="cl">🎨 CUSTOM COLOR</div>
-<p style="font-size:.55rem;color:var(--txd);margin-bottom:8px">Pilih warna dulu, baru klik ✓ APPLY. Warna langsung berubah saat klik APPLY / RANDOM.</p>
+<div class="c"><div class="cl">CUSTOM COLOR</div>
+<p style="font-size:.55rem;color:var(--txd);margin-bottom:8px">Pilih warna dulu, baru klik APPLY. Warna langsung berubah saat klik APPLY / RANDOM.</p>
 <div class="color-row">
 <div class="color-pick"><label>ACCENT</label><input type="color" id="cust-ac" value="#22d3ee"></div>
 <div class="color-pick"><label>BG</label><input type="color" id="cust-bg" value="#04080f"></div>
 <div class="color-pick"><label>BORDER</label><input type="color" id="cust-br" value="#1e4d5c"></div>
 </div>
-<div class="br"><button class="g" id="cust-apply">✓ APPLY</button><button class="g" id="cust-rand">🎲 RANDOM</button></div>
-<button class="d" id="cust-reset">🗑 RESET</button>
+<div class="br"><button class="g" id="cust-apply">APPLY</button><button class="g" id="cust-rand">RANDOM</button></div>
+<button class="d" id="cust-reset">RESET</button>
 </div>
-<div class="c"><div class="cl">🖼 BACKGROUND</div>
+<div class="c"><div class="cl">BACKGROUND</div>
 <div class="snd-pack" id="bg-grid" style="grid-template-columns:repeat(3,1fr)">
-<div class="snd-opt a" data-bg="galaxy">🌌 GALAXY</div>
-<div class="snd-opt" data-bg="binary">💚 BINARY</div>
-<div class="snd-opt" data-bg="ufo">🛸 UFO</div>
-<div class="snd-opt" data-bg="plain">⬛ PLAIN</div>
-<div class="snd-opt" data-bg="custom">🖼 CUSTOM</div>
+<div class="snd-opt a" data-bg="galaxy">GALAXY</div>
+<div class="snd-opt" data-bg="binary">BINARY</div>
+<div class="snd-opt" data-bg="ufo">UFO</div>
+<div class="snd-opt" data-bg="plain">PLAIN</div>
+<div class="snd-opt" data-bg="custom">CUSTOM</div>
 </div>
 <input type="file" id="bg-file" accept="image/*" class="hd">
 <div class="bg-preview" id="bg-preview"></div>
 </div>
-<div class="c"><div class="cl">🔤 FONT <span id="fv" style="color:var(--ac)">13px</span></div>
+<div class="c"><div class="cl">FONT <span id="fv" style="color:var(--ac)">13px</span></div>
 <input type="range" id="fsr" class="fs-range" min="11" max="20" value="13">
 <label>Family (30 pilihan)</label>
 <div class="zy-select-wrap" id="sel-font"></div>
 <input type="hidden" id="ffam" value="'JetBrains Mono',monospace">
 </div>
-<div class="c"><div class="cl">🔊 SOUND (15)</div>
+<div class="c"><div class="cl">SOUND (15)</div>
 <div class="snd-pack" id="snd-grid">
 <div class="snd-opt a" data-snd="beep">BEEP</div>
 <div class="snd-opt" data-snd="click">CLICK</div>
@@ -752,42 +825,75 @@ https://test.cors.workers.dev/?</textarea>
 <div class="snd-opt" data-snd="pop">POP</div>
 <div class="snd-opt" data-snd="off">OFF</div>
 </div>
-<button class="g" id="test-snd">🔊 TEST</button>
+<button class="g" id="test-snd">TEST</button>
 </div>
-<div class="c"><div class="cl">🎚 VOLUME</div>
+<div class="c"><div class="cl">VOLUME</div>
 <label>Volume <span id="vol-val" style="color:var(--ac)">70%</span></label>
 <input type="range" id="vol-range" class="vol-range" min="0" max="100" value="70">
 </div>
-<div class="c"><div class="cl">⚙ TOGGLE</div>
+<div class="c"><div class="cl">TOGGLE</div>
 <div class="switch-row"><span class="lbl">MASTER SOUND</span><label class="switch"><input type="checkbox" id="tg-sound" checked><span class="slider"></span></label></div>
 <div class="switch-row"><span class="lbl">ACHIEVEMENT NOTIF</span><label class="switch"><input type="checkbox" id="tg-notif" checked><span class="slider"></span></label></div>
 <div class="switch-row"><span class="lbl">POPUP WELCOME</span><label class="switch"><input type="checkbox" id="tg-popup" checked><span class="slider"></span></label></div>
 <div class="switch-row"><span class="lbl">ANIMATION</span><label class="switch"><input type="checkbox" id="tg-anim" checked><span class="slider"></span></label></div>
 <div class="switch-row"><span class="lbl">HAPTIC</span><label class="switch"><input type="checkbox" id="tg-haptic"><span class="slider"></span></label></div>
 </div>
-<div class="c"><div class="cl">💾 DATA</div>
-<div class="br"><button class="g" id="exst">⬇ EXPORT</button><button class="g" id="imst">⬆ IMPORT</button></div>
-<button class="d" id="wipe">🗑 WIPE ALL</button>
+<div class="c"><div class="cl">DATA</div>
+<div class="br"><button class="g" id="exst">EXPORT</button><button class="g" id="imst">IMPORT</button></div>
+<button class="d" id="wipe">WIPE ALL</button>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v5.7</div>
+<div class="ft">RYANN • TOOLS · v5.8</div>
 </div>
 
-<!-- ===== NAV BAWAH (FIXED) ===== -->
+<!-- ===== NAV BAWAH — SVG ICONS ===== -->
 <div class="nv" id="nav-main">
   <span class="nav-spot" id="nav-spot"></span>
-  <div class="nb a" data-p="home"><span class="i">🏠</span>HOME</div>
-  <div class="nb" data-p="spy"><span class="i">💀</span>SPY</div>
-  <div class="nb" data-p="utl"><span class="i">🔧</span>FUN</div>
-  <div class="nb" data-p="osi"><span class="i">🕵</span>OSINT</div>
-  <div class="nb" data-p="scr"><span class="i">🕸</span>SCRAPE</div>
-  <div class="nb" data-p="bp"><span class="i">🔓</span>BYPASS</div>
-  <div class="nb" data-p="dl"><span class="i">⬇</span>DL</div>
-  <div class="nb" data-p="tmp"><span class="i">📧</span>TMP</div>
-  <div class="nb" data-p="tpl"><span class="i">📄</span>TPL</div>
-  <div class="nb" data-p="hst"><span class="i">📜</span>HIST</div>
-  <div class="nb" data-p="set"><span class="i">⚙</span>SET</div>
+
+  <div class="nb a" data-p="home"><span class="i">
+    <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>
+  </span>HOME</div>
+
+  <div class="nb" data-p="spy"><span class="i">
+    <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><circle cx="8.5" cy="10.5" r="1.2"/><circle cx="15.5" cy="10.5" r="1.2"/><path d="M12 16c-2 0-3.5-1-4-2.5"/></svg>
+  </span>SPY</div>
+
+  <div class="nb" data-p="utl"><span class="i">
+    <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 1 5.3 5.3l-9 9a2 2 0 0 1-2.8 0l-2.5-2.5a2 2 0 0 1 0-2.8z"/><path d="M14.7 6.3l3 3"/></svg>
+  </span>FUN</div>
+
+  <div class="nb" data-p="osi"><span class="i">
+    <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.5-4.5"/></svg>
+  </span>OSINT</div>
+
+  <div class="nb" data-p="scr"><span class="i">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.5 5.5l13 13M18.5 5.5l-13 13"/></svg>
+  </span>SCRAPE</div>
+
+  <div class="nb" data-p="bp"><span class="i">
+    <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 7-2.6"/><circle cx="12" cy="15" r="1.4"/></svg>
+  </span>BYPASS</div>
+
+  <div class="nb" data-p="dl"><span class="i">
+    <svg viewBox="0 0 24 24"><path d="M12 4v12"/><path d="M7 12l5 5 5-5"/><path d="M4 20h16"/></svg>
+  </span>DL</div>
+
+  <div class="nb" data-p="tmp"><span class="i">
+    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+  </span>TMP</div>
+
+  <div class="nb" data-p="tpl"><span class="i">
+    <svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M15 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+  </span>TPL</div>
+
+  <div class="nb" data-p="hst"><span class="i">
+    <svg viewBox="0 0 24 24"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+  </span>HIST</div>
+
+  <div class="nb" data-p="set"><span class="i">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+  </span>SET</div>
 </div>
 
 <script src="templates.js"></script>
