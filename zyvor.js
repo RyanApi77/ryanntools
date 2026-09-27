@@ -1,5 +1,4 @@
-// zyvor.js v5.3 — API HUB (Bypass + Downloader)
-// Compatible dengan index.html v5.3
+// zyvor.js v5.5 — API HUB (Bypass + Downloader)
 (function(){
 'use strict';
 
@@ -48,7 +47,6 @@ try{ json = JSON.parse(res.text); }catch(e){ json = { raw: res.text }; }
 return json;
 }
 
-// ============ BYPASS ============
 var BYPASS_LIST = [
 { id:'bypasslink', name:'Bypass Link v1', path:'/api/bypass/bypasslink', method:'POST', params:['url','androidId'], desc:'sf.gl, sub2unlock, tinyurl, linkvertise' },
 { id:'bypasslinkv2', name:'Bypass Link v2', path:'/api/bypass/bypasslinkv2', method:'POST', params:['url'], desc:'40+ layanan shortlink' },
@@ -61,7 +59,6 @@ var BYPASS_LIST = [
 { id:'wellbypass', name:'Wellbypass', path:'/api/bypass/wellbypass', method:'POST', params:['url','turnstileToken'], desc:'Linkvertise, Lootlabs' }
 ];
 
-// ============ DOWNLOADER ============
 var DOWNLOADER_LIST = [
 { id:'tikwm', name:'TikWM (recommended)', path:'TIKWM', method:'GET', params:['url'], cat:'TikTok', desc:'tikwm.com · no watermark + music' },
 { id:'tiktokv2', name:'TikTok v2 (HD)', path:'/api/downloader/tiktokv2', method:'GET', params:['url'], cat:'TikTok' },
@@ -110,7 +107,6 @@ var DOWNLOADER_LIST = [
 { id:'mcpelife', name:'MCPelife', path:'/api/downloader/mcpelife', method:'GET', params:['url'], cat:'Lain-lain' }
 ];
 
-// ============ TIKWM ============
 async function fetchTikWM(url){
 var apiURL = TIKWM + '?url=' + encodeURIComponent(url) + '&hd=1';
 var res = await proxyFetch(apiURL);
@@ -124,7 +120,6 @@ video_nowm: d.play, video_wm: d.wmplay, video_hd: d.hdplay, music: d.music, raw:
 };
 }
 
-// ============ FETCH WITH FALLBACK ============
 async function fetchWithFallback(list, params, logEl){
 for(var i=0;i<list.length;i++){
 var api = list[i];
@@ -146,35 +141,15 @@ if(logEl){ var l4 = document.createElement('div'); l4.className = 'er'; l4.textC
 return null;
 }
 
-// ============ UTILITIES ============
 function $id(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function classify(url){
-var u = url.toLowerCase();
-if(/\.(mp4|mov|webm|mkv)(\?|$)/.test(u)) return 'video';
-if(/\.(mp3|m4a|flac|wav|aac|opus)(\?|$)/.test(u)) return 'audio';
-if(/\.(jpg|jpeg|png|webp|gif|bmp)(\?|$)/.test(u)) return 'image';
-return 'other';
-}
+function classify(url){ var u = url.toLowerCase(); if(/\.(mp4|mov|webm|mkv)(\?|$)/.test(u)) return 'video'; if(/\.(mp3|m4a|flac|wav|aac|opus)(\?|$)/.test(u)) return 'audio'; if(/\.(jpg|jpeg|png|webp|gif|bmp)(\?|$)/.test(u)) return 'image'; return 'other'; }
 function collectMedia(obj, out, baseKey){
 out = out || [];
 if(!obj) return out;
-if(typeof obj === 'string'){
-if(/^https?:\/\/.+/.test(obj)) out.push({ url: obj, key: baseKey || '' });
-return out;
-}
+if(typeof obj === 'string'){ if(/^https?:\/\/.+/.test(obj)) out.push({ url: obj, key: baseKey || '' }); return out; }
 if(Array.isArray(obj)){ obj.forEach(function(v, i){ collectMedia(v, out, (baseKey||'')+'['+i+']'); }); return out; }
-if(typeof obj === 'object'){
-Object.keys(obj).forEach(function(k){
-var v = obj[k];
-if(typeof v === 'string' && /^https?:\/\//.test(v)){
-if(/url|link|download|video|audio|music|hd|sd|wm|play|src|cover|thumb|image|photo/i.test(k)){
-out.push({ url: v, key: k });
-}
-}
-collectMedia(v, out, (baseKey||'')+'.'+k);
-});
-}
+if(typeof obj === 'object'){ Object.keys(obj).forEach(function(k){ var v = obj[k]; if(typeof v === 'string' && /^https?:\/\//.test(v)){ if(/url|link|download|video|audio|music|hd|sd|wm|play|src|cover|thumb|image|photo/i.test(k)){ out.push({ url: v, key: k }); } } collectMedia(v, out, (baseKey||'')+'.'+k); }); }
 return out;
 }
 function renderMediaPreview(urls){
@@ -184,98 +159,43 @@ if(!unique.length) return '';
 var videos = unique.filter(function(x){ return classify(x.url)==='video'; });
 var audios = unique.filter(function(x){ return classify(x.url)==='audio'; });
 var images = unique.filter(function(x){ return classify(x.url)==='image'; });
-var others = unique.filter(function(x){ var c=classify(x.url); return c==='other'; });
+var others = unique.filter(function(x){ return classify(x.url)==='other'; });
 var html = '';
-videos.forEach(function(item, i){
-html += '<div class="zy-media-item"><div class="zy-media-h">🎬 Video '+(i+1)+' <span class="zy-cat">'+esc(item.key)+'</span></div>';
-html += '<video controls preload="metadata" class="zy-video" src="'+esc(item.url)+'"></video>';
-html += '<div class="zy-media-actions"><a href="'+esc(item.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a>';
-html += '<button class="zy-cp-btn" onclick="navigator.clipboard.writeText(\''+esc(item.url).replace(/'/g,"\\'")+'\').then(function(){alert(\'URL tersalin\')})">📋 COPY URL</button></div></div>';
-});
-audios.forEach(function(item, i){
-html += '<div class="zy-media-item"><div class="zy-media-h">🎵 Audio '+(i+1)+' <span class="zy-cat">'+esc(item.key)+'</span></div>';
-html += '<audio controls preload="metadata" class="zy-audio" src="'+esc(item.url)+'"></audio>';
-html += '<div class="zy-media-actions"><a href="'+esc(item.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a>';
-html += '<button class="zy-cp-btn" onclick="navigator.clipboard.writeText(\''+esc(item.url).replace(/'/g,"\\'")+'\').then(function(){alert(\'URL tersalin\')})">📋 COPY URL</button></div></div>';
-});
-if(images.length === 1){
-var img = images[0];
-html += '<div class="zy-media-item"><div class="zy-media-h">🖼 Gambar <span class="zy-cat">'+esc(img.key)+'</span></div>';
-html += '<img src="'+esc(img.url)+'" class="zy-image" loading="lazy">';
-html += '<div class="zy-media-actions"><a href="'+esc(img.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a>';
-html += '<button class="zy-cp-btn" onclick="navigator.clipboard.writeText(\''+esc(img.url).replace(/'/g,"\\'")+'\').then(function(){alert(\'URL tersalin\')})">📋 COPY URL</button></div></div>';
-} else if(images.length > 1){
-html += '<div class="zy-slideshow"><div class="zy-media-h">🖼 Slide Show ('+images.length+' foto)</div>';
-html += '<div class="zy-slide-view"><button class="zy-slide-nav" onclick="zySlidePrev(this)">‹</button>';
-html += '<div class="zy-slide-track">';
-images.forEach(function(item, i){
-html += '<div class="zy-slide-item'+(i===0?' active':'')+'"><img src="'+esc(item.url)+'" loading="lazy" onclick="window.open(\''+esc(item.url)+'\',\'_blank\')"></div>';
-});
-html += '</div><button class="zy-slide-nav" onclick="zySlideNext(this)">›</button></div>';
-html += '<div class="zy-slide-dots">';
+videos.forEach(function(item, i){ html += '<div class="zy-media-item"><div class="zy-media-h">🎬 Video '+(i+1)+' <span class="zy-cat">'+esc(item.key)+'</span></div><video controls preload="metadata" class="zy-video" src="'+esc(item.url)+'"></video><div class="zy-media-actions"><a href="'+esc(item.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a><button class="zy-cp-btn" onclick="zyCp(\''+esc(item.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button></div></div>'; });
+audios.forEach(function(item, i){ html += '<div class="zy-media-item"><div class="zy-media-h">🎵 Audio '+(i+1)+' <span class="zy-cat">'+esc(item.key)+'</span></div><audio controls preload="metadata" class="zy-audio" src="'+esc(item.url)+'"></audio><div class="zy-media-actions"><a href="'+esc(item.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a><button class="zy-cp-btn" onclick="zyCp(\''+esc(item.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button></div></div>'; });
+if(images.length === 1){ var img = images[0]; html += '<div class="zy-media-item"><div class="zy-media-h">🖼 Gambar <span class="zy-cat">'+esc(img.key)+'</span></div><img src="'+esc(img.url)+'" class="zy-image" loading="lazy"><div class="zy-media-actions"><a href="'+esc(img.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a><button class="zy-cp-btn" onclick="zyCp(\''+esc(img.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button></div></div>'; }
+else if(images.length > 1){
+html += '<div class="zy-slideshow" data-idx="0"><div class="zy-media-h">🖼 Slide Show ('+images.length+' foto)</div><div class="zy-slide-view"><button class="zy-slide-nav" onclick="zySlideNav(this,-1)">‹</button><div class="zy-slide-track">';
+images.forEach(function(item, i){ html += '<div class="zy-slide-item'+(i===0?' active':'')+'"><img src="'+esc(item.url)+'" loading="lazy"></div>'; });
+html += '</div><button class="zy-slide-nav" onclick="zySlideNav(this,1)">›</button></div><div class="zy-slide-dots">';
 images.forEach(function(item, i){ html += '<span class="zy-dot'+(i===0?' active':'')+'" onclick="zySlideGo(this,'+i+')"></span>'; });
-html += '</div><div class="zy-slide-tools">';
-html += '<button class="zy-cp-btn" onclick="zySlideCopyCurrent(this)">📋 COPY AKTIF</button>';
-html += '<button class="zy-cp-btn" onclick="zySlideDownloadCurrent(this)">⬇ FOTO AKTIF</button>';
-html += '<button class="zy-cp-btn" onclick="zySlideDownloadAll(this)">📦 SEMUA</button>';
-html += '</div></div>';
+html += '</div><div class="zy-slide-tools"><button class="zy-cp-btn" onclick="zySlideCp(this)">📋 COPY AKTIF</button><button class="zy-cp-btn" onclick="zySlideDl(this)">⬇ FOTO AKTIF</button><button class="zy-cp-btn" onclick="zySlideDlAll(this)">📦 SEMUA</button></div></div>';
 }
-others.forEach(function(item, i){
-html += '<div class="zy-media-item"><div class="zy-media-h">🔗 File '+(i+1)+' <span class="zy-cat">'+esc(item.key)+'</span></div>';
-html += '<div class="zy-url-preview">'+esc(item.url)+'</div>';
-html += '<div class="zy-media-actions"><a href="'+esc(item.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a>';
-html += '<button class="zy-cp-btn" onclick="navigator.clipboard.writeText(\''+esc(item.url).replace(/'/g,"\\'")+'\').then(function(){alert(\'URL tersalin\')})">📋 COPY</button></div></div>';
-});
+others.forEach(function(item, i){ html += '<div class="zy-media-item"><div class="zy-media-h">🔗 File '+(i+1)+' <span class="zy-cat">'+esc(item.key)+'</span></div><div class="zy-url-preview">'+esc(item.url)+'</div><div class="zy-media-actions"><a href="'+esc(item.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a><button class="zy-cp-btn" onclick="zyCp(\''+esc(item.url).replace(/'/g,"\\'")+'\')">📋 COPY</button></div></div>'; });
 return html;
 }
-window.zySlidePrev = function(btn){
+window.zyCp = function(u){ navigator.clipboard.writeText(u).then(function(){ alert('URL tersalin'); }); };
+window.zySlideNav = function(btn, dir){
 var show = btn.closest('.zy-slideshow');
 var items = show.querySelectorAll('.zy-slide-item');
-var curr = Array.from(items).findIndex(function(x){ return x.classList.contains('active'); });
-var next = (curr - 1 + items.length) % items.length;
-items.forEach(function(x,i){ x.classList.toggle('active', i===next); });
-var dots = show.querySelectorAll('.zy-dot');
-dots.forEach(function(d,i){ d.classList.toggle('active', i===next); });
-};
-window.zySlideNext = function(btn){
-var show = btn.closest('.zy-slideshow');
-var items = show.querySelectorAll('.zy-slide-item');
-var curr = Array.from(items).findIndex(function(x){ return x.classList.contains('active'); });
-var next = (curr + 1) % items.length;
+var curr = parseInt(show.dataset.idx)||0;
+var next = (curr + dir + items.length) % items.length;
+show.dataset.idx = next;
 items.forEach(function(x,i){ x.classList.toggle('active', i===next); });
 var dots = show.querySelectorAll('.zy-dot');
 dots.forEach(function(d,i){ d.classList.toggle('active', i===next); });
 };
 window.zySlideGo = function(dot, idx){
 var show = dot.closest('.zy-slideshow');
+show.dataset.idx = idx;
 var items = show.querySelectorAll('.zy-slide-item');
 items.forEach(function(x,i){ x.classList.toggle('active', i===idx); });
 var dots = show.querySelectorAll('.zy-dot');
 dots.forEach(function(d,i){ d.classList.toggle('active', i===idx); });
 };
-window.zySlideCopyCurrent = function(btn){
-var show = btn.closest('.zy-slideshow');
-var curr = show.querySelector('.zy-slide-item.active img');
-if(curr) navigator.clipboard.writeText(curr.src).then(function(){ alert('URL tersalin'); });
-};
-window.zySlideDownloadCurrent = function(btn){
-var show = btn.closest('.zy-slideshow');
-var curr = show.querySelector('.zy-slide-item.active img');
-if(curr){
-var a = document.createElement('a'); a.href = curr.src; a.download = 'slide.jpg'; a.target='_blank';
-document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}
-};
-window.zySlideDownloadAll = function(btn){
-var show = btn.closest('.zy-slideshow');
-var imgs = show.querySelectorAll('.zy-slide-item img');
-imgs.forEach(function(img, i){
-setTimeout(function(){
-var a = document.createElement('a'); a.href = img.src; a.download = 'slide_'+String(i+1).padStart(2,'0')+'.jpg'; a.target='_blank';
-document.body.appendChild(a); a.click(); document.body.removeChild(a);
-}, i*500);
-});
-};
+window.zySlideCp = function(btn){ var show = btn.closest('.zy-slideshow'); var idx = parseInt(show.dataset.idx)||0; var img = show.querySelectorAll('.zy-slide-item img')[idx]; if(img) window.zyCp(img.src); };
+window.zySlideDl = function(btn){ var show = btn.closest('.zy-slideshow'); var idx = parseInt(show.dataset.idx)||0; var img = show.querySelectorAll('.zy-slide-item img')[idx]; if(img){ var a=document.createElement('a'); a.href=img.src; a.download='slide.jpg'; a.target='_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a); } };
+window.zySlideDlAll = function(btn){ var show = btn.closest('.zy-slideshow'); var imgs = show.querySelectorAll('.zy-slide-item img'); imgs.forEach(function(img, i){ setTimeout(function(){ var a=document.createElement('a'); a.href=img.src; a.download='slide_'+String(i+1).padStart(2,'0')+'.jpg'; a.target='_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }, i*400); }); };
 
 function renderResult(container, data, apiName){
 var mediaItems = collectMedia(data, []);
@@ -284,213 +204,134 @@ var html = '<div class="zy-head">✓ SUKSES via <b>'+esc(apiName)+'</b></div>';
 if(data.title || data.author){
 html += '<div class="zy-meta">';
 if(data.title) html += '<div class="zy-meta-t">'+esc(data.title)+'</div>';
-if(data.author){
-var au = data.author.unique_id ? '@'+data.author.unique_id+' · '+data.author.nickname : (data.author.nickname || data.author);
-html += '<div class="zy-meta-a">'+esc(au)+'</div>';
-}
-if(data.stats){
-var st = [];
-if(data.stats.play) st.push('▶ '+data.stats.play);
-if(data.stats.like) st.push('❤ '+data.stats.like);
-if(data.stats.comment) st.push('💬 '+data.stats.comment);
-if(data.stats.share) st.push('↗ '+data.stats.share);
-if(st.length) html += '<div class="zy-meta-s">'+st.join(' · ')+'</div>';
-}
+if(data.author){ var au = data.author.unique_id ? '@'+data.author.unique_id+' · '+data.author.nickname : (data.author.nickname || data.author); html += '<div class="zy-meta-a">'+esc(au)+'</div>'; }
+if(data.stats){ var st=[]; if(data.stats.play) st.push('▶ '+data.stats.play); if(data.stats.like) st.push('❤ '+data.stats.like); if(data.stats.comment) st.push('💬 '+data.stats.comment); if(data.stats.share) st.push('↗ '+data.stats.share); if(st.length) html += '<div class="zy-meta-s">'+st.join(' · ')+'</div>'; }
 html += '</div>';
 }
 if(previewHTML) html += '<div class="zy-media-wrap"><div class="zy-media-title">📥 MEDIA PREVIEW</div>'+previewHTML+'</div>';
 html += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>';
-html += '<button class="zy-copy" onclick="zyCopyJSON(this)">📋 COPY JSON</button>';
-html += '<button class="zy-copy" onclick="zyDownloadJSON(this)">⬇ DOWNLOAD JSON</button>';
+html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
 container.innerHTML = html;
 container.classList.remove('hd');
 }
-window.zyCopyJSON = function(btn){
-var pre = btn.parentElement.querySelector('.zy-raw pre');
-if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ alert('JSON tersalin'); });
-};
-window.zyDownloadJSON = function(btn){
-var pre = btn.parentElement.querySelector('.zy-raw pre');
-if(!pre) return;
-var b = new Blob([pre.textContent], {type:'application/json'});
-var u = URL.createObjectURL(b);
-var a = document.createElement('a'); a.href = u; a.download = 'result.json';
-document.body.appendChild(a); a.click(); document.body.removeChild(a);
-setTimeout(function(){ URL.revokeObjectURL(u); }, 1000);
-};
+window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ alert('JSON tersalin'); }); };
 
-// ============ CUSTOM SELECT ============
 function buildCustomSelect(container, items, selectedId, onSelect){
 if(!container) return;
 container.innerHTML = '';
 var btn = document.createElement('button');
-btn.type = 'button';
-btn.className = 'zy-select-btn';
+btn.type = 'button'; btn.className = 'zy-select-btn';
 var current = items.find(function(x){ return x.id===selectedId; });
 btn.innerHTML = '<span>'+(current?current.name:'— Pilih —')+'</span><span class="zy-select-arrow">▾</span>';
 btn.onclick = function(e){
 e.stopPropagation();
 var open = container.querySelector('.zy-select-panel');
-if(open){ open.remove(); container.classList.remove('open'); return; }
-container.classList.add('open');
-var panel = document.createElement('div');
-panel.className = 'zy-select-panel';
+if(open){ open.remove(); return; }
+var panel = document.createElement('div'); panel.className = 'zy-select-panel';
 items.forEach(function(it){
 var opt = document.createElement('div');
 opt.className = 'zy-select-opt' + (it.id===selectedId?' active':'');
 opt.innerHTML = '<span>'+it.name+'</span>' + (it.desc ? '<small>'+it.desc+'</small>' : '');
-opt.onclick = function(e2){
-e2.stopPropagation();
-onSelect(it.id);
-btn.querySelector('span').textContent = it.name;
-var old = container.querySelector('.zy-select-panel');
-if(old) old.remove();
-container.classList.remove('open');
-};
+opt.onclick = function(e2){ e2.stopPropagation(); onSelect(it.id); btn.querySelector('span').textContent = it.name; var o = container.querySelector('.zy-select-panel'); if(o) o.remove(); };
 panel.appendChild(opt);
 });
 container.appendChild(panel);
 };
 container.appendChild(btn);
 }
-document.addEventListener('click', function(){
-document.querySelectorAll('.zy-select-panel').forEach(function(p){ p.remove(); });
-document.querySelectorAll('.zy-select-wrap').forEach(function(w){ w.classList.remove('open'); });
-});
+document.addEventListener('click', function(){ document.querySelectorAll('.zy-select-panel').forEach(function(p){ p.remove(); }); });
 
-// ============ INIT BYPASS ============
+// ===== BYPASS =====
 var bypassSelected = 'ALL';
 window.zyInitBypass = function(){
-var sel = $id('bp-api-custom');
-if(!sel) return;
+var sel = $id('bp-api-custom'); if(!sel) return;
 var items = [{ id:'ALL', name:'🔄 ALL (auto-fallback 9 API)', desc:'Coba semua sampai sukses' }].concat(BYPASS_LIST);
-buildCustomSelect(sel, items, bypassSelected, function(id){
-bypassSelected = id;
-window.zyRenderBypassParams();
-});
+buildCustomSelect(sel, items, bypassSelected, function(id){ bypassSelected = id; window.zyRenderBypassParams(); });
 window.zyRenderBypassParams();
 };
 window.zyRenderBypassParams = function(){
-var wrap = $id('bp-params');
-if(!wrap) return;
-if(bypassSelected === 'ALL'){
-wrap.innerHTML = '<label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">';
-} else {
-var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; });
-if(!api) return;
-wrap.innerHTML = api.params.map(function(p){
-var ph = p === 'url' ? 'https://...' : '(opsional)';
-return '<label>'+p+'</label><input id="bp-'+p+'" placeholder="'+ph+'">';
-}).join('');
+var wrap = $id('bp-params'); if(!wrap) return;
+if(bypassSelected === 'ALL'){ wrap.innerHTML = '<label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">'; }
+else {
+var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; }); if(!api) return;
+wrap.innerHTML = api.params.map(function(p){ var ph = p === 'url' ? 'https://...' : '(opsional)'; return '<label>'+p+'</label><input id="bp-'+p+'" placeholder="'+ph+'">'; }).join('');
 }
 };
 window.zyRunBypass = async function(){
 var log = $id('bp-log'), res = $id('bp-result');
-log.innerHTML = ''; log.classList.remove('hd');
-res.innerHTML = ''; res.classList.add('hd');
+if(log){ log.innerHTML = ''; log.classList.remove('hd'); }
+if(res){ res.innerHTML = ''; res.classList.add('hd'); }
 var list, params;
 if(bypassSelected === 'ALL'){
-var url = ($id('bp-url')||{}).value;
-if(!url){ alert('Masukkan URL'); return; }
-params = { url: url.trim() };
-list = BYPASS_LIST;
+var url = ($id('bp-url')||{}).value; if(!url){ alert('Masukkan URL'); return; }
+params = { url: url.trim() }; list = BYPASS_LIST;
 } else {
-var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; });
-list = [api];
-params = {};
+var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; }); list = [api]; params = {};
 api.params.forEach(function(p){ var el = $id('bp-'+p); if(el) params[p] = el.value.trim(); });
 if(!params.url){ alert('URL kosong'); return; }
 }
 var out = await fetchWithFallback(list, params, log);
 if(out) renderResult(res, out.result, out.api.name);
-else { res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd'); }
+else if(res){ res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd'); }
 };
 
-// ============ INIT DOWNLOADER ============
+// ===== DOWNLOADER =====
 var dlCat = 'ALL';
 var dlApi = DOWNLOADER_LIST[0].id;
 window.zyInitDownloader = function(){
-var catSel = $id('dl-cat-custom');
-var apiSel = $id('dl-api-custom');
-if(!catSel || !apiSel) return;
+var catSel = $id('dl-cat-custom'); var apiSel = $id('dl-api-custom'); if(!catSel || !apiSel) return;
 var cats = Array.from(new Set(DOWNLOADER_LIST.map(function(d){ return d.cat; })));
 var catItems = [{ id:'ALL', name:'🔄 Semua Kategori' }].concat(cats.map(function(c){ return { id:c, name:c }; }));
-buildCustomSelect(catSel, catItems, dlCat, function(id){
-dlCat = id;
-window.zyRenderDlApis();
-});
+buildCustomSelect(catSel, catItems, dlCat, function(id){ dlCat = id; window.zyRenderDlApis(); });
 window.zyRenderDlApis();
 };
 window.zyRenderDlApis = function(){
-var apiSel = $id('dl-api-custom');
-if(!apiSel) return;
+var apiSel = $id('dl-api-custom'); if(!apiSel) return;
 var list = dlCat==='ALL' ? DOWNLOADER_LIST : DOWNLOADER_LIST.filter(function(d){ return d.cat===dlCat; });
 var items = list.map(function(d){ return { id:d.id, name:d.name, desc:d.cat }; });
 if(!items.find(function(x){ return x.id===dlApi; })) dlApi = items[0].id;
-buildCustomSelect(apiSel, items, dlApi, function(id){
-dlApi = id;
-window.zyRenderDlParams();
-});
+buildCustomSelect(apiSel, items, dlApi, function(id){ dlApi = id; window.zyRenderDlParams(); });
 window.zyRenderDlParams();
 };
 window.zyRenderDlParams = function(){
-var wrap = $id('dl-params');
-if(!wrap) return;
-var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-if(!api){ wrap.innerHTML = ''; return; }
-wrap.innerHTML = api.params.map(function(p){
-var ph = p;
-if(p==='url') ph = 'https://...';
-if(p==='query') ph = 'kata kunci';
-if(p==='track_id') ph = 'ID track';
-if(p==='format') ph = 'mp3 / mp4';
-if(p==='quality') ph = '360 / 720 / 1080';
-if(p==='fileType') ph = 'mp3 / mp4';
-if(p==='type') ph = 'video / audio';
-if(p==='action') ph = 'home / search';
-if(p==='json') ph = '1';
-if(p==='mode') ph = 'home / search';
-return '<label>'+p+'</label><input id="dl-'+p+'" placeholder="'+ph+'">';
-}).join('');
+var wrap = $id('dl-params'); if(!wrap) return;
+var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ wrap.innerHTML = ''; return; }
+wrap.innerHTML = api.params.map(function(p){ var ph=p; if(p==='url')ph='https://...'; if(p==='query')ph='kata kunci'; if(p==='track_id')ph='ID track'; if(p==='format')ph='mp3 / mp4'; if(p==='quality')ph='360 / 720 / 1080'; if(p==='fileType')ph='mp3 / mp4'; if(p==='type')ph='video / audio'; if(p==='action')ph='home / search'; if(p==='json')ph='1'; if(p==='mode')ph='home / search'; return '<label>'+p+'</label><input id="dl-'+p+'" placeholder="'+ph+'">'; }).join('');
 };
 window.zyRunDownloader = async function(){
-var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-if(!api){ alert('Pilih API'); return; }
+var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ alert('Pilih API'); return; }
 var log = $id('dl-log'), res = $id('dl-result');
-log.innerHTML = ''; log.classList.remove('hd');
-res.innerHTML = ''; res.classList.add('hd');
+if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+if(res){ res.innerHTML=''; res.classList.add('hd'); }
 var params = {};
 api.params.forEach(function(p){ var el = $id('dl-'+p); if(el && el.value.trim()) params[p] = el.value.trim(); });
 if(!Object.keys(params).length){ alert('Isi minimal 1 parameter'); return; }
 var out = await fetchWithFallback([api], params, log);
 if(out) renderResult(res, out.result, out.api.name);
-else { res.innerHTML = '<div class="zy-head er">✗ API GAGAL</div>'; res.classList.remove('hd'); }
+else if(res){ res.innerHTML='<div class="zy-head er">✗ API GAGAL</div>'; res.classList.remove('hd'); }
 };
 window.zyRunDownloaderAll = async function(){
-var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-if(!api){ alert('Pilih API dulu'); return; }
-var urlEl = $id('dl-url') || $id('dl-query') || $id('dl-track_id');
-if(!urlEl || !urlEl.value.trim()){ alert('Isi URL / query dulu'); return; }
-var value = urlEl.value.trim();
-var paramKey = urlEl.id.replace('dl-','');
+var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ alert('Pilih API dulu'); return; }
+var urlEl = $id('dl-url') || $id('dl-query') || $id('dl-track_id'); if(!urlEl || !urlEl.value.trim()){ alert('Isi URL / query dulu'); return; }
+var value = urlEl.value.trim(); var paramKey = urlEl.id.replace('dl-','');
 var sameCat = DOWNLOADER_LIST.filter(function(d){ return d.cat===api.cat; });
 var log = $id('dl-log'), res = $id('dl-result');
-log.innerHTML = ''; log.classList.remove('hd');
-res.innerHTML = ''; res.classList.add('hd');
+if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+if(res){ res.innerHTML=''; res.classList.add('hd'); }
 var out = await fetchWithFallback(sameCat, {[paramKey]: value}, log);
 if(out) renderResult(res, out.result, out.api.name);
-else { res.innerHTML = '<div class="zy-head er">✗ SEMUA API KATEGORI '+esc(api.cat)+' GAGAL</div>'; res.classList.remove('hd'); }
+else if(res){ res.innerHTML='<div class="zy-head er">✗ SEMUA API KATEGORI '+esc(api.cat)+' GAGAL</div>'; res.classList.remove('hd'); }
 };
 
-// Auto-init kalau elemen udah ada di DOM
+// Auto-init
 if(document.readyState === 'loading'){
 document.addEventListener('DOMContentLoaded', function(){
-  if($id('bp-api-custom')) window.zyInitBypass();
-  if($id('dl-cat-custom')) window.zyInitDownloader();
+  try{ if($id('bp-api-custom')) window.zyInitBypass(); }catch(e){}
+  try{ if($id('dl-cat-custom')) window.zyInitDownloader(); }catch(e){}
 });
 } else {
-if($id('bp-api-custom')) window.zyInitBypass();
-if($id('dl-cat-custom')) window.zyInitDownloader();
+try{ if($id('bp-api-custom')) window.zyInitBypass(); }catch(e){}
+try{ if($id('dl-cat-custom')) window.zyInitDownloader(); }catch(e){}
 }
 
 })();
