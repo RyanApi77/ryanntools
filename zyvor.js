@@ -735,3 +735,696 @@ var API_HUB_LIST = [
   {id:'sr_apkcombo', name:'ApkCombo', path:'/api/search/apkcombo', method:'GET', params:['query'], cat:'SEARCH'},
   {id:'sr_bilibili', name:'Bilibili', path:'/api/search/bilibili', method:'GET', params:['query','type','action','url','page','limit','lang'], cat:'SEARCH'}
 ];
+// ===== TEMPMAIL v6.9 =====
+var tmpToken=null, tmpEmail=null, tmpMsgs=[];
+
+async function tmpFetchV2(url, opts){
+  opts = opts || {};
+  try{
+    var wurl = WORKER + '/?url=' + encodeURIComponent(url);
+    var r = await fetchWithRetry(wurl, {method: opts.method || 'GET', headers: opts.headers || {}, body: opts.body}, 30000, 2);
+    if(r.ok) return r;
+  }catch(e){}
+  for(var i=0;i<CORS.length;i++){
+    try{
+      var p = CORS[i];
+      var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
+      var r2 = await fetchWithRetry(full, opts, 20000, 1);
+      if(r2.ok) return r2;
+    }catch(e){}
+  }
+  throw new Error('Tempmail fetch failed');
+}
+
+async function tmpLoad(){
+  var log = document.getElementById('tmp-log');
+  if(log) log.innerHTML = '';
+  logTo('tmp-log','⏳ Loading domain...','in');
+  try{
+    var r = await tmpFetchV2('https://api.mail.tm/domains');
+    var j = await r.json();
+    var arr = j['hydra:member'] || [];
+    if(window.__selTmpDom){
+      var items = [{id:'', name:'— CHOOSE —'}];
+      arr.forEach(function(d){ items.push({id:d.domain, name:d.domain}); });
+      window.__selTmpDom.setItems(items);
+    }
+    logTo('tmp-log','✓ '+arr.length+' domain','ok');
+  }catch(e){
+    logTo('tmp-log','✗ '+e.message,'er');
+    setTimeout(function(){ tmpLoad(); }, 3000);
+  }
+}
+window.tmpLoadDomains = tmpLoad;
+if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ tmpLoad(); };
+
+if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
+  var log = document.getElementById('tmp-log');
+  if(log) log.innerHTML = '';
+  var nm = $id('tmp-name').value.trim() || ('user' + Math.floor(Math.random()*99999));
+  var dom = (window.__selTmpDom ? window.__selTmpDom.getValue() : '');
+  if(!dom){ alert('Pilih domain dulu'); return; }
+  var em = nm + '@' + dom;
+  var pw = 'RyannTmp!' + Math.floor(Math.random()*99999);
+  logTo('tmp-log','⏳ Membuat ' + em + '...','in');
+  try{
+    var r = await tmpFetchV2('https://api.mail.tm/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
+    var j = await r.json();
+    if(!r.ok){ logTo('tmp-log','✗ '+(j.message || 'error'),'er'); return; }
+    logTo('tmp-log','✓ Account OK','ok');
+    var r2 = await tmpFetchV2('https://api.mail.tm/token', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
+    var j2 = await r2.json();
+    if(!r2.ok){ logTo('tmp-log','✗ Login: '+(j2.message||'error'),'er'); return; }
+    tmpToken = j2.token; tmpEmail = em;
+    $id('tmp-email').textContent = em;
+    logTo('tmp-log','✓ Login OK','ok');
+    try{
+      var hist = JSON.parse(localStorage.getItem('rx_history') || '[]');
+      hist.unshift({n:'Tempmail ['+em+']', s:'0.1', l:em.length, t:Date.now(), c:em});
+      if(hist.length > 30) hist = hist.slice(0,30);
+      localStorage.setItem('rx_history', JSON.stringify(hist));
+    }catch(e){}
+    if(window.unlockAch) window.unlockAch('tmp_first');
+    if(window.sndSuccess) window.sndSuccess();
+  }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
+};
+if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail) navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); }); };
+if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
+  if(!tmpToken){ alert('Generate dulu'); return; }
+  try{
+    var r = await tmpFetchV2('https://api.mail.tm/messages', {headers:{'Authorization':'Bearer '+tmpToken}});
+    var j = await r.json();
+    tmpMsgs = j['hydra:member'] || [];
+    var el = $id('tmp-list');
+    el.innerHTML = tmpMsgs.map(function(m,i){ return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'</div>'; }).join('');
+    el.querySelectorAll('.msg-item').forEach(function(it){
+      it.onclick=function(){
+        var idx = parseInt(it.dataset.i); var m = tmpMsgs[idx];
+        $id('tmp-msg-view').innerHTML='<b>From:</b> '+m.from.address+'<br><b>Subj:</b> '+m.subject+'<br><br>'+(m.intro||'');
+        $id('tmp-msg-view').classList.remove('hd');
+      };
+    });
+    if(window.unlockAch) window.unlockAch('inbox_first');
+    if(window.sndSuccess) window.sndSuccess();
+  }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
+};
+if($id('tmp-inbox-dl')) $id('tmp-inbox-dl').onclick=function(){
+  if(!tmpMsgs.length) return;
+  var t = tmpMsgs.map(function(m){ return m.from.address+' | '+m.subject; }).join('\n');
+  var b = new Blob([t],{type:'text/plain'});
+  var u = URL.createObjectURL(b);
+  var a = document.createElement('a'); a.href=u; a.download='inbox.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+};
+setTimeout(function(){ if(document.getElementById('tmp-domain')) tmpLoad(); }, 2500);
+
+// ===== SEARCH BROWSER =====
+window.zyRunSearch = async function(){
+  var q = document.getElementById('search-input');
+  var cat = window.__searchCategory || 'ALL';
+  if(!q || !q.value.trim()){ alert('Ketik dulu'); return; }
+  var query = q.value.trim();
+  var log = document.getElementById('search-log');
+  var res = document.getElementById('search-result');
+  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+  if(res){ res.innerHTML='<div class="zy-head">🔍 Mencari "'+esc(query)+'"...</div>'; res.classList.remove('hd'); }
+
+  var apis = [];
+  if(cat === 'ALL') apis = [].concat(SEARCH_APIS.WEB, SEARCH_APIS.VIDEO, SEARCH_APIS.MUSIC);
+  else apis = SEARCH_APIS[cat] || [];
+  if(!apis.length){ res.innerHTML = '<div class="zy-head er">Kategori kosong</div>'; return; }
+
+  if(log){ var l0 = document.createElement('div'); l0.className='in'; l0.textContent='Menembak '+apis.length+' API...'; log.appendChild(l0); }
+
+  var promises = apis.map(async function(api){
+    var p = {};
+    api.params.forEach(function(k){ p[k] = query; });
+    if(api.fixed){ Object.keys(api.fixed).forEach(function(k){ p[k] = api.fixed[k]; }); }
+    try{
+      var r = await callAPIv2(api.path, p, 'GET');
+      var items = extractResultItems(r);
+      if(log){ var l = document.createElement('div'); l.className='ok'; l.textContent='✓ '+api.name+' — '+items.length+' hasil'; log.appendChild(l); log.scrollTop=log.scrollHeight; }
+      return { api:api, items:items, raw:r };
+    }catch(e){
+      if(log){ var le = document.createElement('div'); le.className='er'; le.textContent='✗ '+api.name+': '+e.message; log.appendChild(le); log.scrollTop=log.scrollHeight; }
+      return { api:api, items:[], error:e.message };
+    }
+  });
+
+  var settled = await Promise.allSettled(promises);
+  var results = settled.map(function(r){ return r.status === 'fulfilled' ? r.value : { api:null, items:[], error:'rejected' }; });
+
+  var html = '';
+  var total = 0;
+  results.forEach(function(r){
+    if(!r || !r.items || !r.items.length) return;
+    total += r.items.length;
+    html += '<div class="search-section"><div class="search-section-title">'+esc(r.api.name)+' — '+r.items.length+' hasil</div>';
+    r.items.slice(0, 15).forEach(function(item){
+      var thumbHtml = item.thumb ? '<img src="'+esc(item.thumb)+'" class="search-thumb" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="search-thumb-placeholder">📄</div>';
+      html += '<div class="search-item" onclick="zyOpenLink(\''+esc(item.url).replace(/'/g,"\\'")+'\')">'+thumbHtml+'<div class="search-item-body"><div class="search-item-title">'+esc(item.title)+'</div>';
+      if(item.author) html += '<div class="search-item-author">'+esc(item.author)+'</div>';
+      if(item.desc) html += '<div class="search-item-desc">'+esc(String(item.desc).substring(0,140))+'</div>';
+      html += '</div><div class="search-item-arrow">→</div></div>';
+    });
+    html += '</div>';
+  });
+  if(total === 0) html = '<div class="zy-head er">Tidak ada hasil untuk "'+esc(query)+'"</div>';
+  res.innerHTML = html;
+  res.classList.remove('hd');
+};
+window.zyOpenLink = function(url){ window.open(url, '_blank', 'noopener,noreferrer'); };
+
+// ===== BYPASS =====
+var bypassSelected = 'ALL';
+window.zyInitBypass = function(){
+  var sel = $id('bp-api-custom');
+  if(!sel || typeof window.initCustomSelect !== 'function') return;
+  var items = [{id:'ALL', name:'ALL — fallback 9 API', desc:'Coba semua'}].concat(BYPASS_LIST.map(function(b){ return {id:b.id, name:b.name}; }));
+  window.__bpSel = window.initCustomSelect('bp-api-custom', items, bypassSelected, function(id){ bypassSelected = id; window.zyRenderBypassParams(); });
+  window.zyRenderBypassParams();
+};
+window.zyRenderBypassParams = function(){
+  var wrap = $id('bp-params'); if(!wrap) return;
+  if(bypassSelected === 'ALL'){ wrap.innerHTML = '<label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">'; }
+  else {
+    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; }); if(!api) return;
+    wrap.innerHTML = api.params.map(function(p){ return '<label>'+p+'</label><input id="bp-'+p+'" placeholder="'+(p==='url'?'https://...':'(opsional)')+'">'; }).join('');
+  }
+};
+window.zyRunBypass = async function(){
+  var log = $id('bp-log'), res = $id('bp-result');
+  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+  if(res){ res.innerHTML=''; res.classList.add('hd'); }
+  var list, params;
+  if(bypassSelected === 'ALL'){
+    var url = ($id('bp-url')||{}).value;
+    if(!url){ alert('Masukkan URL'); return; }
+    params = {url:url.trim()}; list = BYPASS_LIST;
+  } else {
+    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; }); list = [api]; params = {};
+    api.params.forEach(function(p){ var el = $id('bp-'+p); if(el) params[p] = el.value.trim(); });
+    if(!params.url){ alert('URL kosong'); return; }
+  }
+  var out = await fetchWithFallback(list, params, log);
+  if(out){
+    var html = '<div class="zy-head">✓ SUKSES via <b>'+esc(out.api.name)+'</b></div>';
+    html += '<details class="zy-raw" open><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(out.result,null,2))+'</pre></details>';
+    html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
+    res.innerHTML = html; res.classList.remove('hd');
+  } else { res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd'); }
+};
+
+// ===== DL =====
+var dlCat = 'ALL'; var dlApi = 'tikwm';
+window.zyInitDownloader = function(){
+  var catSel = $id('dl-cat-custom'), apiSel = $id('dl-api-custom');
+  if(!catSel || !apiSel || typeof window.initCustomSelect !== 'function') return;
+  var cats = Array.from(new Set(DOWNLOADER_LIST.map(function(d){ return d.cat; })));
+  var catItems = [{id:'ALL', name:'ALL — semua kategori'}].concat(cats.map(function(c){ return {id:c, name:c}; }));
+  window.__dlCatSel = window.initCustomSelect('dl-cat-custom', catItems, dlCat, function(id){
+    dlCat = id;
+    var list = dlCat==='ALL' ? DOWNLOADER_LIST : DOWNLOADER_LIST.filter(function(d){ return d.cat===dlCat; });
+    if(list.length) dlApi = list[0].id;
+    window.zyRenderDlApis();
+  });
+  window.zyRenderDlApis();
+};
+window.zyRenderDlApis = function(){
+  var apiSel = $id('dl-api-custom'); if(!apiSel) return;
+  var list = dlCat==='ALL' ? DOWNLOADER_LIST : DOWNLOADER_LIST.filter(function(d){ return d.cat===dlCat; });
+  if(!list.length) return;
+  if(!list.find(function(x){ return x.id===dlApi; })) dlApi = list[0].id;
+  var items = list.map(function(d){ return {id:d.id, name:d.name, desc:d.cat+(d.desc?' · '+d.desc:'')}; });
+  window.__dlApiSel = window.initCustomSelect('dl-api-custom', items, dlApi, function(id){ dlApi = id; window.zyRenderDlParams(); });
+  window.zyRenderDlParams();
+};
+window.zyRenderDlParams = function(){
+  var wrap = $id('dl-params'); if(!wrap) return;
+  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
+  if(!api){ wrap.innerHTML=''; return; }
+  wrap.innerHTML = api.params.map(function(p){
+    var ph = p;
+    if(p==='url')ph='https://...'; if(p==='query')ph='kata kunci'; if(p==='track_id')ph='ID track';
+    if(p==='format')ph='mp3 / mp4'; if(p==='quality')ph='360 / 720 / 1080'; if(p==='fileType')ph='mp3 / mp4';
+    if(p==='type')ph='video / audio'; if(p==='action')ph='home / search'; if(p==='json')ph='1'; if(p==='mode')ph='home / search';
+    return '<label>'+p+'</label><input id="dl-'+p+'" placeholder="'+ph+'">';
+  }).join('');
+};
+function isTikTokUrl(url){ if(!url) return false; return /tiktok\.com|vt\.tiktok\.com|vm\.tiktok\.com/.test(url.toLowerCase()); }
+window.zyRunDownloader = async function(){
+  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ alert('Pilih API'); return; }
+  var log = $id('dl-log'), res = $id('dl-result');
+  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+  if(res){ res.innerHTML=''; res.classList.add('hd'); }
+  var urlEl = $id('dl-url'); var url = urlEl ? urlEl.value.trim() : '';
+  if(isTikTokUrl(url)){
+    if(log){ var li = document.createElement('div'); li.className='in'; li.textContent='🧠 Smart TikTok'; log.appendChild(li); }
+    var smart = await fetchTikTokSmart(url, log);
+    if(smart) window.zyRenderDlResult(res, smart, url);
+    else { res.innerHTML='<div class="zy-head er">✗ Semua API TikTok gagal</div>'; res.classList.remove('hd'); }
+    return;
+  }
+  var params = {};
+  api.params.forEach(function(p){ var el = $id('dl-'+p); if(el && el.value.trim()) params[p] = el.value.trim(); });
+  if(!Object.keys(params).length){ alert('Isi minimal 1 parameter'); return; }
+  var out = await fetchWithFallback([api], params, log);
+  if(out) window.zyRenderDlResult(res, {api:out.api, result:out.result, type:'generic'}, url);
+  else { res.innerHTML='<div class="zy-head er">✗ API GAGAL</div>'; res.classList.remove('hd'); }
+};
+window.zyRunDownloaderAll = async function(){
+  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ alert('Pilih API dulu'); return; }
+  var log = $id('dl-log'), res = $id('dl-result');
+  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+  if(res){ res.innerHTML=''; res.classList.add('hd'); }
+  var urlEl = $id('dl-url'); var url = urlEl ? urlEl.value.trim() : '';
+  if(isTikTokUrl(url)){
+    var smart = await fetchTikTokSmart(url, log);
+    if(smart) window.zyRenderDlResult(res, smart, url);
+    else { res.innerHTML='<div class="zy-head er">✗ Semua API gagal</div>'; res.classList.remove('hd'); }
+    return;
+  }
+  var urlElAll = $id('dl-url') || $id('dl-query') || $id('dl-track_id');
+  if(!urlElAll || !urlElAll.value.trim()){ alert('Isi URL / query'); return; }
+  var value = urlElAll.value.trim();
+  var paramKey = urlElAll.id.replace('dl-','');
+  var sameCat = DOWNLOADER_LIST.filter(function(d){ return d.cat===api.cat; });
+  var params = {}; params[paramKey] = value;
+  var out = await fetchWithFallback(sameCat, params, log);
+  if(out) window.zyRenderDlResult(res, {api:out.api, result:out.result, type:'generic'}, value);
+  else { res.innerHTML='<div class="zy-head er">✗ SEMUA GAGAL</div>'; res.classList.remove('hd'); }
+};
+window.zyRenderDlResult = function(container, smart, sourceUrl){
+  var type = smart.type;
+  var variants = smart.allVariants || extractTikTokVariants(smart.result);
+  if(type === 'slideshow' && variants.images && variants.images.length){
+    var slideHtml = '<div class="zy-head">🖼 SLIDESHOW — '+variants.images.length+' foto</div>';
+    if(variants.title) slideHtml += '<div class="zy-meta"><div class="zy-meta-t">'+esc(variants.title)+'</div></div>';
+    slideHtml += '<div class="zy-slide-grid">';
+    variants.images.forEach(function(img, i){
+      slideHtml += '<div class="zy-slide-item-card"><img src="'+esc(img)+'" loading="lazy"><div class="zy-slide-item-num">'+(i+1)+'</div><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(img).replace(/'/g,"\\'")+'\',\'slide_'+(i+1)+'.jpg\')">⬇ DOWNLOAD FOTO '+(i+1)+'</button></div>';
+    });
+    slideHtml += '</div>';
+    container.innerHTML = slideHtml; container.classList.remove('hd'); return;
+  }
+  var videoHtml = '<div class="zy-head">✓ '+(type==='video'?'VIDEO':'SUKSES')+' via <b>'+esc(smart.api.name)+'</b></div>';
+  if(variants.title || variants.author){
+    videoHtml += '<div class="zy-meta">';
+    if(variants.title) videoHtml += '<div class="zy-meta-t">'+esc(variants.title)+'</div>';
+    if(variants.author) videoHtml += '<div class="zy-meta-a">'+esc(variants.author)+'</div>';
+    videoHtml += '</div>';
+  }
+  videoHtml += '<div class="zy-variant-wrap">';
+  if(variants.noWM) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWM)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.noWM).replace(/'/g,"\\'")+'\',\'tiktok_nowm.mp4\')">⬇ NO WM</button></div>';
+  if(variants.noWMHD) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWMHD)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.noWMHD).replace(/'/g,"\\'")+'\',\'tiktok_nowm_hd.mp4\')">⬇ NO WM HD</button></div>';
+  if(variants.wm) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.wm)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.wm).replace(/'/g,"\\'")+'\',\'tiktok_wm.mp4\')">⬇ WM</button></div>';
+  if(variants.music) videoHtml += '<div class="zy-variant"><audio controls preload="metadata" class="zy-audio" src="'+esc(variants.music)+'"></audio><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.music).replace(/'/g,"\\'")+'\',\'tiktok_music.mp3\')">⬇ MUSIC</button></div>';
+  videoHtml += '</div>';
+  if(!variants.noWM && !variants.noWMHD && !variants.wm && !variants.music){
+    var mediaItems = collectMedia(smart.result, []);
+    if(mediaItems.length){
+      videoHtml += '<div class="zy-media-wrap"><div class="zy-media-title">📥 MEDIA</div>';
+      mediaItems.forEach(function(item){
+        var cls = item.url.match(/\.(mp4|mov|webm)/i) ? 'video' : item.url.match(/\.(mp3|m4a)/i) ? 'audio' : 'img';
+        if(cls === 'video') videoHtml += '<div class="zy-media-item"><video controls class="zy-video" src="'+esc(item.url)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'video.mp4\')">⬇ DOWNLOAD</button></div>';
+        else if(cls === 'audio') videoHtml += '<div class="zy-media-item"><audio controls class="zy-audio" src="'+esc(item.url)+'"></audio><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'audio.mp3\')">⬇ DOWNLOAD</button></div>';
+        else videoHtml += '<div class="zy-media-item"><img src="'+esc(item.url)+'" class="zy-image"><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'image.jpg\')">⬇ DOWNLOAD</button></div>';
+      });
+      videoHtml += '</div>';
+    } else { videoHtml += '<div class="zy-head er">⚠ Tidak ada media</div>'; }
+  }
+  container.innerHTML = videoHtml; container.classList.remove('hd');
+};
+window.zyPreviewResult = function(){
+  var res = $id('dl-result');
+  if(!res || res.classList.contains('hd')){ alert('Belum ada hasil'); return; }
+  res.scrollIntoView({behavior:'smooth', block:'start'});
+};
+window.zyClearDownloader = function(){
+  ['dl-url','dl-query','dl-track_id','dl-format','dl-quality','dl-fileType','dl-type','dl-action','dl-mode','dl-json'].forEach(function(id){ var el = $id(id); if(el) el.value=''; });
+  var log = $id('dl-log'), res = $id('dl-result');
+  if(log){ log.innerHTML=''; log.classList.add('hd'); }
+  if(res){ res.innerHTML=''; res.classList.add('hd'); }
+};
+
+// ===== API HUB =====
+var apiHubState = {};
+window.zyInitApiHub = function(tabId, catName){
+  if(typeof window.initCustomSelect !== 'function') return;
+  var filtered = API_HUB_LIST.filter(function(x){ return x.cat === catName; });
+  if(!filtered.length) return;
+  if(!apiHubState[tabId]) apiHubState[tabId] = { endpoint: filtered[0] };
+  var items = filtered.map(function(x){ return { id:x.id, name:x.name, desc:'params: '+x.params.length }; });
+  window.initCustomSelect(tabId+'-endpoint', items, apiHubState[tabId].endpoint.id, function(id){
+    apiHubState[tabId].endpoint = filtered.find(function(x){ return x.id===id; });
+    window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
+  });
+  window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
+};
+window.zyRunApiHub = async function(tabId, catName){
+  var st = apiHubState[tabId];
+  if(!st || !st.endpoint){ alert('Pilih endpoint'); return; }
+  var params = window.zyCollectParams(st.endpoint.params, tabId, catName);
+  var log = document.getElementById(tabId+'-log');
+  var res = document.getElementById(tabId+'-result');
+  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+  if(res){ res.innerHTML=''; res.classList.add('hd'); }
+
+  var loadingMsg = '⏳ Tunggu sebentar ya...';
+  if(catName === 'UPSCALE') loadingMsg = '🎬 Memproses video... tunggu sebentar ya...';
+  else if(catName === 'IMG AI'){ var p = params.prompt || params.teks || params.query || params.text || ''; loadingMsg = '🎨 Membuat sketsa ' + (p ? String(p).substring(0,50) : 'objek') + '...'; }
+  else if(catName === 'IMG HD') loadingMsg = '🖼 Enhancing image... tunggu sebentar ya...';
+  else if(catName === 'KALENDER') loadingMsg = '📅 Mengambil data kalender...';
+  else if(catName === 'MAKER') loadingMsg = '🎨 Membuat ' + st.endpoint.name + '...';
+  else if(catName === 'SEARCH') loadingMsg = '🔍 Mencari...';
+
+  if(log){ var l1 = document.createElement('div'); l1.className='in'; l1.textContent=loadingMsg; log.appendChild(l1); }
+
+  try{
+    var r = await callAPIv2(st.endpoint.path, params, st.endpoint.method || 'GET');
+    if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='✓ Selesai'; log.appendChild(l2); }
+    window.zyRenderApiResult(res, r, st.endpoint.name, catName);
+    try{
+      var txt = JSON.stringify(r);
+      var h = JSON.parse(localStorage.getItem('rx_history') || '[]');
+      h.unshift({n: st.endpoint.name + ' [' + catName + ']', s: (txt.length/1024).toFixed(1), l: txt.length, t: Date.now(), c: txt.substring(0, 40000)});
+      if(h.length > 30) h = h.slice(0,30);
+      localStorage.setItem('rx_history', JSON.stringify(h));
+    }catch(e){}
+  }catch(e){
+    if(log){ var l3 = document.createElement('div'); l3.className='er'; l3.textContent='✗ '+e.message; log.appendChild(l3); }
+    if(res){ res.innerHTML='<div class="zy-head er">✗ '+esc(e.message)+'</div>'; res.classList.remove('hd'); }
+  }
+};
+window.zyRenderApiResult = function(container, data, name, catName){
+  var html = '<div class="zy-head">✓ '+esc(name)+'</div>';
+  if(catName === 'KALENDER'){
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">📅 DATA KALENDER</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre></div>';
+    container.innerHTML = html; container.classList.remove('hd'); return;
+  }
+  var mediaItems = collectMedia(data, []);
+  var seen = {}; var unique = [];
+  mediaItems.forEach(function(m){ if(!seen[m.url]){ seen[m.url]=1; unique.push(m); } });
+  var images = unique.filter(function(x){ return classify(x.url)==='image'; });
+  var videos = unique.filter(function(x){ return classify(x.url)==='video'; });
+  window.__apiHubMedia = unique;
+  if(images.length){
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">🖼 IMAGE ('+images.length+')</div>';
+    images.slice(0,12).forEach(function(img, i){
+      var idx = unique.indexOf(img);
+      html += '<div class="zy-media-item">';
+      html += '<img src="'+esc(img.url)+'" class="zy-image" loading="lazy" onclick="zyOpenPreview('+idx+')" style="cursor:pointer">';
+      html += '<div class="zy-media-actions">';
+      html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🖼 PREVIEW</button>';
+      html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(img.url).replace(/'/g,"\\'")+'\',\'result_'+i+'.jpg\')">⬇ DOWNLOAD</button>';
+      html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(img.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+  if(videos.length){
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">🎬 VIDEO ('+videos.length+')</div>';
+    videos.slice(0,3).forEach(function(v, i){
+      var idx = unique.indexOf(v);
+      html += '<div class="zy-media-item">';
+      html += '<video controls preload="metadata" class="zy-video" src="'+esc(v.url)+'"></video>';
+      html += '<div class="zy-media-actions">';
+      html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🖼 PREVIEW</button>';
+      html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(v.url).replace(/'/g,"\\'")+'\',\'video_'+i+'.mp4\')">⬇ DOWNLOAD</button>';
+      html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(v.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  }
+  if(!images.length && !videos.length){
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">📄 RESPONSE</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre></div>';
+  }
+  html += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>';
+  html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
+  container.innerHTML = html; container.classList.remove('hd');
+};
+
+// ===== LOG HELPER =====
+// [GANTI KALAU UDAH ADA]
+if(typeof window.logTo !== 'function'){
+  window.logTo = function(id, msg, cls){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var line = document.createElement('div');
+    line.className = cls || 'in';
+    line.textContent = msg;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+  };
+}
+
+// ===== CUSTOM SELECT =====
+// [GANTI KALAU UDAH ADA]
+if(typeof window.initCustomSelect !== 'function'){
+  window.initCustomSelect = function(wrapId, items, defaultId, onChange){
+    var wrap = document.getElementById(wrapId);
+    if(!wrap) return null;
+    wrap.innerHTML = '';
+    wrap.classList.add('zy-select-wrap');
+
+    var state = { items: items || [], value: defaultId, onChange: onChange || function(){} };
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'zy-select-btn';
+    btn.innerHTML = '<span class="zy-btn-label"></span><span class="zy-btn-arrow">▾</span>';
+    wrap.appendChild(btn);
+
+    var menu = document.createElement('div');
+    menu.className = 'zy-select-menu';
+    menu.style.display = 'none';
+    wrap.appendChild(menu);
+
+    function labelOf(id){
+      for(var i = 0; i < state.items.length; i++){
+        if(state.items[i].id === id) return state.items[i].name;
+      }
+      return state.items.length ? state.items[0].name : '—';
+    }
+
+    function renderMenu(){
+      menu.innerHTML = '';
+      state.items.forEach(function(item){
+        var row = document.createElement('div');
+        row.className = 'zy-select-item' + (item.id === state.value ? ' active' : '');
+        var desc = item.desc ? '<div class="zy-select-desc">' + esc(item.desc) + '</div>' : '';
+        row.innerHTML = '<div class="zy-select-name">' + esc(item.name) + '</div>' + desc;
+        row.addEventListener('click', function(){
+          state.value = item.id;
+          btn.querySelector('.zy-btn-label').textContent = labelOf(state.value);
+          menu.style.display = 'none';
+          renderMenu();
+          try{ state.onChange(state.value); }catch(e){}
+        });
+        menu.appendChild(row);
+      });
+    }
+
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var open = menu.style.display === 'block';
+      document.querySelectorAll('.zy-select-menu').forEach(function(m){ m.style.display = 'none'; });
+      menu.style.display = open ? 'none' : 'block';
+    });
+
+    if(!state.value && state.items.length) state.value = state.items[0].id;
+    btn.querySelector('.zy-btn-label').textContent = labelOf(state.value);
+    renderMenu();
+
+    return {
+      getValue: function(){ return state.value; },
+      setItems: function(newItems){
+        state.items = newItems || [];
+        if(!state.items.find(function(x){ return x.id === state.value; })){
+          state.value = state.items.length ? state.items[0].id : null;
+        }
+        btn.querySelector('.zy-btn-label').textContent = labelOf(state.value);
+        renderMenu();
+      },
+      setValue: function(id){
+        state.value = id;
+        btn.querySelector('.zy-btn-label').textContent = labelOf(state.value);
+        renderMenu();
+      },
+      destroy: function(){ wrap.innerHTML = ''; }
+    };
+  };
+
+  document.addEventListener('click', function(){
+    document.querySelectorAll('.zy-select-menu').forEach(function(m){ m.style.display = 'none'; });
+  });
+}
+
+// ===== ACHIEVEMENT + SOUND =====
+// [GANTI KALAU UDAH ADA]
+if(typeof window.unlockAch !== 'function'){
+  var ACH_KEY = 'rx_achievements';
+  var ACH_DEFS = {
+    tmp_first:   { name: 'Inbox Rookie',  desc: 'Bikin tempmail pertama' },
+    inbox_first: { name: 'Mail Watcher',  desc: 'Cek inbox pertama kali' }
+  };
+  window.unlockAch = function(id){
+    var ach = {};
+    try{ ach = JSON.parse(localStorage.getItem(ACH_KEY) || '{}'); }catch(e){}
+    if(ach[id]) return;
+    ach[id] = Date.now();
+    try{ localStorage.setItem(ACH_KEY, JSON.stringify(ach)); }catch(e){}
+    var def = ACH_DEFS[id];
+    if(def) window.zyToast('🏆 ' + def.name);
+  };
+}
+
+if(typeof window.sndSuccess !== 'function'){
+  var _audioCtx = null;
+  window.sndSuccess = function(){
+    try{
+      if(!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      var o = _audioCtx.createOscillator();
+      var g = _audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(880, _audioCtx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(1320, _audioCtx.currentTime + 0.08);
+      g.gain.setValueAtTime(0.05, _audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + 0.18);
+      o.connect(g); g.connect(_audioCtx.destination);
+      o.start(); o.stop(_audioCtx.currentTime + 0.2);
+    }catch(e){}
+  };
+}
+
+// ===== HISTORY VIEWER =====
+window.zyRenderHistory = function(){
+  var wrap = document.getElementById('history-list');
+  if(!wrap) return;
+  var hist = [];
+  try{ hist = JSON.parse(localStorage.getItem('rx_history') || '[]'); }catch(e){}
+  if(!hist.length){
+    wrap.innerHTML = '<div class="r" style="font-size:.6rem;text-align:center;padding:20px">Belum ada riwayat</div>';
+    return;
+  }
+  wrap.innerHTML = hist.map(function(h, i){
+    var t = new Date(h.t);
+    var time = t.toLocaleString('id-ID', { hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short' });
+    return '<div class="hist-item" data-i="' + i + '">' +
+      '<div class="hist-name">' + esc(h.n) + '</div>' +
+      '<div class="hist-meta">' + time + ' · ' + esc(h.s) + ' KB</div>' +
+      '</div>';
+  }).join('');
+  wrap.querySelectorAll('.hist-item').forEach(function(el){
+    el.addEventListener('click', function(){
+      var i = parseInt(el.dataset.i, 10);
+      var h = hist[i];
+      if(!h) return;
+      var view = document.getElementById('history-view');
+      if(!view) return;
+      view.classList.remove('hd');
+      view.innerHTML = '<div class="zy-head">' + esc(h.n) + '</div>' +
+        '<pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:60vh">' +
+        esc(h.c || '(kosong)') + '</pre>' +
+        '<button class="zy-copy" onclick="zyCopyHist(' + i + ')">📋 COPY</button>';
+    });
+  });
+};
+
+window.zyCopyHist = function(i){
+  try{
+    var hist = JSON.parse(localStorage.getItem('rx_history') || '[]');
+    if(hist[i]) navigator.clipboard.writeText(hist[i].c || '').then(function(){ window.zyToast('Tersalin'); });
+  }catch(e){}
+};
+
+window.zyClearHistory = function(){
+  if(!confirm('Hapus semua riwayat?')) return;
+  localStorage.removeItem('rx_history');
+  window.zyRenderHistory();
+  var view = document.getElementById('history-view');
+  if(view){ view.innerHTML = ''; view.classList.add('hd'); }
+  window.zyToast('Riwayat dihapus');
+};
+
+// ===== TAB NAV =====
+window.zySwitchTab = function(tabId){
+  document.querySelectorAll('.tab-panel').forEach(function(p){
+    p.classList.toggle('active', p.id === tabId);
+  });
+  document.querySelectorAll('.tab-btn').forEach(function(b){
+    b.classList.toggle('active', b.dataset.tab === tabId);
+  });
+  if(tabId === 'tab-history') window.zyRenderHistory();
+  try{ window.scrollTo({ top: 0, behavior: 'smooth' }); }catch(e){}
+};
+
+document.addEventListener('click', function(e){
+  var btn = e.target.closest && e.target.closest('.tab-btn');
+  if(btn && btn.dataset.tab) window.zySwitchTab(btn.dataset.tab);
+});
+
+// ===== SEARCH CATEGORY =====
+var SEARCH_CATS = [
+  { id:'ALL',   name:'ALL — semua kategori' },
+  { id:'WEB',   name:'WEB — pencarian umum' },
+  { id:'VIDEO', name:'VIDEO — YouTube, TikTok' },
+  { id:'MUSIC', name:'MUSIC — Spotify' }
+];
+
+window.zyInitSearch = function(){
+  if(typeof window.initCustomSelect !== 'function') return;
+  if(!document.getElementById('search-cat-custom')) return;
+  window.__searchCategory = window.__searchCategory || 'ALL';
+  window.__searchCatSel = window.initCustomSelect('search-cat-custom', SEARCH_CATS, window.__searchCategory, function(id){
+    window.__searchCategory = id;
+  });
+};
+
+// ===== TEMPMAIL CUSTOM SELECT BOOT =====
+window.__tmpDomBoot = function(){
+  if(typeof window.initCustomSelect !== 'function'){ setTimeout(window.__tmpDomBoot, 80); return; }
+  if(!document.getElementById('tmp-domain')) return;
+  window.__selTmpDom = window.initCustomSelect('tmp-domain', [{ id:'', name:'— CHOOSE —' }], '', function(){});
+};
+
+// ===== ZYVOR EXPORT =====
+window.ZYVOR = {
+  version: '6.9',
+  base: BASE,
+  worker: WORKER,
+  call: callAPIv2,
+  proxy: proxyFetch,
+  classify: classify,
+  collectMedia: collectMedia,
+  download: window.zyDownload,
+  toast: window.zyToast,
+  copy: window.zyCp,
+  search: function(){ return window.zyRunSearch(); },
+  bypass: function(){ return window.zyRunBypass(); },
+  dl: function(){ return window.zyRunDownloader(); },
+  api: function(){ return API_HUB_LIST; },
+  dlList: function(){ return DOWNLOADER_LIST; },
+  bypassList: function(){ return BYPASS_LIST; },
+  history: function(){ return window.zyRenderHistory(); }
+};
+
+// ===== AUTO-INIT =====
+function __zyReady(){
+  if(typeof window.initCustomSelect !== 'function'){ setTimeout(__zyReady, 80); return; }
+  try{ if($id('bp-api-custom')) window.zyInitBypass(); }catch(e){}
+  try{ if($id('dl-cat-custom')) window.zyInitDownloader(); }catch(e){}
+  try{ if($id('apihub-up-endpoint')) window.zyInitApiHub('apihub-up','UPSCALE'); }catch(e){}
+  try{ if($id('apihub-ai-endpoint')) window.zyInitApiHub('apihub-ai','IMG AI'); }catch(e){}
+  try{ if($id('apihub-hd-endpoint')) window.zyInitApiHub('apihub-hd','IMG HD'); }catch(e){}
+  try{ if($id('apihub-kal-endpoint')) window.zyInitApiHub('apihub-kal','KALENDER'); }catch(e){}
+  try{ if($id('apihub-mk-endpoint')) window.zyInitApiHub('apihub-mk','MAKER'); }catch(e){}
+  try{ if($id('apihub-sr-endpoint')) window.zyInitApiHub('apihub-sr','SEARCH'); }catch(e){}
+  try{ window.zyInitSearch(); }catch(e){}
+  try{ window.__tmpDomBoot(); }catch(e){}
+  try{ if($id('history-list')) window.zyRenderHistory(); }catch(e){}
+}
+if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', function(){ setTimeout(__zyReady, 200); }); }
+else { setTimeout(__zyReady, 200); }
+
+})();
