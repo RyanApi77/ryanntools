@@ -1,4 +1,4 @@
-// zyvor.js v6.8 — Engine
+// zyvor.js v6.9 — Engine
 (function(){
 'use strict';
 
@@ -13,10 +13,14 @@ var CORS = [
   'https://thingproxy.freeboard.io/fetch/'
 ];
 
-function timeoutFor(params){
-  var totalLen = 0;
-  if(params){ Object.keys(params).forEach(function(k){ totalLen += String(params[k] || '').length; }); }
-  return totalLen < 100 ? 120000 : 600000;
+function timeoutFor(path){
+  // Endpoint berat = 10 menit. Biasa = 2 menit.
+  if(!path) return 120000;
+  var heavy = ['/api/imagehd/', '/api/hdvidio/', '/api/maker/', '/api/downloader/'];
+  for(var i=0;i<heavy.length;i++){
+    if(path.indexOf(heavy[i]) !== -1) return 600000;
+  }
+  return 120000;
 }
 
 async function fetchWithRetry(url, opts, timeoutMs, retries){
@@ -43,14 +47,14 @@ async function fetchWithRetry(url, opts, timeoutMs, retries){
   throw lastErr || new Error('Fetch failed');
 }
 
-async function proxyFetch(url, opts, params){
+async function proxyFetch(url, opts, timeoutMs){
   opts = opts || {};
-  var timeoutMs = timeoutFor(params);
+  timeoutMs = timeoutMs || 120000;
   var lastErr = null;
 
   // LAYER 1: DIRECT
   try{
-    var r1 = await fetchWithRetry(url, opts, Math.min(timeoutMs, 8000), 1);
+    var r1 = await fetchWithRetry(url, opts, Math.min(timeoutMs, 10000), 1);
     if(r1.ok) return { ok:true, text: await r1.text() };
     lastErr = new Error('Direct HTTP ' + r1.status);
   }catch(e){ lastErr = e; }
@@ -63,22 +67,16 @@ async function proxyFetch(url, opts, params){
     lastErr = new Error('Worker HTTP ' + r2.status);
   }catch(e){ lastErr = e; }
 
-  // LAYER 3-6: PUBLIC
+  // LAYER 3-6: PUBLIC PROXIES
   for(var i=0;i<CORS.length;i++){
     var p = CORS[i];
     var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
     try{
-      var r3 = await fetchWithRetry(full, {method: opts.method || 'GET', headers: opts.headers || {}, body: opts.body}, Math.min(timeoutMs, 30000), 1);
+      var r3 = await fetchWithRetry(full, {method: opts.method || 'GET', headers: opts.headers || {}, body: opts.body}, Math.min(timeoutMs, 60000), 1);
       if(r3.ok) return { ok:true, text: await r3.text() };
       lastErr = new Error('Proxy ' + i + ' HTTP ' + r3.status);
     }catch(e){ lastErr = e; }
   }
-
-  // LAYER 7: LAST RESORT
-  try{
-    var r4 = await fetchWithRetry(url, opts, timeoutMs, 0);
-    if(r4.ok) return { ok:true, text: await r4.text() };
-  }catch(e){ lastErr = e; }
 
   throw lastErr || new Error('All proxy layers failed');
 }
@@ -90,7 +88,7 @@ async function callAPIv2(path, params, method){
   var url = BASE + path + qs;
   var opts = { method: method };
   if(method === 'POST'){ opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(params); }
-  var res = await proxyFetch(url, opts, params);
+  var res = await proxyFetch(url, opts, timeoutFor(path));
   var json;
   try{ json = JSON.parse(res.text); }catch(e){ json = { raw: res.text }; }
   return json;
@@ -104,7 +102,9 @@ function collectMedia(obj, out, baseKey){
   out = out || [];
   if(!obj) return out;
   if(typeof obj === 'string'){
-    if(/^https?:\/\/.+/.test(obj)) out.push({ url: obj, key: baseKey || 'url' });
+    if(/^https?:\/\/.+\.(jpg|jpeg|png|webp|gif|mp4|mov|webm|mp3|m4a|wav)(\?|$)/i.test(obj) || /^https?:\/\/.+/.test(obj)){
+      out.push({ url: obj, key: baseKey || 'url' });
+    }
     return out;
   }
   if(typeof obj === 'object' && obj.result && typeof obj.result === 'string' && /^https?:\/\//.test(obj.result)){
@@ -119,12 +119,15 @@ function collectMedia(obj, out, baseKey){
     out.push({ url: obj.image, key: 'image' });
     return out;
   }
-  if(Array.isArray(obj)){ obj.forEach(function(v, i){ collectMedia(v, out, (baseKey||'')+'['+i+']'); }); return out; }
+  if(Array.isArray(obj)){
+    obj.forEach(function(v, i){ collectMedia(v, out, (baseKey||'')+'['+i+']'); });
+    return out;
+  }
   if(typeof obj === 'object'){
     Object.keys(obj).forEach(function(k){
       var v = obj[k];
       if(typeof v === 'string' && /^https?:\/\//.test(v)){
-        if(/url|link|download|video|audio|music|hd|sd|wm|play|src|cover|thumb|image|photo|result|output|file|path/i.test(k)){
+        if(/url|link|download|video|audio|music|hd|sd|wm|play|src|cover|thumb|image|photo|result|output|file|path|data/i.test(k)){
           out.push({ url: v, key: k });
         }
       }
@@ -175,7 +178,6 @@ async function uploadToCatbox(file){
   }catch(e){ return { ok:false, error: e.message || 'Upload failed' }; }
 }
 
-// ===== DOWNLOAD via blob (cross-origin works) =====
 window.zyDownload = async function(url, filename){
   try{
     window.zyToast('⏳ Downloading...');
@@ -196,7 +198,6 @@ window.zyDownload = async function(url, filename){
   }
 };
 
-// ===== PREVIEW MODAL =====
 window.zyOpenPreview = function(idx){
   var m = window.__apiHubMedia && window.__apiHubMedia[idx];
   if(!m) return;
@@ -215,7 +216,6 @@ window.zyOpenPreview = function(idx){
   overlay.innerHTML = '<div style="position:relative;max-width:100%;max-height:100%">'+inner+'<button onclick="document.getElementById(\'zy-preview-overlay\').remove()" style="position:absolute;top:-40px;right:0;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button></div>';
 };
 
-// ===== TOAST =====
 (function(){
   if(document.getElementById('zy-toast-style')) return;
   var s = document.createElement('style');
@@ -248,7 +248,6 @@ window.zyToast = function(msg, type){
 window.zyCp = function(u){ navigator.clipboard.writeText(u).then(function(){ window.zyToast('URL tersalin'); }); };
 window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ window.zyToast('JSON tersalin'); }); };
 
-// ===== PARAM TYPES =====
 var PARAM_LISTS = {
   'list-reso':      ['480p','720p','1080p','1440p','2160p (4K)'],
   'list-fps':       ['24','30','60','120'],
@@ -377,12 +376,11 @@ window.zyCollectParams = function(params, idPrefix, category){
 var SEARCH_APIS = {
   'WEB': [
     { id:'wikipedia', name:'Wikipedia', path:'/api/search/wikipedia', params:['query'] },
-    { id:'nasa', name:'NASA', path:'/api/search/nasa', params:['type','query'], fixed:{type:'image'} },
+    { id:'nasa', name:'NASA', path:'/api/search/nasa', params:['type','query'], fixed:{type:'images'} },
     { id:'dapodik', name:'Dapodik', path:'/api/search/dapodik', params:['query'] },
     { id:'nowsecure', name:'NowSecure', path:'/api/search/nowsecure', params:['query'] },
     { id:'sinopsis', name:'Sinopsis Film', path:'/api/search/sinopsis', params:['query'] },
     { id:'cookpad', name:'Cookpad', path:'/api/search/cookpad', params:['query'] },
-    { id:'prodi', name:'PDDIKTI', path:'/api/search/prodi', params:['query','mode'], fixed:{mode:'nama'} },
     { id:'goal', name:'Goal.com', path:'/api/search/goal', params:['query'] }
   ],
   'VIDEO': [
@@ -508,7 +506,7 @@ function extractTikTokVariants(data){
 
 async function fetchTikWM(url){
   var apiURL = TIKWM + '?url=' + encodeURIComponent(url) + '&hd=1';
-  var res = await proxyFetch(apiURL, {}, {url:url});
+  var res = await proxyFetch(apiURL, {}, 60000);
   var json = JSON.parse(res.text);
   if(json.code !== 0) throw new Error(json.msg || 'tikwm error');
   var d = json.data;
@@ -575,7 +573,6 @@ async function fetchTikTokSmart(url, logEl){
     if(v.images && !combined.allVariants.images) combined.allVariants.images = v.images;
     if(v.title && !combined.allVariants.title) combined.allVariants.title = v.title;
     if(v.author && !combined.allVariants.author) combined.allVariants.author = v.author;
-    if(v.cover && !combined.allVariants.cover) combined.allVariants.cover = v.cover;
   });
   return combined;
 }
@@ -687,8 +684,7 @@ var API_HUB_LIST = [
   {id:'mk_textvid', name:'Text Video Generator', path:'/api/maker/textvideo', method:'GET', params:['text','duration','size'], cat:'MAKER'},
   {id:'mk_ttqc', name:'TikTok Quote Chat', path:'/api/maker/ttqc', method:'GET', params:['username','text','avatar'], cat:'MAKER'},
   {id:'mk_2btn', name:'Two Buttons Meme', path:'/api/maker/twobuttons', method:'GET', params:['teks1','teks2','teks3'], cat:'MAKER'},
-  {id:'mk_wafat', name:'Fake Wafat', path:'/api/maker/fakemati', method:'GET', params:['nama'], cat:'MAKER'},
-  {id:'mk_wafat2', name:'Fake Wafat', path:'/api/maker/wafat', method:'GET', params:['fotourl','nama','lahir','wafat'], cat:'MAKER'},
+  {id:'mk_wafat', name:'Fake Wafat', path:'/api/maker/wafat', method:'GET', params:['fotourl','nama','lahir','wafat'], cat:'MAKER'},
   {id:'mk_students', name:'Student ID Card', path:'/api/maker/students', method:'GET', params:['name','school','studentId','class','rollNo','dob','blood','guardian','contact','address','valid','photo'], cat:'MAKER'},
 
   // SEARCH API
@@ -739,449 +735,3 @@ var API_HUB_LIST = [
   {id:'sr_apkcombo', name:'ApkCombo', path:'/api/search/apkcombo', method:'GET', params:['query'], cat:'SEARCH'},
   {id:'sr_bilibili', name:'Bilibili', path:'/api/search/bilibili', method:'GET', params:['query','type','action','url','page','limit','lang'], cat:'SEARCH'}
 ];
-
-// ===== TEMPMAIL =====
-var tmpToken=null, tmpEmail=null, tmpMsgs=[];
-
-async function tmpFetchV2(url, opts){
-  opts = opts || {};
-  try{
-    var wurl = WORKER + '/?url=' + encodeURIComponent(url);
-    var r = await fetchWithRetry(wurl, {method: opts.method || 'GET', headers: opts.headers || {}, body: opts.body}, 30000, 2);
-    if(r.ok) return r;
-  }catch(e){}
-  for(var i=0;i<CORS.length;i++){
-    try{
-      var p = CORS[i];
-      var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
-      var r2 = await fetchWithRetry(full, opts, 20000, 1);
-      if(r2.ok) return r2;
-    }catch(e){}
-  }
-  throw new Error('Tempmail fetch failed');
-}
-
-async function tmpLoad(){
-  var log = document.getElementById('tmp-log');
-  if(log) log.innerHTML = '';
-  logTo('tmp-log','⏳ Loading domain...','in');
-  try{
-    var r = await tmpFetchV2('https://api.mail.tm/domains');
-    var j = await r.json();
-    var arr = j['hydra:member'] || [];
-    if(window.__selTmpDom){
-      var items = [{id:'', name:'— CHOOSE —'}];
-      arr.forEach(function(d){ items.push({id:d.domain, name:d.domain}); });
-      window.__selTmpDom.setItems(items);
-    }
-    logTo('tmp-log','✓ '+arr.length+' domain','ok');
-  }catch(e){
-    logTo('tmp-log','✗ '+e.message,'er');
-    setTimeout(function(){ tmpLoad(); }, 3000);
-  }
-}
-window.tmpLoadDomains = tmpLoad;
-if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ tmpLoad(); };
-
-if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
-  var log = document.getElementById('tmp-log');
-  if(log) log.innerHTML = '';
-  var nm = $id('tmp-name').value.trim() || ('user' + Math.floor(Math.random()*99999));
-  var dom = (window.__selTmpDom ? window.__selTmpDom.getValue() : '');
-  if(!dom){ alert('Pilih domain dulu'); return; }
-  var em = nm + '@' + dom;
-  var pw = 'RyannTmp!' + Math.floor(Math.random()*99999);
-  logTo('tmp-log','⏳ Membuat ' + em + '...','in');
-  try{
-    var r = await tmpFetchV2('https://api.mail.tm/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
-    var j = await r.json();
-    if(!r.ok){ logTo('tmp-log','✗ '+(j.message || 'error'),'er'); return; }
-    logTo('tmp-log','✓ Account OK','ok');
-    var r2 = await tmpFetchV2('https://api.mail.tm/token', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
-    var j2 = await r2.json();
-    if(!r2.ok){ logTo('tmp-log','✗ Login: '+(j2.message||'error'),'er'); return; }
-    tmpToken = j2.token; tmpEmail = em;
-    $id('tmp-email').textContent = em;
-    logTo('tmp-log','✓ Login OK','ok');
-    try{
-      var hist = JSON.parse(localStorage.getItem('rx_history') || '[]');
-      hist.unshift({n:'Tempmail ['+em+']', s:'0.1', l:em.length, t:Date.now(), c:em});
-      if(hist.length > 30) hist = hist.slice(0,30);
-      localStorage.setItem('rx_history', JSON.stringify(hist));
-    }catch(e){}
-    if(window.unlockAch) window.unlockAch('tmp_first');
-    if(window.sndSuccess) window.sndSuccess();
-  }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
-};
-if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail) navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); }); };
-if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
-  if(!tmpToken){ alert('Generate dulu'); return; }
-  try{
-    var r = await tmpFetchV2('https://api.mail.tm/messages', {headers:{'Authorization':'Bearer '+tmpToken}});
-    var j = await r.json();
-    tmpMsgs = j['hydra:member'] || [];
-    var el = $id('tmp-list');
-    el.innerHTML = tmpMsgs.map(function(m,i){ return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'</div>'; }).join('');
-    el.querySelectorAll('.msg-item').forEach(function(it){
-      it.onclick=function(){
-        var idx = parseInt(it.dataset.i); var m = tmpMsgs[idx];
-        $id('tmp-msg-view').innerHTML='<b>From:</b> '+m.from.address+'<br><b>Subj:</b> '+m.subject+'<br><br>'+(m.intro||'');
-        $id('tmp-msg-view').classList.remove('hd');
-      };
-    });
-    if(window.unlockAch) window.unlockAch('inbox_first');
-    if(window.sndSuccess) window.sndSuccess();
-  }catch(e){ logTo('tmp-inbox-log','✗ '+e.message,'er'); }
-};
-if($id('tmp-inbox-dl')) $id('tmp-inbox-dl').onclick=function(){
-  if(!tmpMsgs.length) return;
-  var t = tmpMsgs.map(function(m){ return m.from.address+' | '+m.subject; }).join('\n');
-  var b = new Blob([t],{type:'text/plain'});
-  var u = URL.createObjectURL(b);
-  var a = document.createElement('a'); a.href=u; a.download='inbox.txt';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-};
-setTimeout(function(){ if(document.getElementById('tmp-domain')) tmpLoad(); }, 2000);
-
-// ===== SEARCH BROWSER =====
-window.zyRunSearch = async function(){
-  var q = document.getElementById('search-input');
-  var cat = window.__searchCategory || 'ALL';
-  if(!q || !q.value.trim()){ alert('Ketik dulu'); return; }
-  var query = q.value.trim();
-  var log = document.getElementById('search-log');
-  var res = document.getElementById('search-result');
-  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML='<div class="zy-head">🔍 Mencari "'+esc(query)+'"...</div>'; res.classList.remove('hd'); }
-
-  var apis = [];
-  if(cat === 'ALL') apis = [].concat(SEARCH_APIS.WEB, SEARCH_APIS.VIDEO, SEARCH_APIS.MUSIC);
-  else apis = SEARCH_APIS[cat] || [];
-  if(!apis.length){ res.innerHTML = '<div class="zy-head er">Kategori kosong</div>'; return; }
-
-  if(log){ var l0 = document.createElement('div'); l0.className='in'; l0.textContent='Menembak '+apis.length+' API...'; log.appendChild(l0); }
-
-  var promises = apis.map(async function(api){
-    var p = {};
-    api.params.forEach(function(k){ p[k] = query; });
-    if(api.fixed){ Object.keys(api.fixed).forEach(function(k){ p[k] = api.fixed[k]; }); }
-    try{
-      var r = await callAPIv2(api.path, p, 'GET');
-      var items = extractResultItems(r);
-      if(log){ var l = document.createElement('div'); l.className='ok'; l.textContent='✓ '+api.name+' — '+items.length+' hasil'; log.appendChild(l); log.scrollTop=log.scrollHeight; }
-      return { api:api, items:items, raw:r };
-    }catch(e){
-      if(log){ var le = document.createElement('div'); le.className='er'; le.textContent='✗ '+api.name+': '+e.message; log.appendChild(le); log.scrollTop=log.scrollHeight; }
-      return { api:api, items:[], error:e.message };
-    }
-  });
-
-  var settled = await Promise.allSettled(promises);
-  var results = settled.map(function(r){ return r.status === 'fulfilled' ? r.value : { api:null, items:[], error:'rejected' }; });
-
-  var html = '';
-  var total = 0;
-  results.forEach(function(r){
-    if(!r || !r.items || !r.items.length) return;
-    total += r.items.length;
-    html += '<div class="search-section"><div class="search-section-title">'+esc(r.api.name)+' — '+r.items.length+' hasil</div>';
-    r.items.slice(0, 15).forEach(function(item){
-      var thumbHtml = item.thumb ? '<img src="'+esc(item.thumb)+'" class="search-thumb" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="search-thumb-placeholder">📄</div>';
-      html += '<div class="search-item" onclick="zyOpenLink(\''+esc(item.url).replace(/'/g,"\\'")+'\')">'+thumbHtml+'<div class="search-item-body"><div class="search-item-title">'+esc(item.title)+'</div>';
-      if(item.author) html += '<div class="search-item-author">'+esc(item.author)+'</div>';
-      if(item.desc) html += '<div class="search-item-desc">'+esc(String(item.desc).substring(0,140))+'</div>';
-      html += '</div><div class="search-item-arrow">→</div></div>';
-    });
-    html += '</div>';
-  });
-  if(total === 0) html = '<div class="zy-head er">Tidak ada hasil untuk "'+esc(query)+'"</div>';
-  res.innerHTML = html;
-  res.classList.remove('hd');
-};
-window.zyOpenLink = function(url){ window.open(url, '_blank', 'noopener,noreferrer'); };
-
-// ===== BYPASS =====
-var bypassSelected = 'ALL';
-window.zyInitBypass = function(){
-  var sel = $id('bp-api-custom');
-  if(!sel || typeof window.initCustomSelect !== 'function') return;
-  var items = [{id:'ALL', name:'ALL — fallback 9 API', desc:'Coba semua'}].concat(BYPASS_LIST.map(function(b){ return {id:b.id, name:b.name}; }));
-  window.__bpSel = window.initCustomSelect('bp-api-custom', items, bypassSelected, function(id){ bypassSelected = id; window.zyRenderBypassParams(); });
-  window.zyRenderBypassParams();
-};
-window.zyRenderBypassParams = function(){
-  var wrap = $id('bp-params'); if(!wrap) return;
-  if(bypassSelected === 'ALL'){ wrap.innerHTML = '<label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">'; }
-  else {
-    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; }); if(!api) return;
-    wrap.innerHTML = api.params.map(function(p){ return '<label>'+p+'</label><input id="bp-'+p+'" placeholder="'+(p==='url'?'https://...':'(opsional)')+'">'; }).join('');
-  }
-};
-window.zyRunBypass = async function(){
-  var log = $id('bp-log'), res = $id('bp-result');
-  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-  var list, params;
-  if(bypassSelected === 'ALL'){
-    var url = ($id('bp-url')||{}).value;
-    if(!url){ alert('Masukkan URL'); return; }
-    params = {url:url.trim()}; list = BYPASS_LIST;
-  } else {
-    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; }); list = [api]; params = {};
-    api.params.forEach(function(p){ var el = $id('bp-'+p); if(el) params[p] = el.value.trim(); });
-    if(!params.url){ alert('URL kosong'); return; }
-  }
-  var out = await fetchWithFallback(list, params, log);
-  if(out){
-    var html = '<div class="zy-head">✓ SUKSES via <b>'+esc(out.api.name)+'</b></div>';
-    html += '<details class="zy-raw" open><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(out.result,null,2))+'</pre></details>';
-    html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
-    res.innerHTML = html; res.classList.remove('hd');
-  } else { res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd'); }
-};
-
-// ===== DL =====
-var dlCat = 'ALL'; var dlApi = 'tikwm';
-window.zyInitDownloader = function(){
-  var catSel = $id('dl-cat-custom'), apiSel = $id('dl-api-custom');
-  if(!catSel || !apiSel || typeof window.initCustomSelect !== 'function') return;
-  var cats = Array.from(new Set(DOWNLOADER_LIST.map(function(d){ return d.cat; })));
-  var catItems = [{id:'ALL', name:'ALL — semua kategori'}].concat(cats.map(function(c){ return {id:c, name:c}; }));
-  window.__dlCatSel = window.initCustomSelect('dl-cat-custom', catItems, dlCat, function(id){
-    dlCat = id;
-    var list = dlCat==='ALL' ? DOWNLOADER_LIST : DOWNLOADER_LIST.filter(function(d){ return d.cat===dlCat; });
-    if(list.length) dlApi = list[0].id;
-    window.zyRenderDlApis();
-  });
-  window.zyRenderDlApis();
-};
-window.zyRenderDlApis = function(){
-  var apiSel = $id('dl-api-custom'); if(!apiSel) return;
-  var list = dlCat==='ALL' ? DOWNLOADER_LIST : DOWNLOADER_LIST.filter(function(d){ return d.cat===dlCat; });
-  if(!list.length) return;
-  if(!list.find(function(x){ return x.id===dlApi; })) dlApi = list[0].id;
-  var items = list.map(function(d){ return {id:d.id, name:d.name, desc:d.cat+(d.desc?' · '+d.desc:'')}; });
-  window.__dlApiSel = window.initCustomSelect('dl-api-custom', items, dlApi, function(id){ dlApi = id; window.zyRenderDlParams(); });
-  window.zyRenderDlParams();
-};
-window.zyRenderDlParams = function(){
-  var wrap = $id('dl-params'); if(!wrap) return;
-  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-  if(!api){ wrap.innerHTML=''; return; }
-  wrap.innerHTML = api.params.map(function(p){
-    var ph = p;
-    if(p==='url')ph='https://...'; if(p==='query')ph='kata kunci'; if(p==='track_id')ph='ID track';
-    if(p==='format')ph='mp3 / mp4'; if(p==='quality')ph='360 / 720 / 1080'; if(p==='fileType')ph='mp3 / mp4';
-    if(p==='type')ph='video / audio'; if(p==='action')ph='home / search'; if(p==='json')ph='1'; if(p==='mode')ph='home / search';
-    return '<label>'+p+'</label><input id="dl-'+p+'" placeholder="'+ph+'">';
-  }).join('');
-};
-function isTikTokUrl(url){ if(!url) return false; return /tiktok\.com|vt\.tiktok\.com|vm\.tiktok\.com/.test(url.toLowerCase()); }
-window.zyRunDownloader = async function(){
-  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ alert('Pilih API'); return; }
-  var log = $id('dl-log'), res = $id('dl-result');
-  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-  var urlEl = $id('dl-url'); var url = urlEl ? urlEl.value.trim() : '';
-  if(isTikTokUrl(url)){
-    if(log){ var li = document.createElement('div'); li.className='in'; li.textContent='🧠 Smart TikTok'; log.appendChild(li); }
-    var smart = await fetchTikTokSmart(url, log);
-    if(smart) window.zyRenderDlResult(res, smart, url);
-    else { res.innerHTML='<div class="zy-head er">✗ Semua API TikTok gagal</div>'; res.classList.remove('hd'); }
-    return;
-  }
-  var params = {};
-  api.params.forEach(function(p){ var el = $id('dl-'+p); if(el && el.value.trim()) params[p] = el.value.trim(); });
-  if(!Object.keys(params).length){ alert('Isi minimal 1 parameter'); return; }
-  var out = await fetchWithFallback([api], params, log);
-  if(out) window.zyRenderDlResult(res, {api:out.api, result:out.result, type:'generic'}, url);
-  else { res.innerHTML='<div class="zy-head er">✗ API GAGAL</div>'; res.classList.remove('hd'); }
-};
-window.zyRunDownloaderAll = async function(){
-  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ alert('Pilih API dulu'); return; }
-  var log = $id('dl-log'), res = $id('dl-result');
-  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-  var urlEl = $id('dl-url'); var url = urlEl ? urlEl.value.trim() : '';
-  if(isTikTokUrl(url)){
-    var smart = await fetchTikTokSmart(url, log);
-    if(smart) window.zyRenderDlResult(res, smart, url);
-    else { res.innerHTML='<div class="zy-head er">✗ Semua API gagal</div>'; res.classList.remove('hd'); }
-    return;
-  }
-  var urlElAll = $id('dl-url') || $id('dl-query') || $id('dl-track_id');
-  if(!urlElAll || !urlElAll.value.trim()){ alert('Isi URL / query'); return; }
-  var value = urlElAll.value.trim();
-  var paramKey = urlElAll.id.replace('dl-','');
-  var sameCat = DOWNLOADER_LIST.filter(function(d){ return d.cat===api.cat; });
-  var params = {}; params[paramKey] = value;
-  var out = await fetchWithFallback(sameCat, params, log);
-  if(out) window.zyRenderDlResult(res, {api:out.api, result:out.result, type:'generic'}, value);
-  else { res.innerHTML='<div class="zy-head er">✗ SEMUA GAGAL</div>'; res.classList.remove('hd'); }
-};
-window.zyRenderDlResult = function(container, smart, sourceUrl){
-  var type = smart.type;
-  var variants = smart.allVariants || extractTikTokVariants(smart.result);
-  if(type === 'slideshow' && variants.images && variants.images.length){
-    var slideHtml = '<div class="zy-head">🖼 SLIDESHOW — '+variants.images.length+' foto</div>';
-    if(variants.title) slideHtml += '<div class="zy-meta"><div class="zy-meta-t">'+esc(variants.title)+'</div></div>';
-    slideHtml += '<div class="zy-slide-grid">';
-    variants.images.forEach(function(img, i){
-      slideHtml += '<div class="zy-slide-item-card"><img src="'+esc(img)+'" loading="lazy"><div class="zy-slide-item-num">'+(i+1)+'</div><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(img).replace(/'/g,"\\'")+'\',\'slide_'+(i+1)+'.jpg\')">⬇ DOWNLOAD FOTO '+(i+1)+'</button></div>';
-    });
-    slideHtml += '</div>';
-    container.innerHTML = slideHtml; container.classList.remove('hd');
-    return;
-  }
-  var videoHtml = '<div class="zy-head">✓ '+(type==='video'?'VIDEO':'SUKSES')+' via <b>'+esc(smart.api.name)+'</b></div>';
-  if(variants.title || variants.author){
-    videoHtml += '<div class="zy-meta">';
-    if(variants.title) videoHtml += '<div class="zy-meta-t">'+esc(variants.title)+'</div>';
-    if(variants.author) videoHtml += '<div class="zy-meta-a">'+esc(variants.author)+'</div>';
-    videoHtml += '</div>';
-  }
-  videoHtml += '<div class="zy-variant-wrap">';
-  if(variants.noWM) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWM)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.noWM).replace(/'/g,"\\'")+'\',\'tiktok_nowm.mp4\')">⬇ NO WM</button></div>';
-  if(variants.noWMHD) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWMHD)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.noWMHD).replace(/'/g,"\\'")+'\',\'tiktok_nowm_hd.mp4\')">⬇ NO WM HD</button></div>';
-  if(variants.wm) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.wm)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.wm).replace(/'/g,"\\'")+'\',\'tiktok_wm.mp4\')">⬇ WM</button></div>';
-  if(variants.music) videoHtml += '<div class="zy-variant"><audio controls preload="metadata" class="zy-audio" src="'+esc(variants.music)+'"></audio><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.music).replace(/'/g,"\\'")+'\',\'tiktok_music.mp3\')">⬇ MUSIC</button></div>';
-  videoHtml += '</div>';
-  if(!variants.noWM && !variants.noWMHD && !variants.wm && !variants.music){
-    var mediaItems = collectMedia(smart.result, []);
-    if(mediaItems.length){
-      videoHtml += '<div class="zy-media-wrap"><div class="zy-media-title">📥 MEDIA</div>';
-      mediaItems.forEach(function(item){
-        var cls = item.url.match(/\.(mp4|mov|webm)/i) ? 'video' : item.url.match(/\.(mp3|m4a)/i) ? 'audio' : 'img';
-        if(cls === 'video') videoHtml += '<div class="zy-media-item"><video controls class="zy-video" src="'+esc(item.url)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'video.mp4\')">⬇ DOWNLOAD</button></div>';
-        else if(cls === 'audio') videoHtml += '<div class="zy-media-item"><audio controls class="zy-audio" src="'+esc(item.url)+'"></audio><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'audio.mp3\')">⬇ DOWNLOAD</button></div>';
-        else videoHtml += '<div class="zy-media-item"><img src="'+esc(item.url)+'" class="zy-image"><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'image.jpg\')">⬇ DOWNLOAD</button></div>';
-      });
-      videoHtml += '</div>';
-    } else { videoHtml += '<div class="zy-head er">⚠ Tidak ada media</div>'; }
-  }
-  container.innerHTML = videoHtml; container.classList.remove('hd');
-};
-window.zyPreviewResult = function(){
-  var res = $id('dl-result');
-  if(!res || res.classList.contains('hd')){ alert('Belum ada hasil'); return; }
-  res.scrollIntoView({behavior:'smooth', block:'start'});
-};
-window.zyClearDownloader = function(){
-  ['dl-url','dl-query','dl-track_id','dl-format','dl-quality','dl-fileType','dl-type','dl-action','dl-mode','dl-json'].forEach(function(id){ var el = $id(id); if(el) el.value=''; });
-  var log = $id('dl-log'), res = $id('dl-result');
-  if(log){ log.innerHTML=''; log.classList.add('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-};
-
-// ===== API HUB =====
-var apiHubState = {};
-window.zyInitApiHub = function(tabId, catName){
-  if(typeof window.initCustomSelect !== 'function') return;
-  var filtered = API_HUB_LIST.filter(function(x){ return x.cat === catName; });
-  if(!filtered.length) return;
-  if(!apiHubState[tabId]) apiHubState[tabId] = { endpoint: filtered[0] };
-  var items = filtered.map(function(x){ return { id:x.id, name:x.name, desc:'params: '+x.params.length }; });
-  window.initCustomSelect(tabId+'-endpoint', items, apiHubState[tabId].endpoint.id, function(id){
-    apiHubState[tabId].endpoint = filtered.find(function(x){ return x.id===id; });
-    window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
-  });
-  window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
-};
-window.zyRunApiHub = async function(tabId, catName){
-  var st = apiHubState[tabId];
-  if(!st || !st.endpoint){ alert('Pilih endpoint'); return; }
-  var params = window.zyCollectParams(st.endpoint.params, tabId, catName);
-  var log = document.getElementById(tabId+'-log');
-  var res = document.getElementById(tabId+'-result');
-  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-
-  var loadingMsg = '⏳ Tunggu sebentar ya...';
-  if(catName === 'UPSCALE') loadingMsg = '🎬 Memproses video... tunggu sebentar ya...';
-  else if(catName === 'IMG AI'){ var p = params.prompt || params.teks || params.query || params.text || ''; loadingMsg = '🎨 Membuat sketsa ' + (p ? String(p).substring(0,50) : 'objek') + '...'; }
-  else if(catName === 'IMG HD') loadingMsg = '🖼 Enhancing image... tunggu sebentar ya...';
-  else if(catName === 'KALENDER') loadingMsg = '📅 Mengambil data kalender...';
-  else if(catName === 'MAKER') loadingMsg = '🎨 Membuat ' + st.endpoint.name + '...';
-  else if(catName === 'SEARCH') loadingMsg = '🔍 Mencari...';
-
-  if(log){ var l1 = document.createElement('div'); l1.className='in'; l1.textContent=loadingMsg; log.appendChild(l1); }
-
-  try{
-    var r = await callAPIv2(st.endpoint.path, params, st.endpoint.method || 'GET');
-    if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='✓ Selesai'; log.appendChild(l2); }
-    window.zyRenderApiResult(res, r, st.endpoint.name, catName);
-    try{
-      var txt = JSON.stringify(r);
-      var h = JSON.parse(localStorage.getItem('rx_history') || '[]');
-      h.unshift({n: st.endpoint.name + ' [' + catName + ']', s: (txt.length/1024).toFixed(1), l: txt.length, t: Date.now(), c: txt.substring(0, 40000)});
-      if(h.length > 30) h = h.slice(0,30);
-      localStorage.setItem('rx_history', JSON.stringify(h));
-    }catch(e){}
-  }catch(e){
-    if(log){ var l3 = document.createElement('div'); l3.className='er'; l3.textContent='✗ '+e.message; log.appendChild(l3); }
-    if(res){ res.innerHTML='<div class="zy-head er">✗ '+esc(e.message)+'</div>'; res.classList.remove('hd'); }
-  }
-};
-window.zyRenderApiResult = function(container, data, name, catName){
-  var html = '<div class="zy-head">✓ '+esc(name)+'</div>';
-  if(catName === 'KALENDER'){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">📅 DATA KALENDER</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre></div>';
-    container.innerHTML = html; container.classList.remove('hd'); return;
-  }
-  var mediaItems = collectMedia(data, []);
-  var seen = {}; var unique = [];
-  mediaItems.forEach(function(m){ if(!seen[m.url]){ seen[m.url]=1; unique.push(m); } });
-  var images = unique.filter(function(x){ return classify(x.url)==='image'; });
-  var videos = unique.filter(function(x){ return classify(x.url)==='video'; });
-  window.__apiHubMedia = unique;
-  if(images.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">🖼 IMAGE ('+images.length+')</div>';
-    images.slice(0,12).forEach(function(img, i){
-      var idx = unique.indexOf(img);
-      html += '<div class="zy-media-item">';
-      html += '<img src="'+esc(img.url)+'" class="zy-image" loading="lazy" onclick="zyOpenPreview('+idx+')" style="cursor:pointer">';
-      html += '<div class="zy-media-actions">';
-      html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🖼 PREVIEW</button>';
-      html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(img.url).replace(/'/g,"\\'")+'\',\'result_'+i+'.jpg\')">⬇ DOWNLOAD</button>';
-      html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(img.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
-      html += '</div></div>';
-    });
-    html += '</div>';
-  }
-  if(videos.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">🎬 VIDEO ('+videos.length+')</div>';
-    videos.slice(0,3).forEach(function(v, i){
-      var idx = unique.indexOf(v);
-      html += '<div class="zy-media-item">';
-      html += '<video controls preload="metadata" class="zy-video" src="'+esc(v.url)+'"></video>';
-      html += '<div class="zy-media-actions">';
-      html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🖼 PREVIEW</button>';
-      html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(v.url).replace(/'/g,"\\'")+'\',\'video_'+i+'.mp4\')">⬇ DOWNLOAD</button>';
-      html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(v.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
-      html += '</div></div>';
-    });
-    html += '</div>';
-  }
-  if(!images.length && !videos.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">📄 RESPONSE</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre></div>';
-  }
-  html += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>';
-  html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
-  container.innerHTML = html; container.classList.remove('hd');
-};
-
-// ===== AUTO-INIT =====
-function __zyReady(){
-  if(typeof window.initCustomSelect !== 'function'){ setTimeout(__zyReady, 80); return; }
-  try{ if($id('bp-api-custom')) window.zyInitBypass(); }catch(e){}
-  try{ if($id('dl-cat-custom')) window.zyInitDownloader(); }catch(e){}
-  try{ if($id('apihub-up-endpoint')) window.zyInitApiHub('apihub-up','UPSCALE'); }catch(e){}
-  try{ if($id('apihub-ai-endpoint')) window.zyInitApiHub('apihub-ai','IMG AI'); }catch(e){}
-  try{ if($id('apihub-hd-endpoint')) window.zyInitApiHub('apihub-hd','IMG HD'); }catch(e){}
-  try{ if($id('apihub-kal-endpoint')) window.zyInitApiHub('apihub-kal','KALENDER'); }catch(e){}
-  try{ if($id('apihub-mk-endpoint')) window.zyInitApiHub('apihub-mk','MAKER'); }catch(e){}
-  try{ if($id('apihub-sr-endpoint')) window.zyInitApiHub('apihub-sr','SEARCH'); }catch(e){}
-}
-if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', __zyReady); } else { __zyReady(); }
-
-})();
