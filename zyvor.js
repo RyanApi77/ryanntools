@@ -634,7 +634,6 @@ var TMP_PROVIDERS = {
 
 function tmpBase(){ return TMP_PROVIDERS[tmpProvider] ? TMP_PROVIDERS[tmpProvider].base : TMP_PROVIDERS['mail.tm'].base; }
 
-// tmpFetchV2 dengan AbortController support
 async function tmpFetchV2(url, opts){
   opts = opts || {};
   var method = opts.method || 'GET';
@@ -642,14 +641,15 @@ async function tmpFetchV2(url, opts){
   var body = opts.body || null;
   var externalSignal = opts.signal;
 
+  // v10.0: jangan skip error JSON — biar lu liat pesan aslinya
   async function tryReturn(r){
-    if(!r || !r.ok) return null;
+    if(!r) return null;
     try{
       var txt = await r.clone().text();
       var trimmed = txt.trim();
-      if(trimmed.indexOf('{') !== 0 && trimmed.indexOf('[') !== 0) return null;
+      if(trimmed.indexOf('<') === 0) return null;  // HTML skip
       var j = JSON.parse(txt);
-      if(j && (j['hydra:member'] || j.token || j.id || j.address || j.message || j['@type'])) return r;
+      if(j && typeof j === 'object') return r;     // JSON apapun = return
       return null;
     }catch(e){ return null; }
   }
@@ -673,7 +673,6 @@ async function tmpFetchV2(url, opts){
     }
   }
 
-  // LAYER 1: WORKER (12s)
   try{
     var wurl = WORKER + '/?url=' + encodeURIComponent(url);
     var r1 = await tryFetch(wurl, 12000);
@@ -681,14 +680,12 @@ async function tmpFetchV2(url, opts){
     if(v1) return v1;
   }catch(e){ if(e.message === 'aborted_by_user') throw e; }
 
-  // LAYER 2: DIRECT (10s)
   try{
     var r2 = await tryFetch(url, 10000);
     var v2 = await tryReturn(r2);
     if(v2) return v2;
   }catch(e){ if(e.message === 'aborted_by_user') throw e; }
 
-  // LAYER 3: CORS PROXY[0] (10s)
   try{
     var p1 = CORS[0];
     var full1 = p1 + (p1.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
@@ -717,7 +714,6 @@ async function tmpLoad(){
   logTo('tmp-log','⏳ Fetch paralel...','in');
 
   var providers = Object.keys(TMP_PROVIDERS);
-
   var promises = providers.map(function(provName){
     var provBase = TMP_PROVIDERS[provName].base;
     return Promise.race([
@@ -754,7 +750,7 @@ async function tmpLoad(){
   } else {
     if(_tmpRetryCount < 2){
       _tmpRetryCount++;
-      logTo('tmp-log','⚠ Retry ' + _tmpRetryCount + '/3 dalam 3 detik...','warn');
+      logTo('tmp-log','⚠ Retry ' + _tmpRetryCount + '/3...','warn');
       setTimeout(function(){ tmpLoad(); }, 3000);
     } else {
       logTo('tmp-log','⚠ Gagal semua. Klik RELOAD.','warn');
@@ -767,11 +763,7 @@ function _applyDomainItems(allDomains){
   if(!window.__selTmpDom) return;
   var items = [{id:'', name:'— CHOOSE (' + allDomains.length + ') —'}];
   allDomains.forEach(function(d){
-    items.push({
-      id: d.provider + '|' + d.domain,
-      name: d.domain,
-      desc: d.provider
-    });
+    items.push({ id: d.provider + '|' + d.domain, name: d.domain, desc: d.provider });
   });
   window.__selTmpDom.setItems(items);
 }
@@ -782,9 +774,7 @@ if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ window.tmpLoadDoma
 function tmpInitProviderSelector(){
   if(typeof window.initCustomSelect !== 'function') return;
   if(!document.getElementById('tmp-provider')) return;
-  var items = Object.keys(TMP_PROVIDERS).map(function(k){
-    return { id:k, name: TMP_PROVIDERS[k].name };
-  });
+  var items = Object.keys(TMP_PROVIDERS).map(function(k){ return { id:k, name: TMP_PROVIDERS[k].name }; });
   window.__selTmpProvider = window.initCustomSelect('tmp-provider', items, tmpProvider, function(id){
     tmpProvider = id;
     if(window.__selTmpDom) window.__selTmpDom.setItems([{id:'', name:'— CHOOSE —'}]);
@@ -796,16 +786,18 @@ window.tmpInitProviderSelector = tmpInitProviderSelector;
 // STOP button
 window.__tmpAbort = null;
 if($id('tmp-stop')) $id('tmp-stop').onclick=function(){
-  if(window.__tmpAbort){
-    try{ window.__tmpAbort.abort(); }catch(e){}
-    window.__tmpAbort = null;
-  }
+  if(window.__tmpAbort){ try{ window.__tmpAbort.abort(); }catch(e){} window.__tmpAbort = null; }
   var sb = $id('tmp-stop'); if(sb) sb.style.display = 'none';
   var gb = $id('tmp-gen'); if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
   logTo('tmp-log','⛔ Dihentikan user','warn');
 };
 
+// v10.0 GEN — deteksi akun duplikat + auto login
+var _lastGenTime = 0;
 if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
+  if(Date.now() - _lastGenTime < 3000){ alert('Tunggu 3 detik'); return; }
+  _lastGenTime = Date.now();
+
   var log = document.getElementById('tmp-log');
   if(log) log.innerHTML = '';
   var nm = $id('tmp-name').value.trim() || ('user' + Math.floor(Math.random()*99999));
@@ -823,27 +815,84 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
 
   var gb = $id('tmp-gen'); if(gb){ gb.disabled = true; gb.textContent = '⏳...'; }
   var sb = $id('tmp-stop'); if(sb) sb.style.display = 'block';
-
   window.__tmpAbort = new AbortController();
 
   logTo('tmp-log','⏳ Membuat ' + em + ' via ' + provKey + '...','in');
+
   try{
-    var r = await tmpFetchV2(base + '/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw}), signal: window.__tmpAbort.signal});
-    var j = await r.json();
-    if(!r.ok){ logTo('tmp-log','✗ '+(j.message || 'error'),'er'); throw new Error('account_error'); }
-    logTo('tmp-log','✓ Account OK','ok');
-    var r2 = await tmpFetchV2(base + '/token', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw}), signal: window.__tmpAbort.signal});
-    var j2 = await r2.json();
-    if(!r2.ok){ logTo('tmp-log','✗ Login: '+(j2.message||'error'),'er'); throw new Error('token_error'); }
-    tmpToken = j2.token; tmpEmail = em;
-    $id('tmp-email').textContent = em;
-    logTo('tmp-log','✓ Login OK [' + provKey + ']','ok');
-    if(window.sndSuccess) window.sndSuccess();
+    // STEP 1: create
+    var r = await tmpFetchV2(base + '/accounts', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({address:em, password:pw}),
+      signal: window.__tmpAbort.signal
+    });
+    var j = null; try{ j = await r.json(); }catch(e){}
+
+    // error handling
+    if(r.status >= 400){
+      var errMsg = (j && (j['hydra:description'] || j.message || j.error || j.detail)) || ('HTTP ' + r.status);
+
+      // akun udah ada
+      if(errMsg.toLowerCase().indexOf('already') !== -1 || r.status === 422){
+        logTo('tmp-log','⚠ AKUN SUDAH ADA','warn');
+        logTo('tmp-log','→ Coba login pakai akun itu...','in');
+
+        var rLogin = await tmpFetchV2(base + '/token', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({address:em, password:pw}),
+          signal: window.__tmpAbort.signal
+        });
+        var jLogin = null; try{ jLogin = await rLogin.json(); }catch(e){}
+
+        if(rLogin.status === 200 && jLogin && jLogin.token){
+          tmpToken = jLogin.token; tmpEmail = em;
+          $id('tmp-email').textContent = em;
+          logTo('tmp-log','✓ Login ke akun lama OK','ok');
+          if(window.sndSuccess) window.sndSuccess();
+          return;
+        } else {
+          var lm = (jLogin && (jLogin['hydra:description'] || jLogin.message)) || 'password beda';
+          logTo('tmp-log','✗ Login gagal: ' + lm,'er');
+          logTo('tmp-log','💡 Ganti nama lain (mis: ' + nm + Math.floor(Math.random()*9999) + ')','warn');
+          return;
+        }
+      }
+
+      // rate limit
+      if(r.status === 429){
+        logTo('tmp-log','✗ Rate limit — tunggu 10 menit','er');
+        logTo('tmp-log','💡 ' + errMsg,'warn');
+        return;
+      }
+
+      logTo('tmp-log','✗ ' + errMsg,'er');
+      return;
+    }
+
+    logTo('tmp-log','✓ Account OK: ' + em,'ok');
+
+    // STEP 2: login
+    var r2 = await tmpFetchV2(base + '/token', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({address:em, password:pw}),
+      signal: window.__tmpAbort.signal
+    });
+    var j2 = null; try{ j2 = await r2.json(); }catch(e){}
+
+    if(r2.status === 200 && j2 && j2.token){
+      tmpToken = j2.token; tmpEmail = em;
+      $id('tmp-email').textContent = em;
+      logTo('tmp-log','✓ Login OK [' + provKey + ']','ok');
+      if(window.sndSuccess) window.sndSuccess();
+    } else {
+      var tm = (j2 && (j2['hydra:description'] || j2.message)) || ('HTTP ' + r2.status);
+      logTo('tmp-log','✗ Login: ' + tm,'er');
+    }
   }catch(e){
     if(e.name === 'AbortError' || (e.message && e.message.indexOf('aborted') !== -1)){
       logTo('tmp-log','⛔ Dibatalkan','warn');
     } else {
-      logTo('tmp-log','✗ '+e.message,'er');
+      logTo('tmp-log','✗ Network error: ' + e.message,'er');
     }
   }finally{
     window.__tmpAbort = null;
@@ -1136,7 +1185,7 @@ window.zyRunApiHub = async function(tabId, catName){
   if(log){ log.innerHTML=''; log.classList.remove('hd'); }
   if(res){ res.innerHTML=''; res.classList.add('hd'); }
 
-  var loadingMsg = '⏳ Tunggu sebentar ya...';
+  var loadingMsg = '⏳ Tunggu...';
   if(catName === 'UPSCALE') loadingMsg = '🎬 Memproses video...';
   else if(catName === 'IMG AI'){ var p = params.prompt || params.teks || params.query || params.text || ''; loadingMsg = '🎨 Membuat ' + (p ? String(p).substring(0,50) : 'objek') + '...'; }
   else if(catName === 'IMG HD') loadingMsg = '🖼 Enhancing image...';
