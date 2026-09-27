@@ -7,40 +7,35 @@
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Fira+Code:wght@400;700&family=IBM+Plex+Mono:wght@400;700&family=Inconsolata:wght@400;700&family=Space+Mono:wght@400;700&family=Roboto+Mono:wght@400;700&family=Inter:wght@400;700;800&family=Poppins:wght@400;700&family=Orbitron:wght@400;700;900&family=Audiowide&family=Chakra+Petch:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#04080f;--card:rgba(10,20,35,.78);--border:#1e4d5c;--bl:#2a6b7f;--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--tx:#e0f2fe;--txd:#64748b;--ok:#4ade80;--er:#f87171;--wr:#fbbf24;--fs:13px;--fh:'Orbitron',sans-serif;--fm:'JetBrains Mono',monospace}
 *{margin:0;padding:0;box-sizing:border-box}html{font-size:var(--fs)}
+body{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg);background-attachment:fixed;color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;overflow-x:hidden;position:relative;padding-bottom:96px}
 
-/* ===== BODY + GALAXY NEBULA (background body sendiri, bukan ::before) ===== */
-body{
-  background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),
-             radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),
-             var(--bg);
-  background-attachment:fixed;
-  color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;
-  overflow-x:hidden;position:relative;padding-bottom:96px;
-}
-
-/* ===== PASSWORD GATE — TRANSPARAN TOTAL ===== */
-#passwordGate{
-  position:fixed;inset:0;z-index:999999;
-  display:flex;align-items:center;justify-content:center;
-  background:transparent;    /* GAK ada background — biar galaxy tembus 100% */
-  transition:opacity .6s,visibility .6s;overflow:hidden;
-}
+/* ===== PASSWORD GATE ===== */
+#passwordGate{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:transparent;transition:opacity .6s,visibility .6s;overflow:hidden}
 #passwordGate.gate-hidden{opacity:0;visibility:hidden;pointer-events:none}
 
-/* card login — semi transparan dengan blur */
-.access-card{
-  width:min(94%,500px);padding:36px 26px 28px;
-  background:linear-gradient(180deg,rgba(14,18,24,.72),rgba(8,12,18,.85));
-  border:1.5px solid rgba(148,163,184,.30);
-  border-radius:22px;text-align:center;
-  box-shadow:0 30px 80px rgba(0,0,0,.78);
-  position:relative;overflow:hidden;
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-}
+/* galaxy background yang PASTI keliatan — anak gate sendiri */
+.gate-galaxy{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),#04080f}
+.gate-galaxy .sf{position:absolute;inset:-50px;background-image:radial-gradient(1.5px 1.5px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent),radial-gradient(1px 1px at 25% 85%,#fff,transparent),radial-gradient(1.5px 1.5px at 65% 75%,#fff,transparent),radial-gradient(1px 1px at 90% 10%,#fff,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
+.gate-galaxy .p1{position:absolute;top:12%;left:8%;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fb923c,#7c2d12);box-shadow:0 0 40px rgba(251,146,60,.5);animation:pFloat 8s ease-in-out infinite}
+.gate-galaxy .p2{position:absolute;bottom:15%;left:12%;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985);box-shadow:0 0 30px rgba(125,211,252,.5);animation:pFloat 6s ease-in-out infinite reverse}
+.gate-galaxy .p3{position:absolute;top:22%;right:10%;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#c084fc,#4c1d95);box-shadow:0 0 35px rgba(192,132,252,.5);animation:pFloat 10s ease-in-out infinite}
+.gate-galaxy .bh{position:absolute;top:65%;right:8%;width:110px;height:110px}
+.gate-galaxy .bh-core{position:absolute;top:50%;left:50%;width:28px;height:28px;margin-left:-14px;margin-top:-14px;border-radius:50%;background:radial-gradient(circle,#000 40%,#1a0a2e 70%,transparent);box-shadow:0 0 60px rgba(139,92,246,.6);z-index:3}
+.gate-galaxy .bh-d1{position:absolute;inset:0;border-radius:50%;border:3px solid transparent;border-top-color:rgba(139,92,246,.7);animation:bhDisk 4s linear infinite}
+.gate-galaxy .bh-d2{position:absolute;top:15px;left:15px;right:15px;bottom:15px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(251,191,36,.7);animation:bhDisk 2.5s linear infinite reverse}
+.gate-galaxy .ss1{position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:ssF 6s linear infinite}
+.gate-galaxy .ss2{position:absolute;top:35%;left:-15%;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:ssF2 9s linear infinite 3s}
+@keyframes starTwinkle{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes bhDisk{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes pFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes ssF{0%{transform:translate(0,0);opacity:0}3%{opacity:1}85%{opacity:1}100%{transform:translate(120vw,80vh);opacity:0}}
+@keyframes ssF2{0%{transform:translate(0,0);opacity:0}4%{opacity:1}88%{opacity:1}100%{transform:translate(110vw,70vh);opacity:0}}
+
+.access-card{width:min(94%,500px);padding:36px 26px 28px;background:linear-gradient(180deg,rgba(14,18,24,.88),rgba(8,12,18,.94));border:1.5px solid rgba(148,163,184,.30);border-radius:22px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.78);position:relative;z-index:2;overflow:hidden;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .card-line{width:56px;height:3px;margin:0 auto 20px;border-radius:20px;background:linear-gradient(90deg,transparent,rgba(148,163,184,.9),transparent)}
 .access-card h1{margin:0;font-family:'Orbitron',sans-serif;font-size:22px;letter-spacing:3.5px;color:#e2e8f0;font-weight:900}
 .access-card h1 span{color:#94a3b8;opacity:.95}
@@ -81,6 +76,7 @@ body{
 @keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-11px)}30%{transform:translateX(11px)}45%{transform:translateX(-8px)}60%{transform:translateX(8px)}80%{transform:translateX(-4px)}}
 @media (max-width:480px){.access-card{padding:32px 18px 24px}.password-box{width:36px;height:46px;font-size:20px}}
 
+/* theme */
 body[data-theme="t-cyan"]{--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--bl:#2a6b7f;--border:#1e4d5c}
 body[data-theme="t-green"]{--ac:#4ade80;--ac2:#86efac;--acd:rgba(74,222,128,.15);--bl:#2a7f4a;--border:#1e5c38}
 body[data-theme="t-red"]{--ac:#f87171;--ac2:#fca5a5;--acd:rgba(248,113,113,.15);--bl:#7f2a2a;--border:#5c1e1e}
@@ -98,47 +94,27 @@ body[data-theme="t-fuchsia"]{--ac:#e879f9;--ac2:#f0abfc;--acd:rgba(232,121,249,.
 body[data-theme="t-slate"]{--ac:#94a3b8;--ac2:#cbd5e1;--acd:rgba(148,163,184,.15);--bl:#4a5c73;--border:#334155}
 body[data-theme="t-mono"]{--ac:#e0f2fe;--ac2:#f8fafc;--acd:rgba(224,242,254,.15);--bl:#4a5c73;--border:#334155}
 
-/* ===== BG LAYER — z-index 0, di atas body, di bawah konten ===== */
+/* bg layer (main app) */
 .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.bg-layer > .starfield,.bg-layer > .shooting-star-1,.bg-layer > .shooting-star-2,.bg-layer > .blackhole,.bg-layer > .planet-1,.bg-layer > .planet-2,.bg-layer > .bin-rain,.bg-layer > .ufo-scene{display:none}
-
-/* GALAXY — bintang & planet ke-trigger ===== */
-body.bg-galaxy .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent),radial-gradient(1px 1px at 25% 85%,#fff,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
-body.bg-galaxy .shooting-star-1{display:block;position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:shootingStar1 6s linear infinite}
-body.bg-galaxy .shooting-star-2{display:block;position:absolute;top:35%;left:-15%;width:2px;height:2px;border-radius:50%;background:#fff;animation:shootingStar2 9s linear infinite 3s}
-@keyframes shootingStar1{0%{transform:translate(0,0);opacity:0}3%{opacity:1}85%{opacity:1}100%{transform:translate(120vw,80vh);opacity:0}}
-@keyframes shootingStar2{0%{transform:translate(0,0);opacity:0}4%{opacity:1}88%{opacity:1}100%{transform:translate(110vw,70vh);opacity:0}}
-@keyframes starTwinkle{0%,100%{opacity:.5}50%{opacity:1}}
+.bg-layer > *{display:none}
+body.bg-galaxy .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
+body.bg-galaxy .shooting-star-1{display:block;position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:ssF 6s linear infinite}
+body.bg-galaxy .shooting-star-2{display:block;position:absolute;top:35%;left:-15%;width:2px;height:2px;border-radius:50%;background:#fff;animation:ssF2 9s linear infinite 3s}
 body.bg-galaxy .blackhole{display:block;position:absolute;top:62%;left:78%;width:120px;height:120px;margin-left:-60px}
 body.bg-galaxy .blackhole .bh-core{position:absolute;top:50%;left:50%;width:28px;height:28px;margin-left:-14px;margin-top:-14px;border-radius:50%;background:radial-gradient(circle,#000 40%,#1a0a2e 70%,transparent);box-shadow:0 0 60px rgba(139,92,246,.4);z-index:3}
-body.bg-galaxy .blackhole .bh-disk{position:absolute;top:50%;left:50%;width:120px;height:120px;margin-left:-60px;margin-top:-60px;border-radius:50%;border:3px solid transparent;border-top-color:rgba(139,92,246,.7);animation:bhDisk 4s linear infinite}
-body.bg-galaxy .blackhole .bh-disk2{position:absolute;top:50%;left:50%;width:80px;height:80px;margin-left:-40px;margin-top:-40px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(251,191,36,.7);animation:bhDisk 2.5s linear infinite reverse}
-@keyframes bhDisk{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+body.bg-galaxy .blackhole .bh-disk{position:absolute;inset:0;border-radius:50%;border:3px solid transparent;border-top-color:rgba(139,92,246,.7);animation:bhDisk 4s linear infinite}
+body.bg-galaxy .blackhole .bh-disk2{position:absolute;top:20px;left:20px;right:20px;bottom:20px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(251,191,36,.7);animation:bhDisk 2.5s linear infinite reverse}
 body.bg-galaxy .planet-1{display:block;position:absolute;top:18%;left:8%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fb923c,#7c2d12)}
 body.bg-galaxy .planet-2{display:block;position:absolute;top:72%;left:15%;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985)}
 
-/* BINARY */
 body.bg-binary{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,10,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(4,28,16,.9),transparent 55%),#000400;background-attachment:fixed}
-body.bg-binary .bg-layer{display:block;z-index:0}
-body.bg-binary .bin-rain{display:block !important;position:fixed;inset:0;pointer-events:none;overflow:hidden;opacity:.9}
+body.bg-binary .bin-rain{display:block !important;position:fixed;inset:0;pointer-events:none;overflow:hidden;opacity:.9;z-index:0}
 .bin-rain canvas{display:block;width:100%;height:100%}
 
-/* UFO */
-body.bg-ufo{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.9),transparent 55%),#050210;background-attachment:fixed}
-body.bg-ufo .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
-body.bg-ufo .ufo-scene{display:block;position:absolute;inset:0;overflow:hidden}
-body.bg-ufo .ufo-scene .ufo-craft{position:absolute;bottom:30%;left:-200px;width:100px;height:56px;animation:ufoWarp 10s ease-in infinite}
-@keyframes ufoWarp{0%{transform:translate(0,0) scale(.6);opacity:0}5%{transform:translate(60px,-20px) scale(1);opacity:1}35%{transform:translate(50vw,-10px);opacity:1}70%{transform:translate(90vw,-25vh) scale(.5);opacity:.7}100%{transform:translate(120vw,-45vh) scale(0);opacity:0}}
-
+body.bg-ufo{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.9),transparent 55%),#050210}
 body.bg-plain{background:var(--bg)}
-body.bg-plain .bg-layer{display:none}
-body.bg-custom{background-size:cover;background-attachment:fixed;background-position:center}
-body.bg-custom .bg-layer{display:none}
 body.no-anim *{animation:none!important}
 body.light{--bg:#f0f4f8;--card:rgba(255,255,255,.94);--border:#cbd5e1;--tx:#0f172a;--txd:#475569;background:#f0f4f8;color:#0f172a}
-body.light .bg-layer{display:none}
-body.light #passwordGate{background:transparent}
-body.light .access-card{background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(240,244,248,.92))}
 
 .w{max-width:520px;margin:0 auto;padding:10px;position:relative;z-index:2}
 .tb{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -370,7 +346,21 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 </head>
 <body data-theme="t-cyan" class="bg-galaxy">
 
+<!-- ===== PASSWORD GATE — galaxy di DALAM gate sendiri ===== -->
 <div id="passwordGate">
+  <div class="gate-galaxy">
+    <div class="sf"></div>
+    <div class="p1"></div>
+    <div class="p2"></div>
+    <div class="p3"></div>
+    <div class="bh">
+      <div class="bh-core"></div>
+      <div class="bh-d1"></div>
+      <div class="bh-d2"></div>
+    </div>
+    <div class="ss1"></div>
+    <div class="ss2"></div>
+  </div>
   <div class="access-card" id="accessCard">
     <div class="card-line"></div>
     <h1>RYANNTOOLS <span>v10.0</span></h1>
@@ -405,7 +395,6 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   <div class="planet-1"></div>
   <div class="planet-2"></div>
   <div class="bin-rain" id="bin-rain"></div>
-  <div class="ufo-scene"><div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(165,243,252,.95)"/><stop offset="60%" stop-color="rgba(103,232,249,.65)"/></radialGradient><linearGradient id="bodyG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG2)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG2)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div></div>
 </div>
 
 <div id="welcome-modal" class="hd">
@@ -417,11 +406,11 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
       <div class="wm-ver">v10.0</div>
       <div class="wm-changes-title">WHAT'S NEW?</div>
       <ul class="wm-changes">
-        <li><b>Galaxy gate</b> — tembus 100%</li>
+        <li><b>Galaxy gate</b> — bintang + planet di login</li>
         <li><b>Binary matrix</b> — smooth canvas rain</li>
-        <li><b>Tombol STOP</b> — buat batalin tempmail</li>
-        <li><b>Multi-provider tempmail</b></li>
-        <li><b>Login wajib tiap buka</b></li>
+        <li><b>Tombol STOP</b> — batalin tempmail</li>
+        <li><b>Multi-provider tempmail</b> — mail.tm + mail.gw</li>
+        <li><b>Login wajib tiap buka</b> — device lock tetap</li>
       </ul>
       <button id="wm-start">MULAI</button>
     </div>
@@ -603,7 +592,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 <label>Domain</label><div id="tmp-domain"></div>
 <div class="br3"><button class="g" id="tmp-gen">GEN</button><button class="g" id="tmp-copy">COPY</button><button class="g" id="tmp-reaload">RELOAD</button></div>
 <button class="d" id="tmp-stop" style="display:none;margin-top:6px">⛔ STOP</button>
-<div id="tmp-log" class="console-log" style="height:100px"></div>
+<div id="tmp-log" class="console-log" style="height:120px"></div>
 <div class="r" id="tmp-email">—</div>
 </div>
 <div class="c"><div class="cl">INBOX</div>
@@ -679,7 +668,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
   <div class="nb" data-p="set"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>SET</div>
 </div>
 
-<!-- ===== BINARY RAIN — matrix canvas ===== -->
+<!-- ===== BINARY RAIN ===== -->
 <script>
 (function initBinaryRain(){
   function startRain(){
