@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>TOOLS BY RYANNXD · v6.3</title>
+<title>TOOLS BY RYANNXD · v6.4</title>
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +14,7 @@
 body{background:var(--bg);color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;overflow-x:hidden;position:relative;padding-bottom:96px}
 body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg);transition:background .4s}
 
-/* ===== PASSWORD GATE v6.3 ===== */
+/* ===== PASSWORD GATE v6.4 ===== */
 #passwordGate{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 25%,#0a1525,transparent 60%),radial-gradient(circle at 70% 75%,#0d1830,transparent 55%),#04080f;transition:opacity .6s ease,visibility .6s ease,transform .6s ease;will-change:opacity,transform;overflow:hidden}
 #passwordGate::before{content:"";position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 75% 40%,#a5f3fc,transparent),radial-gradient(1px 1px at 90% 80%,#fff,transparent);background-size:400px 400px;animation:gateStarTwinkle 5s infinite;pointer-events:none;opacity:.75}
 #passwordGate::after{content:"";position:absolute;top:8%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff,0 0 16px #94a3b8;animation:gateShooting 7s linear infinite;pointer-events:none}
@@ -25,22 +25,14 @@ body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-grad
 .access-card{width:min(94%,500px);padding:36px 26px 28px;background:linear-gradient(180deg,rgba(14,18,24,.94),rgba(8,12,18,.97));border:1.5px solid rgba(148,163,184,.30);border-radius:22px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.78),0 0 0 1px rgba(148,163,184,.05),inset 0 1px 0 rgba(255,255,255,.06);animation:cardIn .8s cubic-bezier(.5,.1,.3,1.4);position:relative;overflow:hidden;transition:border-color .4s ease,box-shadow .4s ease}
 .access-card::before{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 20%,rgba(148,163,184,.05),transparent 45%);pointer-events:none;animation:cardShine 18s linear infinite}
 @keyframes cardShine{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-
-.card-line{width:56px;height:3px;margin:0 auto 20px;border-radius:20px;background:linear-gradient(90deg,transparent,rgba(148,163,184,.9),transparent);opacity:.85;box-shadow:0 0 12px rgba(148,163,184,.4);transition:background .4s,box-shadow .4s}
-
-.access-card h1{margin:0;font-family:'Orbitron',sans-serif;font-size:22px;letter-spacing:3.5px;color:#e2e8f0;font-weight:900;text-shadow:0 0 12px rgba(148,163,184,.25);transition:color .4s,text-shadow .4s}
-.access-card h1 span{color:#94a3b8;opacity:.95;transition:color .4s}
-
-.subtitle{margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:4px;color:#94a3b8;opacity:.85;font-weight:700;transition:color .4s}
-
-.description{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:rgba(148,163,184,.65);margin:12px 0 20px;letter-spacing:.5px;transition:color .4s}
-
-#passwordInput{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px}
-
+.card-line{width:56px;height:3px;margin:0 auto 20px;border-radius:20px;background:linear-gradient(90deg,transparent,rgba(148,163,184,.9),transparent);opacity:.85;box-shadow:0 0 12px rgba(148,163,184,.4)}
+.access-card h1{margin:0;font-family:'Orbitron',sans-serif;font-size:22px;letter-spacing:3.5px;color:#e2e8f0;font-weight:900;text-shadow:0 0 12px rgba(148,163,184,.25)}
+.access-card h1 span{color:#94a3b8;opacity:.95}
+.subtitle{margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:4px;color:#94a3b8;opacity:.85;font-weight:700}
+.description{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:rgba(148,163,184,.65);margin:12px 0 20px;letter-spacing:.5px}
+#passwordInput{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px;resize:none;overflow:hidden;border:none;outline:none;padding:0;background:transparent}
 .boxes-wrap{position:relative;display:flex;align-items:center;justify-content:center;gap:0;margin:6px 0 4px}
-
 .password-boxes{display:flex;justify-content:center;gap:7px;margin:0;position:relative;min-height:60px;flex:1;max-width:400px;perspective:600px;transition:height .4s ease,min-height .4s ease}
-
 .password-box{width:42px;height:54px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(20,26,36,.75),rgba(10,14,20,.9));border:1.5px solid rgba(148,163,184,.28);border-radius:12px;font-size:24px;color:#cbd5e1;font-family:'JetBrains Mono',monospace;font-weight:700;transition:transform .22s cubic-bezier(.5,.1,.3,1.4),border-color .2s ease,box-shadow .3s ease,background .25s ease,color .3s;will-change:transform,border-color,box-shadow;position:relative;overflow:hidden}
 .password-box::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(148,163,184,.08),transparent 60%);pointer-events:none;opacity:0;transition:opacity .3s}
 .password-box.filled::after{opacity:1}
@@ -48,25 +40,20 @@ body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-grad
 .password-box.active{border-color:rgba(203,213,225,.85);box-shadow:0 0 24px rgba(203,213,225,.35),0 0 48px rgba(148,163,184,.18),inset 0 0 14px rgba(203,213,225,.08);transform:translateY(-5px) scale(1.06)}
 .password-box.error{border-color:#f87171!important;box-shadow:0 0 20px rgba(248,113,113,.55),inset 0 0 12px rgba(248,113,113,.15)!important;color:#f87171;background:linear-gradient(180deg,rgba(40,10,10,.7),rgba(20,6,6,.9))}
 .password-box.success{border-color:#4ade80!important;box-shadow:0 0 22px rgba(74,222,128,.6),inset 0 0 14px rgba(74,222,128,.15)!important;color:#4ade80;background:linear-gradient(180deg,rgba(6,22,14,.85),rgba(4,12,8,.95))}
-
 .eye-toggle{width:36px;height:54px;flex-shrink:0;margin-left:10px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:12px;cursor:pointer;color:#94a3b8;padding:0;transition:color .25s,background .25s,transform .15s,box-shadow .25s;-webkit-tap-highlight-color:transparent;position:relative}
 .eye-toggle:hover{color:#cbd5e1;background:rgba(148,163,184,.08);box-shadow:0 0 14px rgba(148,163,184,.15)}
 .eye-toggle:active{transform:scale(.9)}
 .eye-toggle svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;transition:stroke .25s,transform .3s}
 .eye-toggle.visible{color:#cbd5e1}
 .eye-toggle.visible svg{stroke:#cbd5e1}
-
 .status-text{min-height:18px;margin:10px 0 14px;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:2.5px;color:rgba(148,163,184,.65);font-weight:700;transition:color .25s ease}
 .status-text.ok{color:#67e8f9}
 .status-text.err{color:#f87171;text-shadow:0 0 8px rgba(248,113,113,.35)}
 .status-text.success{color:#4ade80;text-shadow:0 0 10px rgba(74,222,128,.45)}
-
 .continue-btn{width:100%;padding:15px;border:1.5px solid rgba(148,163,184,.32);border-radius:12px;background:linear-gradient(180deg,rgba(30,41,59,.75),rgba(15,23,42,.85));color:#cbd5e1;cursor:pointer;font-family:'Orbitron',sans-serif;font-size:12px;font-weight:900;letter-spacing:3.5px;transition:transform .2s ease,background .25s ease,box-shadow .3s ease,border-color .25s ease,color .25s ease;position:relative;overflow:hidden}
 .continue-btn:hover{background:linear-gradient(180deg,rgba(51,65,85,.85),rgba(30,41,59,.95));border-color:rgba(203,213,225,.55);color:#f1f5f9;transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 24px rgba(148,163,184,.15)}
 .continue-btn:active{transform:translateY(0) scale(.98)}
 .continue-btn.ready{border-color:#4ade80;color:#4ade80;box-shadow:0 0 24px rgba(74,222,128,.28);background:linear-gradient(180deg,rgba(6,20,12,.75),rgba(4,10,6,.85))}
-
-/* Verification overlay */
 .gate-verifying{position:absolute;inset:0;background:rgba(4,8,15,.92);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:22px;z-index:5;border-radius:22px;animation:gateFadeIn .25s ease}
 .gate-verifying.on{display:flex}
 @keyframes gateFadeIn{from{opacity:0}to{opacity:1}}
@@ -85,13 +72,11 @@ body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-grad
 @keyframes gateCorePulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.6);opacity:.55}}
 .orbit-status{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:#94a3b8;font-weight:700;transition:color .3s}
 .orbit-status.done{color:#4ade80;text-shadow:0 0 10px rgba(74,222,128,.5)}
-
 @keyframes cardIn{from{opacity:0;transform:translateY(28px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
 .shake{animation:shake .45s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-11px)}30%{transform:translateX(11px)}45%{transform:translateX(-8px)}60%{transform:translateX(8px)}80%{transform:translateX(-4px)}}
 .access-card.success{animation:successPulse .55s cubic-bezier(.5,.1,.3,1.4);box-shadow:0 30px 80px rgba(0,0,0,.78),0 0 60px rgba(74,222,128,.2)}
 @keyframes successPulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
-
 @media (max-width:480px){
   .access-card{padding:32px 18px 24px;border-radius:20px}
   .access-card h1{font-size:19px;letter-spacing:3px}
@@ -425,18 +410,16 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 </head>
 <body data-theme="t-cyan" class="bg-galaxy">
 
-<!-- PASSWORD GATE v6.3 -->
+<!-- PASSWORD GATE v6.4 -->
 <div id="passwordGate">
   <div class="access-card" id="accessCard">
     <div class="card-line"></div>
-    <h1>RYANNTOOLS <span>v6.3</span></h1>
+    <h1>RYANNTOOLS <span>v6.4</span></h1>
     <div class="subtitle">ACCESS VERIFICATION</div>
     <p class="description">Enter your password to continue</p>
 
-    <!-- input hidden untuk keyboard -->
-    <input id="passwordInput" type="text" maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px">
+    <textarea id="passwordInput" maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" rows="1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px;resize:none;overflow:hidden;border:none;outline:none;padding:0;background:transparent"></textarea>
 
-    <!-- 8 box + tombol mata -->
     <div class="boxes-wrap">
       <div class="password-boxes" id="passwordBoxes">
         <div class="password-box"></div>
@@ -448,23 +431,15 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
         <div class="password-box"></div>
         <div class="password-box"></div>
       </div>
-
       <button class="eye-toggle" id="eyeToggle" type="button" aria-label="Toggle password visibility">
-        <svg id="eyeOpen" viewBox="0 0 24 24">
-          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-        <svg id="eyeClosed" viewBox="0 0 24 24" style="display:none">
-          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-          <path d="M1 1l22 22"/>
-        </svg>
+        <svg id="eyeOpen" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <svg id="eyeClosed" viewBox="0 0 24 24" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-8-10-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
       </button>
     </div>
 
     <div class="status-text" id="statusText">WAITING FOR PASSWORD</div>
     <button class="continue-btn" id="continueBtn">CONTINUE</button>
 
-    <!-- Verifying overlay -->
     <div class="gate-verifying" id="gateVerifying">
       <div class="orbit-stage">
         <div class="orbit-core"></div>
@@ -489,9 +464,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   <div class="blackhole"><div class="bh-disk"></div><div class="bh-disk2"></div><div class="bh-core"></div></div>
   <div class="planet-1"></div>
   <div class="planet-2"></div>
-
-  <div class="bin-rain">01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100 00100000 01000010 01101001 01101110 01100001 01110010 01111001 00100000 01010010 01100001 01101001 01101110 00100000 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00100000 01001101 01100001 01110100 01110010 01101001 01111000 00100000 01000101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100011 01101111 01100100 01100101 00100000 01101001 01101110 01101010 01100101 01100011 01110100 01101001 01101111 01101110 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100011 01101111 01100100 01100101 00100000 01101001 01101110 01101010 01100101 01100011 01110100 01101001 01101111 01101110 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100011 01101111 01100100 01100101 00100000 01101001 01101110 01101010 01100101 01100011 01110100 01101001 01101111 01101110 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100011 01101111 01100100 01100101 00100000 01101001 01101110 01101010 01100101 01100011 01110100 01101001 01101111 01101110 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100101 01100110 01100110 01100101 01100011 01110100</div>
-
+  <div class="bin-rain">01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100 00100000 01000010 01101001 01101110 01100001 01110010 01111001 00100000 01010010 01100001 01101001 01101110 00100000 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00110000 00110001 00100000 01001101 01100001 01110100 01110010 01101001 01111000 00100000 01000101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100011 01101111 01100100 01100101 00100000 01101001 01101110 01101010 01100101 01100011 01110100 01101001 01101111 01101110 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100011 01101111 01100100 01100101 00100000 01101001 01101110 01101010 01100101 01100011 01110100 01101001 01101111 01101110 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100101 01100110 01100110 01100101 01100011 01110100 00100000 01101110 01101111 01110111 00100000 01110010 01110101 01101110 01101110 01101001 01101110 01100111 00100000 01100100 01100001 01110100 01100001 00100000 01110011 01110100 01110010 01100101 01100001 01101101 00100000 01100011 01101111 01100100 01100101 00100000 01101001 01101110 01101010 01100101 01100011 01110100 01101001 01101111 01101110 00100000 01101101 01100001 01110100 01110010 01101001 01111000 00100000 01110010 01100001 01101001 01101110 00100000 01100101 01100110 01100110 01100101 01100011 01110100</div>
   <div class="ufo-scene">
     <div class="ufo-flash"></div>
     <div class="ufo-trail"></div>
@@ -523,11 +496,12 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
     <img class="wm-banner" id="wm-banner" src="banner.png" alt="Ryann Tools">
     <div class="wm-body">
       <div class="wm-title">WELCOME TO RYANN <span class="y">TOOLS</span></div>
-      <div class="wm-ver">v6.3</div>
+      <div class="wm-ver">v6.4</div>
       <div class="wm-changes-title">WHAT CHANGES?</div>
       <ul class="wm-changes">
+        <li><b>Fix reverse input</b> — password gak kebalik lagi</li>
+        <li><b>Fix stuck verified</b> — overlay auto-close</li>
         <li><b>Password Gate</b> — 8 box + eye toggle</li>
-        <li><b>Gate UI</b> — outline abu, gak kaku</li>
         <li><b>Smart TikTok</b> — auto slide/video detect</li>
         <li><b>Multi variant</b> — No WM, No WM HD, WM, Music</li>
         <li><b>Slideshow</b> — download per foto</li>
@@ -546,7 +520,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v6.3</span>
+<span class="ch">v6.4</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
 <button class="tgl" id="mode-tgl">🌙</button>
@@ -946,7 +920,7 @@ https://test.cors.workers.dev/?</textarea>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v6.3</div>
+<div class="ft">RYANN • TOOLS · v6.4</div>
 </div>
 
 <!-- NAV BAWAH -->
