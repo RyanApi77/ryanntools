@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>TOOLS BY RYANNXD · v10.1</title>
+<title>TOOLS BY RYANNXD · v10.2</title>
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,6 +92,8 @@ body[data-theme="t-mono"]{--ac:#e0f2fe;--ac2:#f8fafc;--acd:rgba(224,242,254,.15)
 
 .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .bg-layer > *{display:none}
+
+/* GALAXY */
 body.bg-galaxy .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
 body.bg-galaxy .shooting-star-1{display:block;position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:ssF 6s linear infinite}
 body.bg-galaxy .shooting-star-2{display:block;position:absolute;top:35%;left:-15%;width:2px;height:2px;border-radius:50%;background:#fff;animation:ssF2 9s linear infinite 3s}
@@ -101,9 +103,21 @@ body.bg-galaxy .blackhole .bh-disk{position:absolute;inset:0;border-radius:50%;b
 body.bg-galaxy .blackhole .bh-disk2{position:absolute;top:20px;left:20px;right:20px;bottom:20px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(251,191,36,.7);animation:bhDisk 2.5s linear infinite reverse}
 body.bg-galaxy .planet-1{display:block;position:absolute;top:18%;left:8%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fb923c,#7c2d12)}
 body.bg-galaxy .planet-2{display:block;position:absolute;top:72%;left:15%;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985)}
+
+/* BINARY */
 body.bg-binary{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,10,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(4,28,16,.9),transparent 55%),#000400;background-attachment:fixed}
 body.bg-binary .bin-rain{display:block !important;position:fixed;inset:0;pointer-events:none;overflow:hidden;opacity:.9;z-index:0}
 .bin-rain canvas{display:block;width:100%;height:100%}
+
+/* ===== UFO ===== */
+body.bg-ufo{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.9),transparent 55%),#050210;background-attachment:fixed}
+body.bg-ufo .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 65% 15%,#fff,transparent),radial-gradient(1px 1px at 25% 80%,#fff,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
+body.bg-ufo .ufo-scene{display:block;position:absolute;inset:0;overflow:hidden}
+body.bg-ufo .ufo-scene .ufo-craft{position:absolute;bottom:30%;left:-200px;width:100px;height:56px;animation:ufoWarp 10s ease-in infinite}
+body.bg-ufo .ufo-scene .ufo-craft:nth-child(2){animation-duration:14s;animation-delay:3s;transform:scale(.7)}
+body.bg-ufo .ufo-scene .ufo-craft:nth-child(3){animation-duration:18s;animation-delay:7s;transform:scale(.5)}
+@keyframes ufoWarp{0%{transform:translate(0,0) scale(.6);opacity:0}5%{transform:translate(60px,-20px) scale(1);opacity:1}35%{transform:translate(50vw,-10px);opacity:1}70%{transform:translate(90vw,-25vh) scale(.5);opacity:.7}100%{transform:translate(120vw,-45vh) scale(0);opacity:0}}
+
 body.bg-plain{background:var(--bg)}
 body.no-anim *{animation:none!important}
 body.light{--bg:#f0f4f8;--card:rgba(255,255,255,.94);--border:#cbd5e1;--tx:#0f172a;--txd:#475569;background:#f0f4f8;color:#0f172a}
@@ -341,8 +355,6 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 .fs-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac)}
 .drop{border:2px dashed var(--ac);border-radius:9px;background:rgba(4,8,15,.4);padding:18px;text-align:center;cursor:pointer}
 .drop .ic{font-size:28px;display:block;margin-bottom:5px}
-
-/* ===== SPY tab extra ===== */
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
 .tab{border:1px solid var(--ac);border-radius:8px;padding:9px 6px;text-align:center;cursor:pointer;font-weight:700;font-size:.6rem;color:var(--txd);text-transform:uppercase}
 .tab.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
@@ -377,7 +389,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   </div>
   <div class="access-card" id="accessCard">
     <div class="card-line"></div>
-    <h1>RYANNTOOLS <span>v10.1</span></h1>
+    <h1>RYANNTOOLS <span>v10.2</span></h1>
     <div class="subtitle">ACCESS VERIFICATION</div>
     <p class="description">Enter your password to continue</p>
     <textarea id="passwordInput" maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" rows="1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px"></textarea>
@@ -409,6 +421,11 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   <div class="planet-1"></div>
   <div class="planet-2"></div>
   <div class="bin-rain" id="bin-rain"></div>
+  <div class="ufo-scene">
+    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(165,243,252,.95)"/><stop offset="60%" stop-color="rgba(103,232,249,.65)"/></radialGradient><linearGradient id="bodyG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG2)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG2)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
+    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG3" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(216,180,254,.95)"/><stop offset="60%" stop-color="rgba(192,132,252,.65)"/></radialGradient><linearGradient id="bodyG3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8b4fe"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG3)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG3)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
+    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG4" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(253,186,116,.95)"/><stop offset="60%" stop-color="rgba(251,146,60,.65)"/></radialGradient><linearGradient id="bodyG4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdba74"/><stop offset="100%" stop-color="#c2410c"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG4)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG4)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
+  </div>
 </div>
 
 <div id="welcome-modal" class="hd">
@@ -417,13 +434,13 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
     <img class="wm-banner" id="wm-banner" src="banner.png" alt="Ryann Tools">
     <div class="wm-body">
       <div class="wm-title">WELCOME TO RYANN <span class="y">TOOLS</span></div>
-      <div class="wm-ver">v10.1</div>
+      <div class="wm-ver">v10.2</div>
       <div class="wm-changes-title">WHAT'S NEW?</div>
       <ul class="wm-changes">
-        <li><b>SPY, FUN, OSINT</b> — balik lagi</li>
-        <li><b>SCRAPE, TEMPLATE</b> — balik lagi</li>
-        <li><b>25 achievements</b> — 5 baru</li>
-        <li><b>Galaxy gate</b> — bintang di login</li>
+        <li><b>UFO background</b> — 3 pesawat warp</li>
+        <li><b>SPY, FUN, OSINT, SCRAPE, TPL</b> — balik lagi</li>
+        <li><b>25 achievements</b> — auto-migrate dari v6.6</li>
+        <li><b>Galaxy gate</b> — bintang + planet</li>
         <li><b>Binary matrix</b> — smooth</li>
       </ul>
       <button id="wm-start">MULAI</button>
@@ -478,7 +495,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v10.1</span>
+<span class="ch">v10.2</span>
 <span class="role-badge" id="role-badge">OWNER</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
@@ -510,7 +527,6 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 </div>
 
-<!-- ===== SPY ===== -->
 <div class="pg hd" id="pg-spy">
 <div class="c"><div class="cl">INPUT CODE</div>
 <div class="tabs"><div class="tab a" id="tp">PASTE</div><div class="tab" id="tu">UPLOAD</div></div>
@@ -538,7 +554,6 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 </div>
 
-<!-- ===== FUN / UTILITY ===== -->
 <div class="pg hd" id="pg-utl">
 <div class="c"><div class="cl">PASSWORD GENERATOR</div>
 <label>Prefix (opsional)</label><input id="pg-prefix" placeholder="misal ryann">
@@ -583,7 +598,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 <div class="c"><div class="cl">LETTER COUNTER</div>
 <textarea id="lc-input" placeholder="paste teks..."></textarea>
-<div class="st" style="grid-template-columns:1fr 1fr 1fr">
+<div class="st" style="grid-template-columns:1fr 1fr 1fr;display:grid;gap:8px">
 <div class="s"><div class="l">Karakter</div><div class="n" id="lc-char">0</div></div>
 <div class="s"><div class="l">Kata</div><div class="n" id="lc-word">0</div></div>
 <div class="s"><div class="l">Baris</div><div class="n" id="lc-line">0</div></div>
@@ -591,7 +606,6 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 </div>
 
-<!-- ===== OSINT ===== -->
 <div class="pg hd" id="pg-osi">
 <div class="c"><div class="cl">IP LOOKUP</div><input id="ipin" placeholder="8.8.8.8"><button class="g" id="ilook">LOOKUP</button><div class="r" id="ires">—</div></div>
 <div class="c"><div class="cl">MY IP</div><button class="g" id="mip">CEK IP</button><div class="r" id="mres">—</div></div>
@@ -604,7 +618,6 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 <div class="c"><div class="cl">DEVICE INFO</div><button class="g" id="dvinfo">CEK DEVICE</button><div class="r" id="dvres">—</div></div>
 </div>
 
-<!-- ===== SCRAPE ===== -->
 <div class="pg hd" id="pg-scr">
 <div class="c"><div class="cl">DEEP WEB SCRAPER</div>
 <label>URL Target</label><input id="ds-url" placeholder="https://example.com">
@@ -638,11 +651,11 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 <textarea id="pc-input" placeholder="ip:port" style="min-height:80px;font-size:.6rem"></textarea>
 <div class="br"><button class="g" id="pc-start">CEK</button><button class="g" id="pc-clear">CLEAR</button></div>
 <div id="pc-log" class="console-log" style="height:150px"></div>
-<div class="st" style="grid-template-columns:1fr 1fr 1fr 1fr">
+<div class="st" style="grid-template-columns:1fr 1fr 1fr 1fr;display:grid;gap:8px">
 <div class="s"><div class="l">Total</div><div class="n" id="pc-stat-total">0</div></div>
 <div class="s"><div class="l">Hidup</div><div class="n" id="pc-stat-alive" style="color:var(--ok)">0</div></div>
 <div class="s"><div class="l">Mati</div><div class="n" id="pc-stat-dead" style="color:var(--er)">0</div></div>
-<div class="s"><div class="l">Skip</div><div class="n" id="pc-stat-skip" style="color:var(--wr)">0</div></div>
+<div class="s"><div class="l">Skip</div><div class="n" id="pc-stat-skip" style="color:var(--ac)">0</div></div>
 </div>
 </div>
 <div class="c"><div class="cl">AUTO DEPLOY VERCEL</div>
@@ -659,7 +672,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== TEMPLATE ===== -->
 <div class="pg hd" id="pg-tpl">
 <div class="c"><div class="cl">TEMPLATE LIST</div><div id="tl">Loading...</div></div>
 <div class="c"><div class="cl">EDITOR</div>
@@ -671,7 +683,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== BYPASS ===== -->
 <div class="pg hd" id="pg-bp">
 <div class="c"><div class="cl">BYPASS LINK</div>
 <label>Pilih API</label><div id="bp-api-custom" class="zy-select-wrap"></div>
@@ -682,7 +693,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== DL ===== -->
 <div class="pg hd" id="pg-dl">
 <div class="c"><div class="cl">DOWNLOADER</div>
 <label>Kategori</label><div id="dl-cat-custom" class="zy-select-wrap"></div>
@@ -695,7 +705,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== SEARCH ===== -->
 <div class="pg hd" id="pg-srch">
 <div class="apihub-header"><div class="apihub-title">🔍 SEARCH</div><div class="apihub-sub">WEB · VIDEO · MUSIC</div></div>
 <div class="c">
@@ -715,7 +724,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== UPSCALE ===== -->
 <div class="pg hd" id="pg-up">
 <div class="apihub-header"><div class="apihub-title">UPSCALE VIDEO</div><div class="apihub-sub">HD Video Enhancer</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -727,7 +735,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== IMG AI ===== -->
 <div class="pg hd" id="pg-imgai">
 <div class="apihub-header"><div class="apihub-title">IMAGE AI</div><div class="apihub-sub">AI Image Generator</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -739,7 +746,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== IMG HD ===== -->
 <div class="pg hd" id="pg-imghd">
 <div class="apihub-header"><div class="apihub-title">IMAGE HD</div><div class="apihub-sub">Upscaler &amp; Enhancer</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -751,7 +757,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== MAKER ===== -->
 <div class="pg hd" id="pg-maker">
 <div class="apihub-header"><div class="apihub-title">MAKER</div><div class="apihub-sub">Fake Canvas Generator</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -763,7 +768,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== SEARCH API ===== -->
 <div class="pg hd" id="pg-srchapi">
 <div class="apihub-header"><div class="apihub-title">SEARCH API</div><div class="apihub-sub">Direct API Call</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -775,7 +779,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== TEMPMAIL ===== -->
 <div class="pg hd" id="pg-tmp">
 <div class="c"><div class="cl">TEMP MAIL</div>
 <label>Provider</label><div id="tmp-provider"></div>
@@ -796,7 +799,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== HISTORY ===== -->
 <div class="pg hd" id="pg-hst">
 <div class="c"><div class="cl">HISTORY</div>
 <div id="hl">Belum ada</div>
@@ -804,7 +806,6 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<!-- ===== SETTINGS ===== -->
 <div class="pg hd" id="pg-set">
 <div class="c"><div class="cl">THEME PRESET</div>
 <div class="tg" id="tg">
@@ -845,10 +846,9 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v10.1</div>
+<div class="ft">RYANN • TOOLS · v10.2</div>
 </div>
 
-<!-- ===== NAV 17 TAB ===== -->
 <div class="nv" id="nav-main">
   <div class="nb a" data-p="home"><span class="i"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span>HOME</div>
   <div class="nb" data-p="spy"><span class="i"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><circle cx="8.5" cy="10.5" r="1.2"/><circle cx="15.5" cy="10.5" r="1.2"/><path d="M12 16c-2 0-3.5-1-4-2.5"/></svg></span>SPY</div>
