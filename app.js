@@ -1,4 +1,4 @@
-// app.js v7.0 — Full rebuild
+// app.js v7.2 — Full rebuild
 (function(){
 'use strict';
 
@@ -6,7 +6,7 @@
 // KONFIG
 // ============================================================
 var DEVICE_API = 'https://ryanndevice.hasbiiryan.workers.dev';
-var OWNER_FALLBACK_PWD = 'ryanndev';   // cadangan kalau worker down
+var OWNER_FALLBACK_PWD = 'ryanndev';
 
 // ============================================================
 // UTIL
@@ -35,7 +35,6 @@ function makeFingerprint(){
       navigator.deviceMemory || 0,
       navigator.maxTouchPoints || 0
     ];
-    // canvas hash
     try{
       var c = document.createElement('canvas');
       var ctx = c.getContext('2d');
@@ -51,6 +50,7 @@ function makeFingerprint(){
   }catch(e){ return 'fp' + Math.random().toString(36).slice(2, 10); }
 }
 
+// v7.2: device_id TETAP disimpen (buat device lock), tapi session GAK.
 function getDeviceId(){
   var id = S.get('device_id', null);
   if(id) return id;
@@ -66,16 +66,15 @@ var DEVICE_ID = getDeviceId();
 var DEVICE_FP = S.get('device_fp', makeFingerprint());
 
 // ============================================================
-// SESSION
+// SESSION — v7.2: cuma di memory, GAK di localStorage
 // ============================================================
-var SESSION = S.get('session', null);
-// { role:'USER'|'OWNER', password:'xxx', verifiedAt: ts }
+var SESSION = null;   // { role, password, verifiedAt }
 
 function saveSession(role, password){
+  // v7.2: TIDAK disave ke localStorage. cuma memory.
   SESSION = { role: role, password: password, verifiedAt: Date.now() };
-  S.set('session', SESSION);
 }
-function clearSession(){ SESSION = null; S.del('session'); }
+function clearSession(){ SESSION = null; }
 
 function isOwner(){ return SESSION && SESSION.role === 'OWNER'; }
 function isUser(){ return SESSION && (SESSION.role === 'USER' || SESSION.role === 'OWNER'); }
@@ -162,7 +161,6 @@ async function deviceApi(path, opts){
     verifyPassword();
   });
 
-  // ===== verify password → tanya worker =====
   async function verifyPassword(){
     var raw = (input.value || '').trim().toLowerCase();
     if(raw.length !== 8){
@@ -170,19 +168,16 @@ async function deviceApi(path, opts){
       return;
     }
 
-    // UI: verifying
     statusText.textContent = 'VERIFYING...';
     statusText.classList.add('ok');
     if(verifyOverlay) verifyOverlay.classList.add('on');
 
-    // panggil worker
     var res = await deviceApi('/device/validate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: raw, deviceId: DEVICE_ID, fingerprint: DEVICE_FP })
     });
 
-    // fallback: kalau worker error network → cek owner fallback
     if(!res.ok && res.error === 'network'){
       if(raw === OWNER_FALLBACK_PWD.toLowerCase()){
         res = { ok: true, role: 'OWNER', bootstrap: true, fallback: true };
@@ -201,7 +196,6 @@ async function deviceApi(path, opts){
       return;
     }
 
-    // valid
     verified = true;
     saveSession(res.role || 'USER', raw);
     statusText.textContent = 'ACCESS VERIFIED';
@@ -236,21 +230,12 @@ async function deviceApi(path, opts){
     }, 1500);
   }
 
-  // autofocus
   setTimeout(function(){ try{ input.focus(); }catch(e){} }, 300);
 })();
 
 // ============================================================
-// ACCESS CODE GATE 2 (kalau user belum terdaftar)
+// ACCESS CODE GATE 2 (user biasa)
 // ============================================================
-window.checkAccessCodeGate = function(){
-  // kalau role OWNER → skip
-  if(isOwner()) return false;
-  // kalau device udah pernah login (session ada) → skip
-  if(SESSION && SESSION.password) return false;
-  return true;
-};
-
 (function accessCodeGateInit(){
   var gate = $('accessCodeGate');
   if(!gate) return;
@@ -387,7 +372,6 @@ function applyMode(){ if(mode==='light') document.body.classList.add('light'); e
 if($('mode-tgl')) $('mode-tgl').onclick=function(){ mode=(mode==='dark')?'light':'dark'; S.set('mode',mode); applyMode(); sndClick(); };
 if($('tg-dark')) $('tg-dark').onchange=function(){ mode=this.checked?'dark':'light'; S.set('mode',mode); applyMode(); sndClick(); };
 
-// background
 function setBg(b){
   S.set('bg', b);
   document.body.classList.remove('bg-galaxy','bg-binary','bg-ufo','bg-plain','bg-custom');
@@ -430,7 +414,6 @@ function switchPage(name){
   newPg.classList.add('active');
   currentPage = name;
 
-  // hooks
   if(name === 'bp' && typeof window.zyInitBypass === 'function'){ try{ window.zyInitBypass(); }catch(e){} }
   if(name === 'dl' && typeof window.zyInitDownloader === 'function'){ try{ window.zyInitDownloader(); }catch(e){} }
   if(name === 'hst'){ try{ renderHist(); }catch(e){} }
@@ -473,7 +456,6 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
     if(!isOwner()){ alert('Akses ditolak. Hanya OWNER.'); return; }
     sndClick();
     modal.classList.add('show');
-    // kalau login udah, langsung dashboard
     if(isOwner()){
       loginSec.classList.add('hd');
       dashSec.classList.remove('hd');
@@ -492,7 +474,6 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
     var pwd = (pwdInput.value || '').trim().toLowerCase();
     if(!pwd){ loginMsg.innerHTML = '<div class="err-box">Password kosong</div>'; return; }
     loginMsg.innerHTML = '<div class="warn-box">Memverifikasi...</div>';
-    // cek via generate dummy — atau langsung test list
     var res = await deviceApi('/device/list?adminPassword=' + encodeURIComponent(pwd), { method: 'GET' });
     if(res.ok){
       loginSec.classList.add('hd');
@@ -505,7 +486,6 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
     }
   });
 
-  // tabs
   $$('.modal-tab').forEach(function(t){
     t.addEventListener('click', function(){
       $$('.modal-tab').forEach(function(x){ x.classList.remove('a'); });
@@ -516,13 +496,12 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
     });
   });
 
-  // generate
   var genRole = null;
   try{
     genRole = window.initCustomSelect('genRoleCustom',
       [{id:'USER',name:'USER',desc:'cuma bisa pakai tools'},{id:'OWNER',name:'OWNER',desc:'akses dev panel'}],
       'USER',
-      function(id){ /* updated */ }
+      function(id){ }
     );
   }catch(e){}
 
@@ -554,7 +533,6 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
     }
   });
 
-  // list
   if($('refreshListBtn')) $('refreshListBtn').addEventListener('click', refreshPwdList);
 
   async function refreshPwdList(){
@@ -587,7 +565,6 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
     }).join('');
   }
 
-  // devices
   if($('refreshDevBtn')) $('refreshDevBtn').addEventListener('click', refreshDevList);
 
   async function refreshDevList(){
@@ -736,7 +713,6 @@ if($('wipe')) $('wipe').onclick=function(){ if(confirm('Wipe ALL?')){ Object.key
 // WELCOME MODAL
 // ============================================================
 (function(){
-  var popupOn = S.get('popup_on', true);
   var modal = $('welcome-modal');
   if(!modal) return;
   function closeWm(){ modal.classList.add('hd'); sndClick(); }
@@ -748,19 +724,14 @@ if($('wipe')) $('wipe').onclick=function(){ if(confirm('Wipe ALL?')){ Object.key
 // BOOT AFTER LOGIN
 // ============================================================
 function bootAfterLogin(){
-  // cek access code gate (kalau user belum terdaftar di device ini)
   if(!isOwner()){
-    // user biasa — cek udah pernah login apa belum
-    // kalau belum, cek worker status device ini
     deviceApi('/device/me?deviceId=' + encodeURIComponent(DEVICE_ID), { method: 'GET' }).then(function(res){
       if(!res || !res.ok || !res.registered){
-        // belum terdaftar → minta access code
         window.showAccessCodeGate();
       }
     });
   }
 
-  // tampilkan dev btn kalau owner
   if(isOwner()){
     var devBtn = $('dev-btn');
     if(devBtn) devBtn.classList.add('show');
@@ -768,59 +739,42 @@ function bootAfterLogin(){
     if(rb) rb.classList.add('show');
   }
 
-  // tampilkan role di home
   var hr = $('homeRole');
   if(hr) hr.textContent = SESSION ? SESSION.role : 'USER';
   var hd = $('homeDevice');
   if(hd) hd.textContent = DEVICE_ID;
 
-  // init
   try{ if(typeof window.zyInitBypass === 'function') window.zyInitBypass(); }catch(e){}
   try{ if(typeof window.zyInitDownloader === 'function') window.zyInitDownloader(); }catch(e){}
 
-  // init tmp dropdown
+  // init dropdown TMP + provider
   try{
     if(window.initCustomSelect && $('tmp-domain')){
       window.__selTmpDom = window.initCustomSelect('tmp-domain', [{id:'',name:'— CHOOSE —'}], '', function(){});
+    }
+    if(typeof window.tmpInitProviderSelector === 'function'){
+      window.tmpInitProviderSelector();
     }
   }catch(e){}
 }
 
 // ============================================================
-// BOOT (dipanggil setelah password gate sukses, atau auto kalau session ada)
+// BOOT
 // ============================================================
 function boot(){
-  // init custom selects
-  try{ if(window.initCustomSelect) window.__selSep = window.initCustomSelect('sel-sep', [{id:'_',name:'_'},{id:'-',name:'-'}], '_', function(){}); }catch(e){}
-
-  // theme
   try{ setTema(S.get('theme','t-cyan')); }catch(e){}
   try{ setBg(S.get('bg','galaxy')); }catch(e){}
   try{ applyMode(); }catch(e){}
-
-  // stats
-  try{ if($('st-g')) $('st-g').textContent = S.get('generates', 0); }catch(e){}
   try{ renderHist(); }catch(e){}
-
-  // sel-tmpdom init
-  try{
-    if(window.initCustomSelect && $('tmp-domain')){
-      window.__selTmpDom = window.initCustomSelect('tmp-domain', [{id:'',name:'— CHOOSE —'}], '', function(){});
-    }
-  }catch(e){}
 }
 
 // ============================================================
-// AUTO-START
+// AUTO-START — v7.2: SELALU minta login
 // ============================================================
-// kalau session ada → langsung boot
-if(SESSION && SESSION.password){
-  var gate = $('passwordGate');
-  if(gate){ gate.style.display = 'none'; gate.classList.add('gate-hidden'); }
-  boot();
-  bootAfterLogin();
-} else {
-  boot();   // biar theme dsb siap sebelum gate
-}
+// device_id tetep disimpen (buat device lock), tapi session gak.
+SESSION = null;
+S.del('session');
+boot();
+// gate bakal handle login → bootAfterLogin() dipanggil setelah verify sukses
 
 })();
