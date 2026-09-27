@@ -637,17 +637,23 @@ var API_HUB_LIST = [
   {id:'sr_pinterest', name:'Search Pinterest', path:'/api/search/pinterest', method:'GET', params:['query','limit'], cat:'SEARCH'}
 ];
 
-// ===== TEMPMAIL v7.0 =====
-var tmpToken=null, tmpEmail=null, tmpMsgs=[];
+// ===== TEMPMAIL v7.1 — Multi-Provider (mail.tm + mail.gw) =====
+var tmpToken=null, tmpEmail=null, tmpMsgs=[], tmpProvider='mail.tm';
 
-// FIX: validasi response per layer + retry terbatas
+var TMP_PROVIDERS = {
+  'mail.tm': { name:'mail.tm', base:'https://api.mail.tm', color:'#22d3ee' },
+  'mail.gw': { name:'mail.gw', base:'https://api.mail.gw', color:'#4ade80' }
+};
+
+function tmpBase(){ return TMP_PROVIDERS[tmpProvider].base; }
+
+// tmpFetchV2 — validasi response per layer + retry
 async function tmpFetchV2(url, opts){
   opts = opts || {};
   var method = opts.method || 'GET';
   var headers = opts.headers || {};
   var body = opts.body || null;
 
-  // helper: cek apakah response beneran data valid dari mail.tm
   async function tryReturn(r){
     if(!r || !r.ok) return null;
     try{
@@ -668,7 +674,7 @@ async function tmpFetchV2(url, opts){
     if(valid) return valid;
   }catch(e){}
 
-  // LAYER 2: DIRECT (mail.tm kadang kasih CORS)
+  // LAYER 2: DIRECT
   try{
     var r0 = await fetchWithRetry(url, { method: method, headers: headers, body: body }, 20000, 1);
     var valid0 = await tryReturn(r0);
@@ -693,60 +699,111 @@ var _tmpRetryCount = 0;
 async function tmpLoad(){
   var log = document.getElementById('tmp-log');
   if(log && _tmpRetryCount === 0) log.innerHTML = '';
-  logTo('tmp-log','⏳ Loading domain...','in');
-  try{
-    var r = await tmpFetchV2('https://api.mail.tm/domains');
-    var j = await r.json();
-    var arr = j['hydra:member'] || [];
-    if(window.__selTmpDom){
-      var items = [{id:'', name:'— CHOOSE —'}];
-      arr.forEach(function(d){ items.push({id:d.domain, name:d.domain}); });
-      window.__selTmpDom.setItems(items);
+  logTo('tmp-log','⏳ Loading domain dari semua provider...','in');
+
+  var allDomains = [];
+  var providers = Object.keys(TMP_PROVIDERS);
+  var successCount = 0;
+
+  for(var pi = 0; pi < providers.length; pi++){
+    var provName = providers[pi];
+    var provBase = TMP_PROVIDERS[provName].base;
+    logTo('tmp-log','→ ' + provName, 'in');
+    try{
+      var r = await tmpFetchV2(provBase + '/domains');
+      var j = await r.json();
+      var arr = j['hydra:member'] || [];
+      arr.forEach(function(d){
+        allDomains.push({ domain: d.domain, provider: provName });
+      });
+      logTo('tmp-log','  ✓ ' + arr.length + ' domain', 'ok');
+      successCount++;
+    }catch(e){
+      logTo('tmp-log','  ✗ ' + e.message, 'er');
     }
-    logTo('tmp-log','✓ '+arr.length+' domain','ok');
-    _tmpRetryCount = 0;
-  }catch(e){
-    logTo('tmp-log','✗ '+e.message,'er');
+  }
+
+  if(window.__selTmpDom){
+    var items = [{id:'', name:'— CHOOSE (' + allDomains.length + ' domain) —'}];
+    allDomains.forEach(function(d){
+      items.push({
+        id: d.provider + '|' + d.domain,
+        name: d.domain,
+        desc: d.provider
+      });
+    });
+    window.__selTmpDom.setItems(items);
+  }
+
+  if(successCount === 0){
     if(_tmpRetryCount < 2){
       _tmpRetryCount++;
+      logTo('tmp-log','⚠ Retry ' + _tmpRetryCount + '/3 dalam 5 detik...','warn');
       setTimeout(function(){ tmpLoad(); }, 5000);
     } else {
-      logTo('tmp-log','⚠ Gagal 3x. Klik RELOAD manual.','warn');
+      logTo('tmp-log','⚠ Gagal semua. Klik RELOAD manual.','warn');
       _tmpRetryCount = 0;
     }
+  } else {
+    logTo('tmp-log','✓ Total: ' + allDomains.length + ' domain dari ' + successCount + ' provider','ok');
+    _tmpRetryCount = 0;
   }
 }
 window.tmpLoadDomains = function(){ _tmpRetryCount = 0; return tmpLoad(); };
 if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ window.tmpLoadDomains(); };
 
+// Provider selector init
+function tmpInitProviderSelector(){
+  if(typeof window.initCustomSelect !== 'function') return;
+  if(!document.getElementById('tmp-provider')) return;
+  var items = Object.keys(TMP_PROVIDERS).map(function(k){
+    return { id:k, name: TMP_PROVIDERS[k].name };
+  });
+  window.__selTmpProvider = window.initCustomSelect('tmp-provider', items, tmpProvider, function(id){
+    tmpProvider = id;
+    // reset dropdown domain
+    if(window.__selTmpDom) window.__selTmpDom.setItems([{id:'', name:'— CHOOSE —'}]);
+    tmpLoad();
+  });
+}
+window.tmpInitProviderSelector = tmpInitProviderSelector;
+
 if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
   var log = document.getElementById('tmp-log');
   if(log) log.innerHTML = '';
   var nm = $id('tmp-name').value.trim() || ('user' + Math.floor(Math.random()*99999));
-  var dom = (window.__selTmpDom ? window.__selTmpDom.getValue() : '');
-  if(!dom){ alert('Pilih domain dulu'); return; }
+  var domRaw = (window.__selTmpDom ? window.__selTmpDom.getValue() : '');
+  if(!domRaw){ alert('Pilih domain dulu'); return; }
+
+  var parts = domRaw.split('|');
+  var provKey = parts[0] || tmpProvider;
+  var dom = parts[1] || domRaw;
+  var base = TMP_PROVIDERS[provKey] ? TMP_PROVIDERS[provKey].base : tmpBase();
+  tmpProvider = provKey;
+
   var em = nm + '@' + dom;
   var pw = 'RyannTmp!' + Math.floor(Math.random()*99999);
-  logTo('tmp-log','⏳ Membuat ' + em + '...','in');
+  logTo('tmp-log','⏳ Membuat ' + em + ' via ' + provKey + '...','in');
   try{
-    var r = await tmpFetchV2('https://api.mail.tm/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
+    var r = await tmpFetchV2(base + '/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
     var j = await r.json();
     if(!r.ok){ logTo('tmp-log','✗ '+(j.message || 'error'),'er'); return; }
     logTo('tmp-log','✓ Account OK','ok');
-    var r2 = await tmpFetchV2('https://api.mail.tm/token', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
+    var r2 = await tmpFetchV2(base + '/token', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
     var j2 = await r2.json();
     if(!r2.ok){ logTo('tmp-log','✗ Login: '+(j2.message||'error'),'er'); return; }
     tmpToken = j2.token; tmpEmail = em;
     $id('tmp-email').textContent = em;
-    logTo('tmp-log','✓ Login OK','ok');
+    logTo('tmp-log','✓ Login OK [' + provKey + ']','ok');
     if(window.sndSuccess) window.sndSuccess();
   }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
 };
 if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail) navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); }); };
 if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
   if(!tmpToken){ alert('Generate dulu'); return; }
+  var base = tmpBase();
   try{
-    var r = await tmpFetchV2('https://api.mail.tm/messages', {headers:{'Authorization':'Bearer '+tmpToken}});
+    var r = await tmpFetchV2(base + '/messages', {headers:{'Authorization':'Bearer '+tmpToken}});
     var j = await r.json();
     tmpMsgs = j['hydra:member'] || [];
     var el = $id('tmp-list');
