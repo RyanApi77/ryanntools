@@ -1,9 +1,9 @@
-// app.js v6.3 — Logic utama RYANN TOOLS + Password Gate 8-box + Eye Toggle
+// app.js v6.4 — Logic utama RYANN TOOLS + Password Gate 8-box + Eye Toggle + Fix reverse input + Fix stuck overlay
 (function(){
 'use strict';
 
 // ============================================================
-// PASSWORD GATE v6.3 — 8 box + eye toggle + orbit verify
+// PASSWORD GATE v6.4 — 8 box + eye toggle + orbit verify
 // ============================================================
 (function passwordGateInit(){
   var PASSWORD = 'ryanndev';
@@ -26,7 +26,7 @@
 
   if(!input || !boxesWrap || !continueBtn) return;
 
-  // ===== EYE TOGGLE — lihat / sembunyikan password =====
+  // ===== EYE TOGGLE =====
   if(eyeToggle){
     eyeToggle.addEventListener('click', function(e){
       e.preventDefault();
@@ -35,7 +35,6 @@
       eyeToggle.classList.toggle('visible', passwordVisible);
       if(eyeOpen) eyeOpen.style.display = passwordVisible ? 'none' : '';
       if(eyeClosed) eyeClosed.style.display = passwordVisible ? '' : 'none';
-      // update tampilan box: kalau visible tampil char, kalau engga tampil bullet
       updateBoxes(input.value);
     });
   }
@@ -61,29 +60,23 @@
     input.focus();
   });
 
-  // ===== INPUT HANDLER =====
+  // ===== INPUT HANDLER v6.4 — NO REWRITE, NO setSelectionRange =====
   input.addEventListener('input', function(){
-    // sanitize: lowercase, hapus whitespace & karakter aneh
     var raw = input.value || '';
-    var cleaned = raw.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 8);
-    if(cleaned !== raw){
-      var pos = input.selectionStart;
-      input.value = cleaned;
-      try{ input.setSelectionRange(pos, pos); }catch(e){}
-    }
-    updateBoxes(cleaned);
+    updateBoxes(raw);
     statusText.classList.remove('ok','err','success');
-    statusText.textContent = cleaned.length === 8 ? 'PRESS ENTER TO VERIFY' : 'WAITING FOR PASSWORD';
+    statusText.textContent = raw.length === 8 ? 'PRESS ENTER TO VERIFY' : 'WAITING FOR PASSWORD';
   });
 
   // ===== ENTER KEY =====
   input.addEventListener('keydown', function(event){
-    if(event.key === 'Enter') verifyPassword();
+    if(event.key === 'Enter'){ event.preventDefault(); verifyPassword(); }
   });
 
   // ===== CONTINUE BUTTON =====
   continueBtn.addEventListener('click', function(){
     if(verified){
+      if(verifyOverlay) verifyOverlay.classList.remove('on');
       gate.classList.add('gate-hidden');
       setTimeout(function(){ gate.style.display = 'none'; }, 700);
       return;
@@ -97,16 +90,14 @@
     var cleaned = raw.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 8);
     var expected = PASSWORD.toLowerCase();
 
-    // debug
     try{
       console.log('[GATE] raw:', JSON.stringify(raw), 'len', raw.length);
       console.log('[GATE] cleaned:', JSON.stringify(cleaned), 'len', cleaned.length);
-      console.log('[GATE] expected:', JSON.stringify(expected), 'len', expected.length);
+      console.log('[GATE] expected:', JSON.stringify(expected));
       console.log('[GATE] match:', cleaned === expected);
     }catch(e){}
 
     if(cleaned !== expected){
-      // error shake
       card.classList.remove('shake');
       void card.offsetWidth;
       card.classList.add('shake');
@@ -136,31 +127,31 @@
     statusText.classList.add('ok');
     Array.prototype.forEach.call(boxes, function(box){ box.classList.remove('active','filled'); });
 
-    // tampilkan overlay orbit
     if(verifyOverlay) verifyOverlay.classList.add('on');
     if(orbitStatus){ orbitStatus.textContent = 'VERIFYING ACCESS...'; orbitStatus.classList.remove('done'); }
 
     setTimeout(function(){
-      // done state
-      if(orbitStatus){ orbitStatus.textContent = '✓ ACCESS VERIFIED'; orbitStatus.classList.add('done'); }
+      if(orbitStatus){ orbitStatus.textContent = 'ACCESS VERIFIED'; orbitStatus.classList.add('done'); }
       Array.prototype.forEach.call(boxes, function(box){
         box.textContent = '✓';
         box.classList.add('success');
       });
-      if(orbitStatus) orbitStatus.textContent = 'ACCESS VERIFIED';
       if(card) card.classList.add('success');
       statusText.textContent = 'ACCESS VERIFIED';
       statusText.classList.remove('ok');
       statusText.classList.add('success');
       continueBtn.textContent = 'CONTINUE';
       continueBtn.classList.add('ready');
+
+      // PENTING: sembunyiin overlay setelah 1.2s biar tombol CONTINUE bisa diklik
+      setTimeout(function(){
+        if(verifyOverlay) verifyOverlay.classList.remove('on');
+      }, 1200);
     }, 1800);
   }
 
-  // autofocus kalau di desktop
   setTimeout(function(){ try{ input.focus(); }catch(e){} }, 300);
 
-  // klik gate area luar card → fokus input juga
   gate.addEventListener('click', function(e){
     if(e.target === gate) input.focus();
   });
@@ -342,7 +333,7 @@ function showAchToast(name,desc){ if(!notifOn)return; var wrap=$('ach-toast-wrap
 function unlockAch(id){ try{ if(ACH_UNLOCKED[id])return; var a=ACH_LIST.find(function(x){ return x.id===id; }); if(!a)return; ACH_UNLOCKED[id]=Date.now(); S.set('ach_unlocked',ACH_UNLOCKED); showAchToast(a.name,a.desc); sndSuccess(); renderAch(); }catch(e){} }
 window.unlockAch=unlockAch;
 
-// ===== WELCOME — setiap kali =====
+// ===== WELCOME =====
 (function(){
   var popupOn = S.get('popup_on', true);
   var modal = $('welcome-modal');
@@ -611,6 +602,7 @@ if($('dl-run-all')) $('dl-run-all').onclick=function(){ sndClick(); if(typeof wi
 if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){ alert('Preview error: '+e.message); } };
 if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window.zyClearDownloader==='function') try{ window.zyClearDownloader(); }catch(e){ alert('Clear error: '+e.message); } };
 
+ 
 // ===== PROXY SCRAPER =====
 var scrResults=[], scrRunning=false, SCR_CD=15*60*1000;
 function scrCD(){ var last=S.get('scr_last',0); var diff=last+SCR_CD-Date.now(); var btn=$('scr-start'); if(!btn)return; if(scrRunning){ btn.disabled=true; btn.textContent='⏳...'; return; } if(diff>0){ var m=Math.floor(diff/60000),s=Math.floor((diff%60000)/1000); btn.disabled=true; btn.textContent='⏳ '+m+'m '+s+'s'; }else{ btn.disabled=false; btn.textContent='▶ START'; } }
