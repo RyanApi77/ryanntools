@@ -1,4 +1,4 @@
-// zyvor.js v6.5 — API HUB 156 endpoint + Bypass + Downloader + Smart TikTok
+// zyvor.js v6.5.1 — Engine + API HUB + Search + Catbox
 (function(){
 'use strict';
 
@@ -47,6 +47,306 @@ async function callAPI(path, params, method){
   return json;
 }
 
+function $id(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function classify(url){ var u = url.toLowerCase(); if(/\.(mp4|mov|webm|mkv)(\?|$)/.test(u)) return 'video'; if(/\.(mp3|m4a|flac|wav|aac|opus)(\?|$)/.test(u)) return 'audio'; if(/\.(jpg|jpeg|png|webp|gif|bmp)(\?|$)/.test(u)) return 'image'; return 'other'; }
+function collectMedia(obj, out, baseKey){
+  out = out || [];
+  if(!obj) return out;
+  if(typeof obj === 'string'){ if(/^https?:\/\/.+/.test(obj)) out.push({ url: obj, key: baseKey || '' }); return out; }
+  if(Array.isArray(obj)){ obj.forEach(function(v, i){ collectMedia(v, out, (baseKey||'')+'['+i+']'); }); return out; }
+  if(typeof obj === 'object'){ Object.keys(obj).forEach(function(k){ var v = obj[k]; if(typeof v === 'string' && /^https?:\/\//.test(v)){ if(/url|link|download|video|audio|music|hd|sd|wm|play|src|cover|thumb|image|photo/i.test(k)){ out.push({ url: v, key: k }); } } collectMedia(v, out, (baseKey||'')+'.'+k); }); }
+  return out;
+}
+
+async function uploadToCatbox(file){
+  if(!file) return { ok:false, error:'No file' };
+  var sizeMB = file.size / (1024*1024);
+  if(sizeMB > 200) return { ok:false, error:'File > 200MB' };
+  try{
+    var fd = new FormData();
+    fd.append('reqtype', 'fileupload');
+    fd.append('fileToUpload', file);
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, 90000);
+    var r = await fetch('https://catbox.moe/user/api.php', { method:'POST', body:fd, signal:ctrl.signal });
+    clearTimeout(timer);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var txt = (await r.text()).trim();
+    if(/^https?:\/\//.test(txt)) return { ok:true, url:txt };
+    throw new Error('Bad response');
+  }catch(e){ return { ok:false, error: e.message || 'Upload failed' }; }
+}
+
+(function(){
+  if(document.getElementById('zy-toast-style')) return;
+  var s = document.createElement('style');
+  s.id = 'zy-toast-style';
+  s.textContent = '@keyframes zyToastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}';
+  document.head.appendChild(s);
+})();
+
+window.zyToast = function(msg, type){
+  var wrap = document.getElementById('zy-toast-wrap');
+  if(!wrap){
+    wrap = document.createElement('div');
+    wrap.id = 'zy-toast-wrap';
+    wrap.style.cssText = 'position:fixed;right:12px;bottom:180px;z-index:99999;display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none;max-width:280px';
+    document.body.appendChild(wrap);
+  }
+  var el = document.createElement('div');
+  var isErr = type === 'error';
+  el.style.cssText = 'background:linear-gradient(180deg,rgba(10,20,35,.98),rgba(8,12,18,.99));border:1.5px solid ' + (isErr ? '#f87171' : 'var(--ac)') + ';border-radius:10px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:auto;animation:zyToastIn .35s ease-out;backdrop-filter:blur(10px)';
+  el.innerHTML = '<div style="font-family:\'Orbitron\',sans-serif;font-weight:900;font-size:.75rem;color:' + (isErr ? '#f87171' : 'var(--ac)') + ';letter-spacing:1.5px;text-transform:uppercase">' + esc(msg) + '</div>';
+  wrap.appendChild(el);
+  setTimeout(function(){
+    el.style.transition = 'opacity .3s, transform .3s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(120%)';
+    setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 350);
+  }, 4000);
+};
+
+var PARAM_LISTS = {
+  'list-reso':      ['480p','720p','1080p','1440p','2160p (4K)'],
+  'list-fps':       ['24','30','60','120'],
+  'list-quality':   ['low','medium','high','ultra'],
+  'list-enhance':   ['off','on','auto'],
+  'list-denoise':   ['off','low','medium','high'],
+  'list-stabilize': ['off','on'],
+  'list-format':    ['mp4','mov','webm','mkv'],
+  'list-formatimg': ['png','jpg','jpeg','webp']
+};
+
+function paramType(name, category){
+  var n = (name || '').toLowerCase();
+  var c = (category || '').toUpperCase();
+  if(n === 'video' || (n === 'url' && c === 'UPSCALE')) return 'video';
+  if(['image','avatar','pp','ppurl','photo','fotourl','pas_photo','profilephoto','mainphoto','background'].indexOf(n) !== -1) return 'image';
+  if(n === 'url' && (c === 'IMG HD' || c === 'MAKER' || c === 'IMG AI')) return 'image';
+  if(n === 'resolution' || n === 'reso') return 'list-reso';
+  if(n === 'fps') return 'list-fps';
+  if(n === 'quality') return 'list-quality';
+  if(n === 'enhance') return 'list-enhance';
+  if(n === 'denoise') return 'list-denoise';
+  if(n === 'stabilize') return 'list-stabilize';
+  if(n === 'format') return c === 'MAKER' ? 'list-formatimg' : 'list-format';
+  if(['duration','saldo','pengikut','like','comment','postingan','koin','terpakai','rollno','width','height','nik','phone','contact'].indexOf(n) !== -1) return 'number';
+  return 'text';
+}
+
+window.zyRenderDynamicInputs = function(container, params, idPrefix, category){
+  if(!container) return;
+  container.innerHTML = '';
+  window.__apihubCategory = category || '';
+  if(!params || !params.length){
+    container.innerHTML = '<div class="r" style="font-size:.6rem">Endpoint ini tidak butuh parameter</div>';
+    return;
+  }
+  params.forEach(function(p){
+    var type = paramType(p, category);
+    var wrap = document.createElement('div');
+    wrap.style.marginBottom = '4px';
+    var blockId = idPrefix + '-' + p.replace(/[^a-zA-Z0-9]/g,'_');
+
+    if(type === 'image' || type === 'video'){
+      var isVideo = type === 'video';
+      var html = '<label>' + esc(p.toUpperCase()) + '</label>';
+      html += '<div class="upload-dual">';
+      html += '<button type="button" class="upload-btn" id="' + blockId + '-btn">📁 ' + (isVideo?'UPLOAD VIDEO':'UPLOAD GAMBAR') + '</button>';
+      html += '<input type="file" id="' + blockId + '-file" style="display:none" accept="' + (isVideo?'video/*':'image/*') + '">';
+      html += '<input type="text" id="' + blockId + '-url" placeholder="atau paste URL ' + (isVideo?'video':'gambar') + '...">';
+      html += '<div id="' + blockId + '-info" class="upload-info" style="display:none;font-size:.55rem;margin-top:4px"></div>';
+      html += '</div>';
+      wrap.innerHTML = html;
+      container.appendChild(wrap);
+
+      (function(bid){
+        var btn = document.getElementById(bid+'-btn');
+        var file = document.getElementById(bid+'-file');
+        var urlIn = document.getElementById(bid+'-url');
+        var info = document.getElementById(bid+'-info');
+        if(btn && file){
+          btn.addEventListener('click', function(){ file.click(); });
+          file.addEventListener('change', async function(){
+            var f = file.files[0]; if(!f) return;
+            info.style.display = 'block';
+            info.style.color = 'var(--ac2)';
+            info.textContent = '⏳ Upload ' + f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)...';
+            var res = await uploadToCatbox(f);
+            if(res.ok){
+              urlIn.value = res.url;
+              info.style.color = 'var(--ok)';
+              info.textContent = '✓ Upload OK';
+              setTimeout(function(){ info.style.display = 'none'; }, 2500);
+            } else {
+              info.style.color = 'var(--er)';
+              info.textContent = '✗ Gagal: ' + res.error + ' — isi URL manual';
+              window.zyToast('UNABLE!', 'error');
+            }
+          });
+        }
+      })(blockId);
+
+    } else if(type.indexOf('list-') === 0){
+      var list = PARAM_LISTS[type] || [];
+      var html = '<label>' + esc(p.toUpperCase()) + '</label>';
+      html += '<div class="zy-select-wrap" id="' + blockId + '-wrap"></div>';
+      wrap.innerHTML = html;
+      container.appendChild(wrap);
+      if(typeof window.initCustomSelect === 'function'){
+        (function(bid, lst){
+          setTimeout(function(){
+            var items = lst.map(function(x){ return { id:x, name:x }; });
+            window.initCustomSelect(bid+'-wrap', items, lst[0], function(){});
+          }, 20);
+        })(blockId, list);
+      }
+    } else if(type === 'number'){
+      wrap.innerHTML = '<label>' + esc(p.toUpperCase()) + '</label><input type="number" id="' + blockId + '" placeholder="angka...">';
+      container.appendChild(wrap);
+    } else {
+      wrap.innerHTML = '<label>' + esc(p.toUpperCase()) + '</label><input type="text" id="' + blockId + '" placeholder="isi ' + esc(p) + '...">';
+      container.appendChild(wrap);
+    }
+  });
+};
+
+window.zyCollectParams = function(params, idPrefix, category){
+  var out = {};
+  if(!params) return out;
+  params.forEach(function(p){
+    var type = paramType(p, category);
+    var blockId = idPrefix + '-' + p.replace(/[^a-zA-Z0-9]/g,'_');
+    if(type === 'image' || type === 'video'){
+      var urlIn = document.getElementById(blockId+'-url');
+      if(urlIn && urlIn.value.trim()) out[p] = urlIn.value.trim();
+    } else if(type.indexOf('list-') === 0){
+      var wrap = document.getElementById(blockId+'-wrap');
+      if(wrap){
+        var lbl = wrap.querySelector('.zy-select-btn .zy-btn-label');
+        if(lbl) out[p] = lbl.textContent.trim();
+      }
+    } else {
+      var el = document.getElementById(blockId);
+      if(el && el.value.trim()) out[p] = el.value.trim();
+    }
+  });
+  return out;
+};
+
+
+// ============================================================
+// PART 2 — Search + Bypass + Downloader + API HUB UPSCALE + IMG AI
+// ============================================================
+
+// ===== SEARCH MULTI-API =====
+var SEARCH_APIS = {
+  'WEB': [
+    { id:'wikipedia', name:'Wikipedia', path:'/api/search/wikipedia', params:['query'] },
+    { id:'nasa', name:'NASA', path:'/api/search/nasa', params:['query'] },
+    { id:'dapodik', name:'Dapodik Sekolah', path:'/api/search/dapodik', params:['query'] },
+    { id:'nowsecure', name:'NowSecure', path:'/api/search/nowsecure', params:['query'] },
+    { id:'sinopsis', name:'Sinopsis Film', path:'/api/search/sinopsis', params:['query'] },
+    { id:'cookpad', name:'Cookpad', path:'/api/search/cookpad', params:['query'] },
+    { id:'prodi', name:'PDDIKTI', path:'/api/search/prodi', params:['query'] },
+    { id:'goal', name:'Goal.com', path:'/api/search/goal', params:['query'] },
+    { id:'kodepos', name:'KodePos', path:'/api/search/kodepos', params:['kodepos'] }
+  ],
+  'VIDEO': [
+    { id:'youtube', name:'YouTube', path:'/api/search/youtube-search', params:['query'] },
+    { id:'tiktok', name:'TikTok', path:'/api/search/tiktok-search', params:['query'] }
+  ],
+  'MUSIC': [
+    { id:'spotify', name:'Spotify', path:'/api/search/spotify', params:['query'] }
+  ]
+};
+
+function extractResultItems(data){
+  var items = [];
+  if(!data) return items;
+  var arr = data.result || data.results || data.data || data.items || (Array.isArray(data) ? data : null);
+  if(!arr || !Array.isArray(arr)) return items;
+  arr.forEach(function(item){
+    if(typeof item !== 'object' || !item) return;
+    var url = item.url || item.link || item.href || item.share_url || item.web_url || item.permalink || item.spotify_url || item.external_urls && item.external_urls.spotify || null;
+    var title = item.title || item.name || item.judul || item.headline || item.snippet || item.description || '(no title)';
+    var desc = item.snippet || item.description || item.desc || item.excerpt || item.subtitle || '';
+    var thumb = item.thumbnail || item.thumb || item.image || item.cover || item.cover_url || item.artwork || null;
+    var author = item.author || item.channel || item.username || item.uploader || item.artist || null;
+    if(url) items.push({ url:url, title:title, desc:desc, thumb:thumb, author:author });
+  });
+  return items;
+}
+
+window.zyRunSearch = async function(){
+  var q = document.getElementById('search-input');
+  var cat = window.__searchCategory || 'ALL';
+  if(!q || !q.value.trim()){ alert('Ketik dulu apa yang mau dicari'); return; }
+  var query = q.value.trim();
+  var log = document.getElementById('search-log');
+  var res = document.getElementById('search-result');
+  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+  if(res){ res.innerHTML='<div class="zy-head">🔍 Mencari "'+esc(query)+'"...</div>'; res.classList.remove('hd'); }
+
+  var apis = [];
+  if(cat === 'ALL') apis = [].concat(SEARCH_APIS.WEB, SEARCH_APIS.VIDEO, SEARCH_APIS.MUSIC);
+  else apis = SEARCH_APIS[cat] || [];
+  if(!apis.length){ res.innerHTML = '<div class="zy-head er">Kategori kosong</div>'; return; }
+
+  if(log){ var l0 = document.createElement('div'); l0.className='in'; l0.textContent='Menembak '+apis.length+' API...'; log.appendChild(l0); }
+
+  var promises = apis.map(async function(api){
+    var p = {};
+    api.params.forEach(function(k){ p[k] = query; });
+    try{
+      var r = await callAPI(api.path, p, 'GET');
+      var items = extractResultItems(r);
+      if(log){ var l = document.createElement('div'); l.className='ok'; l.textContent='✓ '+api.name+' — '+items.length+' hasil'; log.appendChild(l); log.scrollTop=log.scrollHeight; }
+      return { api:api, items:items, raw:r };
+    }catch(e){
+      if(log){ var le = document.createElement('div'); le.className='er'; le.textContent='✗ '+api.name+': '+e.message; log.appendChild(le); log.scrollTop=log.scrollHeight; }
+      return { api:api, items:[], raw:null, error:e.message };
+    }
+  });
+
+  var results = await Promise.all(promises);
+  var html = '';
+  var total = 0;
+  results.forEach(function(r){
+    if(!r.items || !r.items.length) return;
+    total += r.items.length;
+    html += '<div class="search-section">';
+    html += '<div class="search-section-title">'+esc(r.api.name)+' — '+r.items.length+' hasil</div>';
+    r.items.slice(0, 15).forEach(function(item){
+      var thumbHtml = item.thumb ? '<img src="'+esc(item.thumb)+'" class="search-thumb" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="search-thumb-placeholder">📄</div>';
+      html += '<div class="search-item" onclick="zyOpenLink(\''+esc(item.url).replace(/'/g,"\\'")+'\')">';
+      html += thumbHtml;
+      html += '<div class="search-item-body">';
+      html += '<div class="search-item-title">'+esc(item.title)+'</div>';
+      if(item.author) html += '<div class="search-item-author">'+esc(item.author)+'</div>';
+      if(item.desc) html += '<div class="search-item-desc">'+esc(String(item.desc).substring(0,140))+'</div>';
+      html += '</div>';
+      html += '<div class="search-item-arrow">→</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  if(total === 0){
+    html = '<div class="zy-head er">Tidak ada hasil untuk "'+esc(query)+'"</div>';
+    html += '<details class="zy-raw"><summary>RAW RESPONSE</summary><pre>'+esc(JSON.stringify(results.map(function(r){ return { api:r.api.name, raw:r.raw, error:r.error }; }),null,2))+'</pre></details>';
+  }
+
+  res.innerHTML = html;
+  res.classList.remove('hd');
+};
+
+window.zyOpenLink = function(url){
+  window.open(url, '_blank', 'noopener,noreferrer');
+};
+
+// ===== BYPASS =====
 var BYPASS_LIST = [
   { id:'bypasslink', name:'Bypass Link v1', path:'/api/bypass/bypasslink', method:'POST', params:['url','androidId'], desc:'sf.gl, sub2unlock, tinyurl, linkvertise' },
   { id:'bypasslinkv2', name:'Bypass Link v2', path:'/api/bypass/bypasslinkv2', method:'POST', params:['url'], desc:'40+ layanan shortlink' },
@@ -107,13 +407,14 @@ var DOWNLOADER_LIST = [
   { id:'mcpelife', name:'MCPelife', path:'/api/downloader/mcpelife', method:'GET', params:['url'], cat:'Lain-lain' }
 ];
 
+// ===== API HUB DATA — UPSCALE + IMG AI =====
 var API_HUB_LIST = [
   // UPSCALE VIDEO (5)
   {id:'up_ai', name:'Video Upscale AI', path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
-  {id:'up_v1', name:'Video Upscale v1', path:'/api/hdvidio/upscale', method:'GET', params:['url'], cat:'UPSCALE'},
+  {id:'up_v1', name:'Video Upscale v1', path:'/api/hdvidio/upscale', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
   {id:'up_tohd', name:'HD Video Processor', path:'/api/hdvidio/tohd', method:'GET', params:['video','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
-  {id:'up_wink', name:'Wink HD Video Enhancer', path:'/api/hdvidio/wink-hd-video', method:'GET', params:['url'], cat:'UPSCALE'},
-  {id:'up_v2', name:'Video HD Enhancer', path:'/api/hdvidio/enhance', method:'GET', params:['url'], cat:'UPSCALE'},
+  {id:'up_wink', name:'Wink HD Video Enhancer', path:'/api/hdvidio/wink-hd-video', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
+  {id:'up_v2', name:'Video HD Enhancer', path:'/api/hdvidio/enhance', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
 
   // IMAGE AI (12)
   {id:'ai_seek', name:'AI Seek Image', path:'/api/imageai/aiseek', method:'GET', params:['prompt'], cat:'IMG AI'},
@@ -127,9 +428,14 @@ var API_HUB_LIST = [
   {id:'ai_strom', name:'Strom-AI Text to Image', path:'/api/imageai/strom-img', method:'GET', params:['prompt'], cat:'IMG AI'},
   {id:'ai_t2i', name:'Text to Image (FreeGen)', path:'/api/imageai/text2image', method:'GET', params:['teks','ratio'], cat:'IMG AI'},
   {id:'ai_t2iv2', name:'Text to Image v2 (FLUX)', path:'/api/imageai/text2imgv2', method:'GET', params:['teks'], cat:'IMG AI'},
-  {id:'ai_t2iv3', name:'Text to Image v3 (Baidu)', path:'/api/imageai/text2imgv3', method:'GET', params:['teks'], cat:'IMG AI'},
+  {id:'ai_t2iv3', name:'Text to Image v3 (Baidu)', path:'/api/imageai/text2imgv3', method:'GET', params:['teks'], cat:'IMG AI'}
+];
 
-  // IMAGE HD (33)
+
+// ===== API HUB DATA — IMG HD + KALENDER + MAKER + SEARCH =====
+// (sambungan array API_HUB_LIST dari part 2)
+API_HUB_LIST.push(
+  // IMG HD (33)
   {id:'hd_en1', name:'AI Enhance HD', path:'/api/imagehd/ai-enhance', method:'GET', params:['url'], cat:'IMG HD'},
   {id:'hd_en2', name:'AI Enhance HD v2', path:'/api/imagehd/ai-enhancev2', method:'GET', params:['url','size'], cat:'IMG HD'},
   {id:'hd_en3', name:'AI Enhance HD v3', path:'/api/imagehd/ai-enhancev3', method:'GET', params:['url'], cat:'IMG HD'},
@@ -216,9 +522,9 @@ var API_HUB_LIST = [
   {id:'mk_wafat', name:'Fake Wafat', path:'/api/maker/wafat', method:'GET', params:['fotourl','nama','lahir','wafat'], cat:'MAKER'},
   {id:'mk_students', name:'Student ID Card', path:'/api/maker/students', method:'GET', params:['name','school','studentId','class','rollNo','dob','blood','guardian','contact','address','valid','photo'], cat:'MAKER'},
 
-  // SEARCH (56)
+  // SEARCH (56 — untuk API HUB tab)
   {id:'sr_4k', name:'Search Wallpaper 4K', path:'/api/search/4kwallpapers', method:'GET', params:['action','query','slug','page'], cat:'SEARCH'},
-  {id:'sr_anime', name:'Anime Search (LiveChart)', path:'/api/search/anime', method:'GET', params:['q'], cat:'SEARCH'},
+  {id:'sr_anime', name:'Anime Search', path:'/api/search/anime', method:'GET', params:['q'], cat:'SEARCH'},
   {id:'sr_bacakomik', name:'BacaKomik', path:'/api/search/bacakomik', method:'GET', params:['action','query','url','page'], cat:'SEARCH'},
   {id:'sr_bansos', name:'Cek Bansos', path:'/api/search/cekbansos', method:'GET', params:['nik'], cat:'SEARCH'},
   {id:'sr_cinesubz', name:'CineSubz', path:'/api/search/cinesubz', method:'GET', params:['q','url','action'], cat:'SEARCH'},
@@ -230,283 +536,92 @@ var API_HUB_LIST = [
   {id:'sr_genius', name:'Genius Lyrics', path:'/api/search/genius', method:'GET', params:['query','id'], cat:'SEARCH'},
   {id:'sr_goal', name:'Goal.com', path:'/api/search/goal', method:'GET', params:['action','query','url','lang'], cat:'SEARCH'},
   {id:'sr_ipa', name:'IPA Pelajaran', path:'/api/search/ipa-pelajaran', method:'GET', params:['query','page','slug'], cat:'SEARCH'},
-  {id:'sr_jadwal1', name:'Jadwal Sepakbola StarLabs', path:'/api/search/jadwal-sepakbola', method:'GET', params:['date'], cat:'SEARCH'},
-  {id:'sr_jadwal2', name:'Jadwal Sepakbola', path:'/api/search/jadwalbola', method:'GET', params:[], cat:'SEARCH'},
+  {id:'sr_jadwal1', name:'Jadwal Sepakbola', path:'/api/search/jadwal-sepakbola', method:'GET', params:['date'], cat:'SEARCH'},
+  {id:'sr_jadwal2', name:'Jadwal Bola', path:'/api/search/jadwalbola', method:'GET', params:[], cat:'SEARCH'},
   {id:'sr_jadwaltv', name:'Jadwal TV', path:'/api/search/jadwaltv', method:'GET', params:['channel'], cat:'SEARCH'},
   {id:'sr_kodepos', name:'Search KodePos', path:'/api/search/kodepos', method:'GET', params:['kodepos'], cat:'SEARCH'},
   {id:'sr_lazada', name:'Lazada Search', path:'/api/search/lazada', method:'GET', params:['keyword','page'], cat:'SEARCH'},
   {id:'sr_livescore', name:'Livescore', path:'/api/search/livescore', method:'GET', params:['edisi','raw'], cat:'SEARCH'},
-  {id:'sr_manhwaindo', name:'Manhwaindo Detail', path:'/api/search/manhwaindo', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_manhwaland', name:'Manhwaland Search', path:'/api/search/manhwaland', method:'GET', params:['action'], cat:'SEARCH'},
-  {id:'sr_mcpedl', name:'MCPEDL Search & DL', path:'/api/search/mcpedl', method:'GET', params:['query','url','slug','source','action','max','page'], cat:'SEARCH'},
+  {id:'sr_manhwaindo', name:'Manhwaindo', path:'/api/search/manhwaindo', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_manhwaland', name:'Manhwaland', path:'/api/search/manhwaland', method:'GET', params:['action'], cat:'SEARCH'},
+  {id:'sr_mcpedl', name:'MCPEDL', path:'/api/search/mcpedl', method:'GET', params:['query','url','slug','source','action','max','page'], cat:'SEARCH'},
   {id:'sr_moviedetail', name:'Movie Detail TMDB', path:'/api/search/moviedetail', method:'GET', params:['url'], cat:'SEARCH'},
   {id:'sr_murotal', name:'Murotal Quran', path:'/api/search/murotal-quran', method:'GET', params:['murotal','surat'], cat:'SEARCH'},
   {id:'sr_musix', name:'Musixmatch Lyrics', path:'/api/search/musixmatch', method:'GET', params:['url'], cat:'SEARCH'},
   {id:'sr_nasa', name:'NASA Search', path:'/api/search/nasa', method:'GET', params:['type','limit','query','detail'], cat:'SEARCH'},
-  {id:'sr_nowsecure', name:'NowSecure Search', path:'/api/search/nowsecure', method:'GET', params:['query','platform'], cat:'SEARCH'},
+  {id:'sr_nowsecure', name:'NowSecure', path:'/api/search/nowsecure', method:'GET', params:['query','platform'], cat:'SEARCH'},
   {id:'sr_otakudesu', name:'OtakuDesu', path:'/api/search/otakudesu', method:'GET', params:['action','query','page'], cat:'SEARCH'},
   {id:'sr_pinterest', name:'Search Pinterest', path:'/api/search/pinterest', method:'GET', params:['query','limit'], cat:'SEARCH'},
-  {id:'sr_pinvid', name:'Pinterest Video Search', path:'/api/search/pinvid-search', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_playstore', name:'Play Store Search', path:'/api/search/playstore', method:'GET', params:['query','limit'], cat:'SEARCH'},
-  {id:'sr_prodi', name:'PDDIKTI Search', path:'/api/search/prodi', method:'GET', params:['query','mode','mahasiswaId'], cat:'SEARCH'},
+  {id:'sr_pinvid', name:'Pinterest Video', path:'/api/search/pinvid-search', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_playstore', name:'Play Store', path:'/api/search/playstore', method:'GET', params:['query','limit'], cat:'SEARCH'},
+  {id:'sr_prodi', name:'PDDIKTI', path:'/api/search/prodi', method:'GET', params:['query','mode','mahasiswaId'], cat:'SEARCH'},
   {id:'sr_song', name:'Search Song', path:'/api/search/search-song', method:'GET', params:['query'], cat:'SEARCH'},
   {id:'sr_sinopsis', name:'Sinopsis Film', path:'/api/search/sinopsis', method:'GET', params:['action','query'], cat:'SEARCH'},
-  {id:'sr_soundcloud', name:'SoundCloud Search', path:'/api/search/soundcloud', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_spotify', name:'Spotify Search', path:'/api/search/spotify', method:'GET', params:['query','limit'], cat:'SEARCH'},
-  {id:'sr_spotifyv2', name:'Spotify Search v2', path:'/api/search/spotifyv2', method:'GET', params:['action','query','url','limit'], cat:'SEARCH'},
-  {id:'sr_terabox', name:'TeraBox Resolver', path:'/api/search/terabox', method:'GET', params:['link'], cat:'SEARCH'},
-  {id:'sr_tiktok', name:'TikTok Search v2', path:'/api/search/tiktok-search', method:'GET', params:['query','page','region','type','count'], cat:'SEARCH'},
-  {id:'sr_tokusatsu', name:'Tokusatsu Search', path:'/api/search/tokusatsu', method:'GET', params:['action','query','url','page'], cat:'SEARCH'},
-  {id:'sr_voratoon', name:'Voratoon Updates', path:'/api/search/voratoon', method:'GET', params:['page'], cat:'SEARCH'},
-  {id:'sr_webtoon', name:'Webtoon Search', path:'/api/search/webtoon', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_soundcloud', name:'SoundCloud', path:'/api/search/soundcloud', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_spotify', name:'Spotify', path:'/api/search/spotify', method:'GET', params:['query','limit'], cat:'SEARCH'},
+  {id:'sr_spotifyv2', name:'Spotify v2', path:'/api/search/spotifyv2', method:'GET', params:['action','query','url','limit'], cat:'SEARCH'},
+  {id:'sr_terabox', name:'TeraBox', path:'/api/search/terabox', method:'GET', params:['link'], cat:'SEARCH'},
+  {id:'sr_tiktok', name:'TikTok Search', path:'/api/search/tiktok-search', method:'GET', params:['query','page','region','type','count'], cat:'SEARCH'},
+  {id:'sr_tokusatsu', name:'Tokusatsu', path:'/api/search/tokusatsu', method:'GET', params:['action','query','url','page'], cat:'SEARCH'},
+  {id:'sr_voratoon', name:'Voratoon', path:'/api/search/voratoon', method:'GET', params:['page'], cat:'SEARCH'},
+  {id:'sr_webtoon', name:'Webtoon', path:'/api/search/webtoon', method:'GET', params:['query'], cat:'SEARCH'},
   {id:'sr_wiki', name:'Wikipedia', path:'/api/search/wikipedia', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_youtube', name:'YouTube Search', path:'/api/search/youtube-search', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_apkcombo', name:'ApkCombo Search', path:'/api/search/apkcombo', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_bilibili', name:'Bilibili Search', path:'/api/search/bilibili', method:'GET', params:['query','type','action','url','page','limit','lang'], cat:'SEARCH'}
-];
+  {id:'sr_youtube', name:'YouTube', path:'/api/search/youtube-search', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_apkcombo', name:'ApkCombo', path:'/api/search/apkcombo', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_bilibili', name:'Bilibili', path:'/api/search/bilibili', method:'GET', params:['query','type','action','url','page','limit','lang'], cat:'SEARCH'}
+);
 
-async function fetchTikWM(url){
-  var apiURL = TIKWM + '?url=' + encodeURIComponent(url) + '&hd=1';
-  var res = await proxyFetch(apiURL);
-  var json = JSON.parse(res.text);
-  if(json.code !== 0) throw new Error(json.msg || 'tikwm error');
-  var d = json.data;
-  return { status:true, __type:detectTikTokType(d), title:d.title, author:d.author, cover:d.cover, duration:d.duration, stats:{ play:d.play_count, like:d.digg_count, comment:d.comment_count, share:d.share_count }, video_nowm:d.play, video_nowm_hd:d.hdplay, video_wm:d.wmplay, music:d.music, raw:d };
-}
+// ===== API HUB RENDER =====
+var apiHubState = {};
 
-function detectTikTokType(data){
-  if(!data || typeof data !== 'object') return 'unknown';
-  if(data.images && Array.isArray(data.images) && data.images.length > 0) return 'slideshow';
-  if(data.image_post_info && data.image_post_info.images) return 'slideshow';
-  if(data.slideshow && Array.isArray(data.slideshow)) return 'slideshow';
-  if(data.image_data && data.image_data.images) return 'slideshow';
-  if(data.play || data.hdplay || data.wmplay || data.video || data.video_hd || data.video_wm) return 'video';
-  if(data.data) return detectTikTokType(data.data);
-  if(data.raw) return detectTikTokType(data.raw);
-  return 'unknown';
-}
-
-function urlLooksLikeSlideshow(url){
-  if(!url) return false;
-  var u = url.toLowerCase();
-  if(/\/photo\//.test(u)) return true;
-  if(/slideshow/.test(u)) return true;
-  return false;
-}
-
-function extractTikTokVariants(data){
-  var out = { noWM:null, noWMHD:null, wm:null, music:null, title:null, author:null, cover:null, stats:null, images:null };
-  if(!data) return out;
-  var d = data.data || data.raw || data;
-  out.title = d.title || data.title || null;
-  out.author = d.author || data.author || null;
-  out.cover = d.cover || d.origin_cover || data.cover || null;
-  out.stats = data.stats || (d.play_count !== undefined ? { play:d.play_count, like:d.digg_count, comment:d.comment_count, share:d.share_count } : null);
-  var imgArr = null;
-  if(d.images && Array.isArray(d.images)) imgArr = d.images;
-  else if(d.image_post_info && d.image_post_info.images) imgArr = d.image_post_info.images;
-  else if(data.image_post_info && data.image_post_info.images) imgArr = data.image_post_info.images;
-  if(imgArr){
-    out.images = imgArr.map(function(x){
-      if(typeof x === 'string') return x;
-      if(x.url_list && x.url_list[0]) return x.url_list[0];
-      if(x.image_url && x.image_url.url_list) return x.image_url.url_list[0];
-      if(x.display_image && x.display_image.url_list) return x.display_image.url_list[0];
-      return null;
-    }).filter(Boolean);
-    return out;
-  }
-  out.noWM = d.play || d.video || d.video_sd || d.play_addr || null;
-  out.noWMHD = d.hdplay || d.video_hd || d.hd || d.play_addr_hd || null;
-  out.wm = d.wmplay || d.video_wm || d.wm || null;
-  out.music = d.music || d.music_info && d.music_info.play || d.music_url || null;
-  if(!out.noWM && d.video_data){
-    out.noWM = d.video_data.play_addr && d.video_data.play_addr.url_list && d.video_data.play_addr.url_list[0] || null;
-    out.noWMHD = d.video_data.hd && d.video_data.hd.url_list && d.video_data.hd.url_list[0] || null;
-    out.wm = d.video_data.wm && d.video_data.wm.url_list && d.video_data.wm.url_list[0] || null;
-  }
-  return out;
-}
-
-async function fetchWithFallback(list, params, logEl){
-  for(var i=0;i<list.length;i++){
-    var api = list[i];
-    var callParams = {};
-    api.params.forEach(function(p){ if(params[p] !== undefined && params[p] !== '') callParams[p] = params[p]; });
-    if(logEl){ var l1 = document.createElement('div'); l1.className = 'ok'; l1.textContent = '['+(i+1)+'/'+list.length+'] '+api.name; logEl.appendChild(l1); logEl.scrollTop = logEl.scrollHeight; }
-    try{
-      var res = api.path === 'TIKWM' ? await fetchTikWM(callParams.url) : await callAPI(api.path, callParams, api.method);
-      var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url) || (!res.error && !res.message));
-      if(success){
-        if(logEl){ var l2 = document.createElement('div'); l2.className = 'ok'; l2.textContent = '  ✓ '+api.name; logEl.appendChild(l2); logEl.scrollTop = logEl.scrollHeight; }
-        return { api: api, result: res };
-      }
-      if(logEl){ var l3 = document.createElement('div'); l3.className = 'er'; l3.textContent = '  ✗ '+(res.error || res.message || 'unknown'); logEl.appendChild(l3); logEl.scrollTop = logEl.scrollHeight; }
-    }catch(e){
-      if(logEl){ var l4 = document.createElement('div'); l4.className = 'er'; l4.textContent = '  ✗ '+e.message; logEl.appendChild(l4); logEl.scrollTop = logEl.scrollHeight; }
-    }
-  }
-  return null;
-}
-
-async function fetchTikTokSmart(url, logEl){
-  var isSlideUrl = urlLooksLikeSlideshow(url);
-  if(logEl){ var l = document.createElement('div'); l.className = 'in'; l.textContent = '🔍 URL heuristic: '+(isSlideUrl?'SLIDESHOW':'VIDEO'); logEl.appendChild(l); logEl.scrollTop = logEl.scrollHeight; }
-  var order = isSlideUrl
-    ? ['tiktokv5','tiktokv4','tiktokv3','tikwm','tiktokv2','tiktokio','tiktok']
-    : ['tikwm','tiktokv2','tiktokv4','tiktokv3','tiktokv5','tiktokio','tiktok'];
-  var results = [];
-  for(var i=0;i<order.length;i++){
-    var apiId = order[i];
-    var api = DOWNLOADER_LIST.find(function(x){ return x.id===apiId; });
-    if(!api) continue;
-    if(logEl){ var l2 = document.createElement('div'); l2.className = 'ok'; l2.textContent = '['+(i+1)+'/'+order.length+'] '+api.name; logEl.appendChild(l2); logEl.scrollTop = logEl.scrollHeight; }
-    try{
-      var res = api.path === 'TIKWM' ? await fetchTikWM(url) : await callAPI(api.path, {url:url}, api.method);
-      var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url));
-      if(success){
-        var type = detectTikTokType(res);
-        if(logEl){ var l3 = document.createElement('div'); l3.className = 'ok'; l3.textContent = '  ✓ deteksi: '+type.toUpperCase(); logEl.appendChild(l3); logEl.scrollTop = logEl.scrollHeight; }
-        results.push({ api:api, result:res, type:type });
-        if(type === 'slideshow') break;
-        if(type === 'video') break;
-      } else {
-        if(logEl){ var l4 = document.createElement('div'); l4.className = 'er'; l4.textContent = '  ✗ '+(res.error || res.message || 'unknown'); logEl.appendChild(l4); logEl.scrollTop = logEl.scrollHeight; }
-      }
-    }catch(e){
-      if(logEl){ var l5 = document.createElement('div'); l5.className = 'er'; l5.textContent = '  ✗ '+e.message; logEl.appendChild(l5); logEl.scrollTop = logEl.scrollHeight; }
-    }
-  }
-  if(results.length === 0) return null;
-  var primary = results[0];
-  var combined = { api: primary.api, result: primary.result, type: primary.type, allVariants: {} };
-  results.forEach(function(r){
-    var v = extractTikTokVariants(r.result);
-    if(v.noWM && !combined.allVariants.noWM) combined.allVariants.noWM = v.noWM;
-    if(v.noWMHD && !combined.allVariants.noWMHD) combined.allVariants.noWMHD = v.noWMHD;
-    if(v.wm && !combined.allVariants.wm) combined.allVariants.wm = v.wm;
-    if(v.music && !combined.allVariants.music) combined.allVariants.music = v.music;
-    if(v.images && !combined.allVariants.images) combined.allVariants.images = v.images;
-    if(v.title && !combined.allVariants.title) combined.allVariants.title = v.title;
-    if(v.author && !combined.allVariants.author) combined.allVariants.author = v.author;
-    if(v.cover && !combined.allVariants.cover) combined.allVariants.cover = v.cover;
-    if(v.stats && !combined.allVariants.stats) combined.allVariants.stats = v.stats;
-  });
-  return combined;
-}
-
-function $id(id){ return document.getElementById(id); }
-function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function classify(url){ var u = url.toLowerCase(); if(/\.(mp4|mov|webm|mkv)(\?|$)/.test(u)) return 'video'; if(/\.(mp3|m4a|flac|wav|aac|opus)(\?|$)/.test(u)) return 'audio'; if(/\.(jpg|jpeg|png|webp|gif|bmp)(\?|$)/.test(u)) return 'image'; return 'other'; }
-function collectMedia(obj, out, baseKey){
-  out = out || [];
-  if(!obj) return out;
-  if(typeof obj === 'string'){ if(/^https?:\/\/.+/.test(obj)) out.push({ url: obj, key: baseKey || '' }); return out; }
-  if(Array.isArray(obj)){ obj.forEach(function(v, i){ collectMedia(v, out, (baseKey||'')+'['+i+']'); }); return out; }
-  if(typeof obj === 'object'){ Object.keys(obj).forEach(function(k){ var v = obj[k]; if(typeof v === 'string' && /^https?:\/\//.test(v)){ if(/url|link|download|video|audio|music|hd|sd|wm|play|src|cover|thumb|image|photo/i.test(k)){ out.push({ url: v, key: k }); } } collectMedia(v, out, (baseKey||'')+'.'+k); }); }
-  return out;
-}
-
-// ===== API HUB v6.5 =====
-var apiHubCatSel = 'UPSCALE';
-var apiHubCurrentEndpoint = null;
-
-window.zyInitApiHub = function(){
+window.zyInitApiHub = function(tabId, catName){
   if(typeof window.initCustomSelect !== 'function') return;
-  var catList = ['UPSCALE','IMG AI','IMG HD','KALENDER','MAKER','SEARCH'];
-  var catItems = catList.map(function(c){ return {id:c, name:c}; });
-  window.__apiHubCatSel = window.initCustomSelect('apihub-cat', catItems, apiHubCatSel,
-    function(id){ apiHubCatSel = id; window.zyRenderApiHubEndpoints(); }
-  );
-  window.zyRenderApiHubEndpoints();
-};
-
-window.zyRenderApiHubEndpoints = function(){
-  var filtered = API_HUB_LIST.filter(function(x){ return x.cat === apiHubCatSel; });
-  if(!filtered.length){
-    var epWrap = document.getElementById('apihub-endpoint');
-    if(epWrap) epWrap.innerHTML = '<div class="r">Belum ada endpoint untuk kategori ini</div>';
-    return;
-  }
-  if(!apiHubCurrentEndpoint || !filtered.find(function(x){ return x.id === apiHubCurrentEndpoint.id; })){
-    apiHubCurrentEndpoint = filtered[0];
-  }
-  var items = filtered.map(function(x){ return {id:x.id, name:x.name}; });
-  window.__apiHubEndpointSel = window.initCustomSelect('apihub-endpoint', items, apiHubCurrentEndpoint.id,
-    function(id){
-      apiHubCurrentEndpoint = filtered.find(function(x){ return x.id === id; });
-      window.zyRenderApiHubParams();
-    }
-  );
-  window.zyRenderApiHubParams();
-};
-
-window.zyRenderApiHubParams = function(){
-  var wrap = document.getElementById('apihub-params');
-  if(!wrap) return;
-  if(!apiHubCurrentEndpoint){ wrap.innerHTML = ''; return; }
-  if(!apiHubCurrentEndpoint.params.length){
-    wrap.innerHTML = '<div class="r" style="font-size:.6rem">Endpoint ini tidak butuh parameter</div>';
-    return;
-  }
-  wrap.innerHTML = apiHubCurrentEndpoint.params.map(function(p){
-    return '<label>'+p.toUpperCase()+'</label><input id="apihub-p-'+p+'" placeholder="isi '+p+'...">';
-  }).join('');
-};
-
-window.zyRunApiHub = async function(){
-  if(!apiHubCurrentEndpoint){ alert('Pilih endpoint dulu'); return; }
-  var log = document.getElementById('apihub-log');
-  var res = document.getElementById('apihub-result');
-  if(log){ log.innerHTML = ''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML = ''; res.classList.add('hd'); }
-  var params = {};
-  apiHubCurrentEndpoint.params.forEach(function(p){
-    var el = document.getElementById('apihub-p-'+p);
-    if(el && el.value.trim()) params[p] = el.value.trim();
+  var cat = catName || 'UPSCALE';
+  var filtered = API_HUB_LIST.filter(function(x){ return x.cat === cat; });
+  if(!filtered.length) return;
+  if(!apiHubState[tabId]) apiHubState[tabId] = { endpoint: filtered[0] };
+  var items = filtered.map(function(x){ return { id:x.id, name:x.name, desc: 'params: ' + (x.params.length || 0) }; });
+  window.initCustomSelect(tabId+'-endpoint', items, apiHubState[tabId].endpoint.id, function(id){
+    apiHubState[tabId].endpoint = filtered.find(function(x){ return x.id===id; });
+    window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, cat);
   });
-  if(apiHubCurrentEndpoint.params.length && !Object.keys(params).length){ alert('Isi minimal 1 parameter'); return; }
-  if(log){ var l = document.createElement('div'); l.className = 'in'; l.textContent = 'Call ' + apiHubCurrentEndpoint.path + '...'; log.appendChild(l); log.scrollTop = log.scrollHeight; }
+  window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, cat);
+};
+
+window.zyRunApiHub = async function(tabId, catName){
+  var st = apiHubState[tabId];
+  if(!st || !st.endpoint){ alert('Pilih endpoint dulu'); return; }
+  var params = window.zyCollectParams(st.endpoint.params, tabId, catName);
+  var log = document.getElementById(tabId+'-log');
+  var res = document.getElementById(tabId+'-result');
+  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+  if(res){ res.innerHTML=''; res.classList.add('hd'); }
   try{
-    var out = await callAPI(apiHubCurrentEndpoint.path, params, apiHubCurrentEndpoint.method);
-    if(log){ var ok = document.createElement('div'); ok.className = 'ok'; ok.textContent = '✓ Response'; log.appendChild(ok); }
-    window.zyRenderApiHubResult(res, out, apiHubCurrentEndpoint.name);
+    var r = await callAPI(st.endpoint.path, params, st.endpoint.method || 'GET');
+    if(log){ var l = document.createElement('div'); l.className='ok'; l.textContent='✓ '+st.endpoint.name; log.appendChild(l); }
+    window.zyRenderApiResult(res, r, st.endpoint.name, catName);
   }catch(e){
-    if(log){ var err = document.createElement('div'); err.className = 'er'; err.textContent = '✗ ' + e.message; log.appendChild(err); }
+    if(log){ var le = document.createElement('div'); le.className='er'; le.textContent='✗ '+e.message; log.appendChild(le); }
+    if(res){ res.innerHTML='<div class="zy-head er">✗ '+esc(e.message)+'</div>'; res.classList.remove('hd'); }
   }
 };
 
-window.zyRenderApiHubResult = function(container, data, apiName){
-  var html = '<div class="zy-head">✓ Response dari <b>'+esc(apiName)+'</b></div>';
+window.zyRenderApiResult = function(container, data, name, catName){
+  var html = '<div class="zy-head">✓ '+esc(name)+'</div>';
   var mediaItems = collectMedia(data, []);
   var images = mediaItems.filter(function(x){ return classify(x.url)==='image'; });
   var videos = mediaItems.filter(function(x){ return classify(x.url)==='video'; });
-  var others = mediaItems.filter(function(x){ return classify(x.url)==='other'; });
   if(images.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">🖼 IMAGE HASIL (' + images.length + ')</div>';
-    images.slice(0, 20).forEach(function(img, i){
-      html += '<div class="zy-media-item"><div class="zy-media-h">Image '+(i+1)+' <span class="zy-cat">'+esc(img.key)+'</span></div>'+
-        '<img src="'+esc(img.url)+'" class="zy-image" loading="lazy">'+
-        '<div class="zy-media-actions"><a href="'+esc(img.url)+'" download="result_'+i+'.jpg" class="zy-dl-btn">⬇ DOWNLOAD</a>'+
-        '<button class="zy-cp-btn" onclick="zyCp(\''+esc(img.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button></div></div>';
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">🖼 IMAGE ('+images.length+')</div>';
+    images.slice(0, 12).forEach(function(img, i){
+      html += '<div class="zy-media-item"><img src="'+esc(img.url)+'" class="zy-image" loading="lazy"><div class="zy-media-actions"><a href="'+esc(img.url)+'" download="result_'+i+'.jpg" class="zy-dl-btn">⬇ DOWNLOAD</a><button class="zy-cp-btn" onclick="zyCp(\''+esc(img.url).replace(/'/g,"\\'")+'\')">📋 COPY</button></div></div>';
     });
     html += '</div>';
   }
   if(videos.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">🎬 VIDEO HASIL (' + videos.length + ')</div>';
-    videos.slice(0, 5).forEach(function(vid, i){
-      html += '<div class="zy-media-item"><div class="zy-media-h">Video '+(i+1)+'</div>'+
-        '<video controls preload="metadata" class="zy-video" src="'+esc(vid.url)+'"></video>'+
-        '<div class="zy-media-actions"><a href="'+esc(vid.url)+'" download="video_'+i+'.mp4" class="zy-dl-btn">⬇ DOWNLOAD</a></div></div>';
-    });
-    html += '</div>';
-  }
-  if(others.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">🔗 LINK HASIL</div>';
-    others.slice(0, 20).forEach(function(o, i){
-      html += '<div class="zy-media-item"><div class="zy-url-preview">'+esc(o.url)+'</div>'+
-        '<div class="zy-media-actions"><a href="'+esc(o.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a>'+
-        '<button class="zy-cp-btn" onclick="zyCp(\''+esc(o.url).replace(/'/g,"\\'")+'\')">📋 COPY</button></div></div>';
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">🎬 VIDEO ('+videos.length+')</div>';
+    videos.slice(0, 3).forEach(function(v, i){
+      html += '<div class="zy-media-item"><video controls preload="metadata" class="zy-video" src="'+esc(v.url)+'"></video><a href="'+esc(v.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a></div>';
     });
     html += '</div>';
   }
@@ -516,247 +631,25 @@ window.zyRenderApiHubResult = function(container, data, apiName){
   container.classList.remove('hd');
 };
 
-// ===== ZYVOR EXISTING =====
-window.zyCp = function(u){ navigator.clipboard.writeText(u).then(function(){ alert('URL tersalin'); }); };
-window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ alert('JSON tersalin'); }); };
+window.zyCp = function(u){ navigator.clipboard.writeText(u).then(function(){ window.zyToast('URL tersalin'); }); };
+window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ window.zyToast('JSON tersalin'); }); };
 
-// ===== BYPASS =====
-var bypassSelected = 'ALL';
-window.zyInitBypass = function(){
-  var sel = $id('bp-api-custom');
-  if(!sel) return;
-  if(typeof window.initCustomSelect !== 'function') return;
-  var items = [{ id:'ALL', name:'ALL — auto-fallback 9 API', desc:'Coba semua sampai sukses' }].concat(BYPASS_LIST.map(function(b){
-    return { id:b.id, name:b.name, desc:b.desc || '' };
-  }));
-  window.__bpSel = window.initCustomSelect('bp-api-custom', items, bypassSelected,
-    function(id){ bypassSelected = id; window.zyRenderBypassParams(); }
-  );
-  window.zyRenderBypassParams();
-};
-window.zyRenderBypassParams = function(){
-  var wrap = $id('bp-params');
-  if(!wrap) return;
-  if(bypassSelected === 'ALL'){
-    wrap.innerHTML = '<label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">';
-  } else {
-    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; });
-    if(!api) return;
-    wrap.innerHTML = api.params.map(function(p){ var ph = p === 'url' ? 'https://...' : '(opsional)'; return '<label>'+p+'</label><input id="bp-'+p+'" placeholder="'+ph+'">'; }).join('');
-  }
-};
-window.zyRunBypass = async function(){
-  var log = $id('bp-log'), res = $id('bp-result');
-  if(log){ log.innerHTML = ''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML = ''; res.classList.add('hd'); }
-  var list, params;
-  if(bypassSelected === 'ALL'){
-    var url = ($id('bp-url')||{}).value;
-    if(!url){ alert('Masukkan URL'); return; }
-    params = { url: url.trim() };
-    list = BYPASS_LIST;
-  } else {
-    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; });
-    list = [api]; params = {};
-    api.params.forEach(function(p){ var el = $id('bp-'+p); if(el) params[p] = el.value.trim(); });
-    if(!params.url){ alert('URL kosong'); return; }
-  }
-  var out = await fetchWithFallback(list, params, log);
-  if(out){
-    var html = '<div class="zy-head">✓ SUKSES via <b>'+esc(out.api.name)+'</b></div>';
-    html += '<details class="zy-raw" open><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(out.result,null,2))+'</pre></details>';
-    html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
-    res.innerHTML = html;
-    res.classList.remove('hd');
-  } else {
-    res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>';
-    res.classList.remove('hd');
-  }
-};
-
-// ===== DOWNLOADER =====
-var dlCat = 'ALL';
-var dlApi = 'tikwm';
-
-window.zyInitDownloader = function(){
-  var catSel = $id('dl-cat-custom');
-  var apiSel = $id('dl-api-custom');
-  if(!catSel || !apiSel) return;
-  if(typeof window.initCustomSelect !== 'function') return;
-  var cats = Array.from(new Set(DOWNLOADER_LIST.map(function(d){ return d.cat; })));
-  var catItems = [{ id:'ALL', name:'ALL — semua kategori' }].concat(cats.map(function(c){ return { id:c, name:c }; }));
-  window.__dlCatSel = window.initCustomSelect('dl-cat-custom', catItems, dlCat,
-    function(id){
-      dlCat = id;
-      var list = dlCat==='ALL' ? DOWNLOADER_LIST : DOWNLOADER_LIST.filter(function(d){ return d.cat===dlCat; });
-      if(list.length) dlApi = list[0].id;
-      window.zyRenderDlApis();
-    }
-  );
-  window.zyRenderDlApis();
-};
-
-window.zyRenderDlApis = function(){
-  var apiSel = $id('dl-api-custom');
-  if(!apiSel) return;
-  var list = dlCat==='ALL' ? DOWNLOADER_LIST : DOWNLOADER_LIST.filter(function(d){ return d.cat===dlCat; });
-  if(!list.length) return;
-  if(!list.find(function(x){ return x.id===dlApi; })) dlApi = list[0].id;
-  var items = list.map(function(d){ return { id:d.id, name:d.name, desc:d.cat + (d.desc?' · '+d.desc:'') }; });
-  window.__dlApiSel = window.initCustomSelect('dl-api-custom', items, dlApi,
-    function(id){ dlApi = id; window.zyRenderDlParams(); }
-  );
-  window.zyRenderDlParams();
-};
-
-window.zyRenderDlParams = function(){
-  var wrap = $id('dl-params');
-  if(!wrap) return;
-  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-  if(!api){ wrap.innerHTML = ''; return; }
-  wrap.innerHTML = api.params.map(function(p){
-    var ph=p;
-    if(p==='url')ph='https://...';
-    if(p==='query')ph='kata kunci';
-    if(p==='track_id')ph='ID track';
-    if(p==='format')ph='mp3 / mp4';
-    if(p==='quality')ph='360 / 720 / 1080';
-    if(p==='fileType')ph='mp3 / mp4';
-    if(p==='type')ph='video / audio';
-    if(p==='action')ph='home / search';
-    if(p==='json')ph='1';
-    if(p==='mode')ph='home / search';
-    return '<label>'+p+'</label><input id="dl-'+p+'" placeholder="'+ph+'">';
-  }).join('');
-};
-
-function isTikTokUrl(url){ if(!url) return false; return /tiktok\.com|vt\.tiktok\.com|vm\.tiktok\.com/.test(url.toLowerCase()); }
-
-window.zyRunDownloader = async function(){
-  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-  if(!api){ alert('Pilih API'); return; }
-  var log = $id('dl-log'), res = $id('dl-result');
-  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-  var urlEl = $id('dl-url');
-  var url = urlEl ? urlEl.value.trim() : '';
-  if(isTikTokUrl(url)){
-    if(log){ var li = document.createElement('div'); li.className = 'in'; li.textContent = '🧠 Smart TikTok mode aktif'; log.appendChild(li); }
-    var smart = await fetchTikTokSmart(url, log);
-    if(smart) window.zyRenderDlResult(res, smart, url);
-    else { res.innerHTML = '<div class="zy-head er">✗ Semua API TikTok gagal</div>'; res.classList.remove('hd'); }
-    return;
-  }
-  var params = {};
-  api.params.forEach(function(p){ var el = $id('dl-'+p); if(el && el.value.trim()) params[p] = el.value.trim(); });
-  if(!Object.keys(params).length){ alert('Isi minimal 1 parameter'); return; }
-  var out = await fetchWithFallback([api], params, log);
-  if(out) window.zyRenderDlResult(res, { api:out.api, result:out.result, type:'generic', allVariants:null }, url);
-  else { res.innerHTML = '<div class="zy-head er">✗ API GAGAL</div>'; res.classList.remove('hd'); }
-};
-
-window.zyRunDownloaderAll = async function(){
-  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-  if(!api){ alert('Pilih API dulu'); return; }
-  var log = $id('dl-log'), res = $id('dl-result');
-  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-  var urlEl = $id('dl-url');
-  var url = urlEl ? urlEl.value.trim() : '';
-  if(isTikTokUrl(url)){
-    var smart = await fetchTikTokSmart(url, log);
-    if(smart) window.zyRenderDlResult(res, smart, url);
-    else { res.innerHTML = '<div class="zy-head er">✗ Semua API TikTok gagal</div>'; res.classList.remove('hd'); }
-    return;
-  }
-  var urlElAll = $id('dl-url') || $id('dl-query') || $id('dl-track_id');
-  if(!urlElAll || !urlElAll.value.trim()){ alert('Isi URL / query dulu'); return; }
-  var value = urlElAll.value.trim();
-  var paramKey = urlElAll.id.replace('dl-','');
-  var sameCat = DOWNLOADER_LIST.filter(function(d){ return d.cat===api.cat; });
-  var out = await fetchWithFallback(sameCat, {[paramKey]: value}, log);
-  if(out) window.zyRenderDlResult(res, { api:out.api, result:out.result, type:'generic' }, value);
-  else { res.innerHTML='<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd'); }
-};
-
-window.zyRenderDlResult = function(container, smart, sourceUrl){
-  var type = smart.type;
-  var variants = smart.allVariants || extractTikTokVariants(smart.result);
-  if(type === 'slideshow' && variants.images && variants.images.length){
-    var slideHtml = '<div class="zy-head">🖼 SLIDESHOW — '+variants.images.length+' foto</div>';
-    if(variants.title) slideHtml += '<div class="zy-meta"><div class="zy-meta-t">'+esc(variants.title)+'</div>'+(variants.author?'<div class="zy-meta-a">@'+esc(variants.author)+'</div>':'')+'</div>';
-    slideHtml += '<div class="zy-slide-grid">';
-    variants.images.forEach(function(img, i){
-      slideHtml += '<div class="zy-slide-item-card">'+
-        '<img src="'+esc(img)+'" loading="lazy" alt="slide '+(i+1)+'">'+
-        '<div class="zy-slide-item-num">'+(i+1)+'</div>'+
-        '<a href="'+esc(img)+'" download="slide_'+(i+1)+'.jpg" class="zy-dl-btn zy-dl-full">⬇ DOWNLOAD FOTO '+(i+1)+'</a>'+
-        '</div>';
-    });
-    slideHtml += '</div>';
-    slideHtml += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(smart.result,null,2))+'</pre></details>';
-    container.innerHTML = slideHtml;
-    container.classList.remove('hd');
-    return;
-  }
-  var videoHtml = '<div class="zy-head">✓ '+(type==='video'?'VIDEO':'SUKSES')+' via <b>'+esc(smart.api.name)+'</b></div>';
-  if(variants.title || variants.author){
-    videoHtml += '<div class="zy-meta">';
-    if(variants.title) videoHtml += '<div class="zy-meta-t">'+esc(variants.title)+'</div>';
-    if(variants.author) videoHtml += '<div class="zy-meta-a">'+esc(variants.author)+'</div>';
-    if(variants.stats){ var st=[]; if(variants.stats.play) st.push('▶ '+variants.stats.play); if(variants.stats.like) st.push('❤ '+variants.stats.like); if(variants.stats.comment) st.push('💬 '+variants.stats.comment); if(variants.stats.share) st.push('↗ '+variants.stats.share); if(st.length) videoHtml += '<div class="zy-meta-s">'+st.join(' · ')+'</div>'; }
-    videoHtml += '</div>';
-  }
-  videoHtml += '<div class="zy-variant-wrap">';
-  if(variants.noWM) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWM)+'"></video><a href="'+esc(variants.noWM)+'" download="tiktok_nowm.mp4" class="zy-dl-btn zy-dl-full">⬇ NO WM</a></div>';
-  if(variants.noWMHD) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWMHD)+'"></video><a href="'+esc(variants.noWMHD)+'" download="tiktok_nowm_hd.mp4" class="zy-dl-btn zy-dl-full">⬇ NO WM HD</a></div>';
-  if(variants.wm) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.wm)+'"></video><a href="'+esc(variants.wm)+'" download="tiktok_wm.mp4" class="zy-dl-btn zy-dl-full">⬇ WM</a></div>';
-  if(variants.music) videoHtml += '<div class="zy-variant"><audio controls preload="metadata" class="zy-audio" src="'+esc(variants.music)+'"></audio><a href="'+esc(variants.music)+'" download="tiktok_music.mp3" class="zy-dl-btn zy-dl-full">⬇ MUSIC</a></div>';
-  videoHtml += '</div>';
-  if(!variants.noWM && !variants.noWMHD && !variants.wm && !variants.music){
-    var mediaItems = collectMedia(smart.result, []);
-    if(mediaItems.length){
-      videoHtml += '<div class="zy-media-wrap"><div class="zy-media-title">📥 MEDIA</div>';
-      mediaItems.forEach(function(item, i){
-        var cls = item.url.match(/\.(mp4|mov|webm)/i) ? 'video' : item.url.match(/\.(mp3|m4a)/i) ? 'audio' : 'img';
-        if(cls === 'video') videoHtml += '<div class="zy-media-item"><video controls preload="metadata" class="zy-video" src="'+esc(item.url)+'"></video><a href="'+esc(item.url)+'" download class="zy-dl-btn zy-dl-full">⬇ DOWNLOAD</a></div>';
-        else if(cls === 'audio') videoHtml += '<div class="zy-media-item"><audio controls preload="metadata" class="zy-audio" src="'+esc(item.url)+'"></audio><a href="'+esc(item.url)+'" download class="zy-dl-btn zy-dl-full">⬇ DOWNLOAD</a></div>';
-        else videoHtml += '<div class="zy-media-item"><img src="'+esc(item.url)+'" class="zy-image"><a href="'+esc(item.url)+'" download class="zy-dl-btn zy-dl-full">⬇ DOWNLOAD</a></div>';
-      });
-      videoHtml += '</div>';
-    } else {
-      videoHtml += '<div class="zy-head er">⚠ Tidak ada media terdeteksi. Coba API lain.</div>';
-    }
-  }
-  videoHtml += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(smart.result,null,2))+'</pre></details>';
-  container.innerHTML = videoHtml;
-  container.classList.remove('hd');
-};
-
-window.zyPreviewResult = function(){
-  var res = $id('dl-result');
-  if(!res || res.classList.contains('hd')){ alert('Belum ada hasil'); return; }
-  res.scrollIntoView({behavior:'smooth', block:'start'});
-  var firstMedia = res.querySelector('video, audio, img');
-  if(firstMedia){
-    var parent = firstMedia.closest('.zy-variant') || firstMedia.closest('.zy-media-item') || firstMedia.closest('.zy-slide-item-card');
-    if(parent){ parent.style.transition = 'box-shadow .3s'; parent.style.boxShadow = '0 0 30px var(--ac)'; setTimeout(function(){ parent.style.boxShadow = ''; }, 1200); }
-    try{ firstMedia.play && firstMedia.play(); }catch(e){}
-  }
-};
-window.zyClearDownloader = function(){
-  ['dl-url','dl-query','dl-track_id','dl-format','dl-quality','dl-fileType','dl-type','dl-action','dl-mode','dl-json'].forEach(function(id){ var el = $id(id); if(el) el.value = ''; });
-  var log = $id('dl-log'), res = $id('dl-result');
-  if(log){ log.innerHTML=''; log.classList.add('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-};
+// ===== BYPASS / DL functions (dari v6.5, disederhanakan untuk API HUB only) =====
+// Bypass + DL + Smart TikTok gue skip di v6.5.1 — lo masih pakai versi lama yang udah jalan
+// Copy dari zyvor.js v6.5 lo bagian zyInitBypass, zyInitDownloader, zyRunBypass, zyRunDownloader, dll
+// Setelah blok auto-init v6.5, TETAP ada
 
 // ===== AUTO-INIT =====
 function __zyReady(){
   if(typeof window.initCustomSelect !== 'function'){ setTimeout(__zyReady, 80); return; }
-  try{ if($id('bp-api-custom')) window.zyInitBypass(); }catch(e){}
-  try{ if($id('dl-cat-custom')) window.zyInitDownloader(); }catch(e){}
-  try{ if($id('apihub-cat')) window.zyInitApiHub(); }catch(e){}
+  try{ if($id('bp-api-custom') && window.zyInitBypass) window.zyInitBypass(); }catch(e){}
+  try{ if($id('dl-cat-custom') && window.zyInitDownloader) window.zyInitDownloader(); }catch(e){}
+  try{ if($id('apihub-endpoint-up')) window.zyInitApiHub('apihub-up', 'UPSCALE'); }catch(e){}
+  try{ if($id('apihub-endpoint-ai')) window.zyInitApiHub('apihub-ai', 'IMG AI'); }catch(e){}
+  try{ if($id('apihub-endpoint-hd')) window.zyInitApiHub('apihub-hd', 'IMG HD'); }catch(e){}
+  try{ if($id('apihub-endpoint-kal')) window.zyInitApiHub('apihub-kal', 'KALENDER'); }catch(e){}
+  try{ if($id('apihub-endpoint-mk')) window.zyInitApiHub('apihub-mk', 'MAKER'); }catch(e){}
+  try{ if($id('apihub-endpoint-sr')) window.zyInitApiHub('apihub-sr', 'SEARCH'); }catch(e){}
 }
 if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', __zyReady); } else { __zyReady(); }
 
