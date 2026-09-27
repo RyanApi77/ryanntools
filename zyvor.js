@@ -1,4 +1,4 @@
-// zyvor.js v7.0 — Engine
+// zyvor.js v7.2 — Engine
 (function(){
 'use strict';
 
@@ -46,7 +46,6 @@ async function fetchWithRetry(url, opts, timeoutMs, retries){
   throw lastErr || new Error('Fetch failed');
 }
 
-// proxyFetch — support raw mode buat binary
 async function proxyFetch(url, opts, timeoutMs, raw){
   opts = opts || {};
   timeoutMs = timeoutMs || 120000;
@@ -86,7 +85,6 @@ async function proxyFetch(url, opts, timeoutMs, raw){
   throw lastErr || new Error('All proxy layers failed');
 }
 
-// callAPIv2 — auto-deteksi binary PNG/JPEG/GIF/WebP → blob URL
 async function callAPIv2(path, params, method){
   method = method || 'GET';
   var qs = '';
@@ -398,7 +396,6 @@ window.zyCollectParams = function(params, idPrefix, category){
   return out;
 };
 
-// ===== SEARCH APIS =====
 var SEARCH_APIS = {
   'WEB': [
     { id:'wikipedia', name:'Wikipedia', path:'/api/search/wikipedia', params:['query'] },
@@ -415,7 +412,6 @@ var SEARCH_APIS = {
   ]
 };
 
-// ===== BYPASS =====
 var BYPASS_LIST = [
   { id:'bypasslink', name:'Bypass Link v1', path:'/api/bypass/bypasslink', method:'POST', params:['url','androidId'] },
   { id:'bypasslinkv2', name:'Bypass Link v2', path:'/api/bypass/bypasslinkv2', method:'POST', params:['url'] },
@@ -428,7 +424,6 @@ var BYPASS_LIST = [
   { id:'wellbypass', name:'Wellbypass', path:'/api/bypass/wellbypass', method:'POST', params:['url','turnstileToken'] }
 ];
 
-// ===== DOWNLOADER =====
 var DOWNLOADER_LIST = [
   { id:'tikwm', name:'TikWM (recommended)', path:'TIKWM', method:'GET', params:['url'], cat:'TikTok', desc:'auto WM/NoWM/HD' },
   { id:'tiktokv2', name:'TikTok v2 (HD)', path:'/api/downloader/tiktokv2', method:'GET', params:['url'], cat:'TikTok' },
@@ -455,13 +450,11 @@ var DOWNLOADER_LIST = [
   { id:'gdrive', name:'Google Drive', path:'/api/downloader/gdrive', method:'GET', params:['url'], cat:'File Hosting' },
   { id:'terabox', name:'TeraBox', path:'/api/downloader/terabox', method:'GET', params:['url'], cat:'File Hosting' },
   { id:'allinone', name:'All-in-One v1', path:'/api/downloader/allinone', method:'GET', params:['url'], cat:'All-in-One' },
-  { id:'allinonev2', name:'All-in-One v2', path:'/api/downloader/allinonev2', method:'GET', params:['url','format'], cat:'All-in-One' },
   { id:'omnify', name:'Omnify', path:'/api/downloader/omnify', method:'GET', params:['url'], cat:'All-in-One' },
   { id:'savefrom', name:'SaveFrom', path:'/api/downloader/savefrom', method:'GET', params:['url','type'], cat:'All-in-One' },
   { id:'snapany', name:'SnapAny', path:'/api/downloader/snapany', method:'GET', params:['url'], cat:'All-in-One' }
 ];
 
-// ===== TIKTOK HELPERS =====
 function detectTikTokType(data){
   if(!data || typeof data !== 'object') return 'unknown';
   if(data.images && Array.isArray(data.images) && data.images.length > 0) return 'slideshow';
@@ -584,7 +577,6 @@ async function fetchTikTokSmart(url, logEl){
   return combined;
 }
 
-// ===== API HUB LIST =====
 var API_HUB_LIST = [
   // UPSCALE
   {id:'up_ai', name:'Video Upscale AI', path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
@@ -637,17 +629,16 @@ var API_HUB_LIST = [
   {id:'sr_pinterest', name:'Search Pinterest', path:'/api/search/pinterest', method:'GET', params:['query','limit'], cat:'SEARCH'}
 ];
 
-// ===== TEMPMAIL v7.1 — Multi-Provider (mail.tm + mail.gw) =====
+// ===== TEMPMAIL v7.2 — Multi-Provider Paralel + Cache =====
 var tmpToken=null, tmpEmail=null, tmpMsgs=[], tmpProvider='mail.tm';
 
 var TMP_PROVIDERS = {
-  'mail.tm': { name:'mail.tm', base:'https://api.mail.tm', color:'#22d3ee' },
-  'mail.gw': { name:'mail.gw', base:'https://api.mail.gw', color:'#4ade80' }
+  'mail.tm': { name:'mail.tm', base:'https://api.mail.tm' },
+  'mail.gw': { name:'mail.gw', base:'https://api.mail.gw' }
 };
 
-function tmpBase(){ return TMP_PROVIDERS[tmpProvider].base; }
+function tmpBase(){ return TMP_PROVIDERS[tmpProvider] ? TMP_PROVIDERS[tmpProvider].base : TMP_PROVIDERS['mail.tm'].base; }
 
-// tmpFetchV2 — validasi response per layer + retry
 async function tmpFetchV2(url, opts){
   opts = opts || {};
   var method = opts.method || 'GET';
@@ -666,27 +657,24 @@ async function tmpFetchV2(url, opts){
     }catch(e){ return null; }
   }
 
-  // LAYER 1: WORKER
   try{
     var wurl = WORKER + '/?url=' + encodeURIComponent(url);
-    var r = await fetchWithRetry(wurl, { method: method, headers: headers, body: body }, 30000, 2);
+    var r = await fetchWithRetry(wurl, { method: method, headers: headers, body: body }, 20000, 1);
     var valid = await tryReturn(r);
     if(valid) return valid;
   }catch(e){}
 
-  // LAYER 2: DIRECT
   try{
-    var r0 = await fetchWithRetry(url, { method: method, headers: headers, body: body }, 20000, 1);
+    var r0 = await fetchWithRetry(url, { method: method, headers: headers, body: body }, 15000, 1);
     var valid0 = await tryReturn(r0);
     if(valid0) return valid0;
   }catch(e){}
 
-  // LAYER 3: CORS PROXIES
-  for(var i=0;i<CORS.length;i++){
+  for(var i=0;i<Math.min(CORS.length, 2);i++){
     try{
       var p = CORS[i];
       var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
-      var r2 = await fetchWithRetry(full, { method: method, headers: headers, body: body }, 20000, 1);
+      var r2 = await fetchWithRetry(full, { method: method, headers: headers, body: body }, 15000, 1);
       var valid2 = await tryReturn(r2);
       if(valid2) return valid2;
     }catch(e){}
@@ -696,63 +684,84 @@ async function tmpFetchV2(url, opts){
 }
 
 var _tmpRetryCount = 0;
+var _tmpCache = { domains: [], time: 0 };
+var TMP_CACHE_MS = 5 * 60 * 1000;
+
 async function tmpLoad(){
   var log = document.getElementById('tmp-log');
   if(log && _tmpRetryCount === 0) log.innerHTML = '';
-  logTo('tmp-log','⏳ Loading domain dari semua provider...','in');
 
-  var allDomains = [];
+  if(_tmpCache.domains.length && (Date.now() - _tmpCache.time) < TMP_CACHE_MS){
+    logTo('tmp-log','⚡ Cache (' + _tmpCache.domains.length + ' domain)','ok');
+    _applyDomainItems(_tmpCache.domains);
+    return;
+  }
+
+  logTo('tmp-log','⏳ Fetch paralel...','in');
+
   var providers = Object.keys(TMP_PROVIDERS);
-  var successCount = 0;
 
-  for(var pi = 0; pi < providers.length; pi++){
-    var provName = providers[pi];
+  var promises = providers.map(function(provName){
     var provBase = TMP_PROVIDERS[provName].base;
-    logTo('tmp-log','→ ' + provName, 'in');
-    try{
-      var r = await tmpFetchV2(provBase + '/domains');
-      var j = await r.json();
-      var arr = j['hydra:member'] || [];
-      arr.forEach(function(d){
-        allDomains.push({ domain: d.domain, provider: provName });
-      });
-      logTo('tmp-log','  ✓ ' + arr.length + ' domain', 'ok');
-      successCount++;
-    }catch(e){
-      logTo('tmp-log','  ✗ ' + e.message, 'er');
-    }
-  }
+    return Promise.race([
+      tmpFetchV2(provBase + '/domains')
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          var arr = j['hydra:member'] || [];
+          logTo('tmp-log','  ✓ ' + provName + ' — ' + arr.length,'ok');
+          return arr.map(function(d){ return { domain: d.domain, provider: provName }; });
+        })
+        .catch(function(e){
+          logTo('tmp-log','  ✗ ' + provName + ' — ' + e.message,'er');
+          return [];
+        }),
+      new Promise(function(res){
+        setTimeout(function(){
+          logTo('tmp-log','  ⏱ ' + provName + ' timeout','warn');
+          res([]);
+        }, 8000);
+      })
+    ]);
+  });
 
-  if(window.__selTmpDom){
-    var items = [{id:'', name:'— CHOOSE (' + allDomains.length + ' domain) —'}];
-    allDomains.forEach(function(d){
-      items.push({
-        id: d.provider + '|' + d.domain,
-        name: d.domain,
-        desc: d.provider
-      });
-    });
-    window.__selTmpDom.setItems(items);
-  }
+  var results = await Promise.all(promises);
+  var allDomains = [];
+  results.forEach(function(arr){ arr.forEach(function(d){ allDomains.push(d); }); });
 
-  if(successCount === 0){
+  if(allDomains.length){
+    _tmpCache.domains = allDomains;
+    _tmpCache.time = Date.now();
+    logTo('tmp-log','✓ Total ' + allDomains.length + ' domain','ok');
+    _applyDomainItems(allDomains);
+    _tmpRetryCount = 0;
+  } else {
     if(_tmpRetryCount < 2){
       _tmpRetryCount++;
-      logTo('tmp-log','⚠ Retry ' + _tmpRetryCount + '/3 dalam 5 detik...','warn');
-      setTimeout(function(){ tmpLoad(); }, 5000);
+      logTo('tmp-log','⚠ Retry ' + _tmpRetryCount + '/3 dalam 3 detik...','warn');
+      setTimeout(function(){ tmpLoad(); }, 3000);
     } else {
-      logTo('tmp-log','⚠ Gagal semua. Klik RELOAD manual.','warn');
+      logTo('tmp-log','⚠ Gagal semua. Klik RELOAD.','warn');
       _tmpRetryCount = 0;
     }
-  } else {
-    logTo('tmp-log','✓ Total: ' + allDomains.length + ' domain dari ' + successCount + ' provider','ok');
-    _tmpRetryCount = 0;
   }
 }
-window.tmpLoadDomains = function(){ _tmpRetryCount = 0; return tmpLoad(); };
+
+function _applyDomainItems(allDomains){
+  if(!window.__selTmpDom) return;
+  var items = [{id:'', name:'— CHOOSE (' + allDomains.length + ') —'}];
+  allDomains.forEach(function(d){
+    items.push({
+      id: d.provider + '|' + d.domain,
+      name: d.domain,
+      desc: d.provider
+    });
+  });
+  window.__selTmpDom.setItems(items);
+}
+
+window.tmpLoadDomains = function(){ _tmpRetryCount = 0; _tmpCache.time = 0; return tmpLoad(); };
 if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ window.tmpLoadDomains(); };
 
-// Provider selector init
 function tmpInitProviderSelector(){
   if(typeof window.initCustomSelect !== 'function') return;
   if(!document.getElementById('tmp-provider')) return;
@@ -761,7 +770,6 @@ function tmpInitProviderSelector(){
   });
   window.__selTmpProvider = window.initCustomSelect('tmp-provider', items, tmpProvider, function(id){
     tmpProvider = id;
-    // reset dropdown domain
     if(window.__selTmpDom) window.__selTmpDom.setItems([{id:'', name:'— CHOOSE —'}]);
     tmpLoad();
   });
@@ -1064,7 +1072,7 @@ window.zyInitApiHub = function(tabId, catName){
   var filtered = API_HUB_LIST.filter(function(x){ return x.cat === catName; });
   if(!filtered.length) return;
   if(!apiHubState[tabId]) apiHubState[tabId] = { endpoint: filtered[0], __init: false };
-  if(apiHubState[tabId].__init) return;   // guard: init cuma sekali
+  if(apiHubState[tabId].__init) return;
   apiHubState[tabId].__init = true;
   var items = filtered.map(function(x){ return { id:x.id, name:x.name, desc:'params: '+x.params.length }; });
   window.initCustomSelect(tabId+'-endpoint', items, apiHubState[tabId].endpoint.id, function(id){
@@ -1108,7 +1116,6 @@ window.zyRunApiHub = async function(tabId, catName){
   }
 };
 
-// ===== MAKER: extract semua gambar (blob/URL/base64) =====
 function extractMakerImages(data){
   if(data && data.__binary && data.url){
     return [data.url];
@@ -1143,7 +1150,6 @@ function extractMakerImages(data){
 }
 
 window.zyRenderApiResult = function(container, data, name, catName){
-  // MAKER / binary → tampil FOTO
   if(catName === 'MAKER' || (data && data.__binary)){
     var mkImgs = extractMakerImages(data);
     if(mkImgs.length){
@@ -1218,9 +1224,8 @@ window.zyRenderApiResult = function(container, data, name, catName){
   container.innerHTML = html; container.classList.remove('hd');
 };
 
-// ===== ZYVOR EXPORT =====
 window.ZYVOR = {
-  version: '7.0',
+  version: '7.2',
   base: BASE,
   worker: WORKER,
   call: callAPIv2,
@@ -1236,4 +1241,3 @@ window.ZYVOR = {
 };
 
 })();
-// zyvor.js v7.0 — END
