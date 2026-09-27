@@ -1,4 +1,4 @@
-// zyvor.js v7.2 — Engine
+// zyvor.js v10.0 — Engine
 (function(){
 'use strict';
 
@@ -578,14 +578,12 @@ async function fetchTikTokSmart(url, logEl){
 }
 
 var API_HUB_LIST = [
-  // UPSCALE
   {id:'up_ai', name:'Video Upscale AI', path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
   {id:'up_v1', name:'Video Upscale v1', path:'/api/hdvidio/upscale', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
   {id:'up_tohd', name:'HD Video Processor', path:'/api/hdvidio/tohd', method:'GET', params:['video','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
   {id:'up_wink', name:'Wink HD Video Enhancer', path:'/api/hdvidio/wink-hd-video', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
   {id:'up_v2', name:'Video HD Enhancer', path:'/api/hdvidio/enhance', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
 
-  // IMG AI
   {id:'ai_poll', name:'Pollinations AI', path:'/api/imageai/pollinations', method:'GET', params:['prompt'], cat:'IMG AI'},
   {id:'ai_nano', name:'Nano Banana AI', path:'/api/imageai/nanobanana', method:'GET', params:['prompt','ratio','resolution'], cat:'IMG AI'},
   {id:'ai_bing', name:'AI Bing Image', path:'/api/imageai/bingimg', method:'GET', params:['query'], cat:'IMG AI'},
@@ -595,7 +593,6 @@ var API_HUB_LIST = [
   {id:'ai_t2iv2', name:'Text to Image v2 (FLUX)', path:'/api/imageai/text2imgv2', method:'GET', params:['teks'], cat:'IMG AI'},
   {id:'ai_t2iv3', name:'Text to Image v3 (Baidu)', path:'/api/imageai/text2imgv3', method:'GET', params:['teks'], cat:'IMG AI'},
 
-  // IMG HD
   {id:'hd_en1', name:'AI Enhance HD', path:'/api/imagehd/ai-enhance', method:'GET', params:['url'], cat:'IMG HD'},
   {id:'hd_en2', name:'AI Enhance HD v2', path:'/api/imagehd/ai-enhancev2', method:'GET', params:['url','size'], cat:'IMG HD'},
   {id:'hd_remini', name:'Remini HD', path:'/api/imagehd/remini', method:'GET', params:['url'], cat:'IMG HD'},
@@ -608,7 +605,6 @@ var API_HUB_LIST = [
   {id:'hd_wink', name:'Wink HD Enhancer', path:'/api/imagehd/wink-hd', method:'GET', params:['url'], cat:'IMG HD'},
   {id:'hd_yupra', name:'Yupra Enhancer', path:'/api/imagehd/yupra', method:'GET', params:['url'], cat:'IMG HD'},
 
-  // MAKER
   {id:'mk_bounty', name:'Fake Bounty', path:'/api/maker/bounty', method:'GET', params:['image','text'], cat:'MAKER'},
   {id:'mk_ektp', name:'EKTP Generator', path:'/api/maker/ektp', method:'GET', params:['nama','nik','provinsi','kota','ttl','jenis_kelamin','golongan_darah','alamat','rt/rw','kel/desa','kecamatan','agama','status','pekerjaan','kewarganegaraan','masa_berlaku','terbuat','pas_photo'], cat:'MAKER'},
   {id:'mk_tweet', name:'Fake Tweet', path:'/api/maker/fake-tweet', method:'GET', params:['name','username','text','avatar'], cat:'MAKER'},
@@ -620,7 +616,6 @@ var API_HUB_LIST = [
   {id:'mk_dana', name:'Fake Saldo Dana', path:'/api/maker/saldo-dana', method:'GET', params:['saldo'], cat:'MAKER'},
   {id:'mk_gopay', name:'Fake Saldo Gopay', path:'/api/maker/saldo-gopay', method:'GET', params:['saldo','koin','terpakai','bulan'], cat:'MAKER'},
 
-  // SEARCH
   {id:'sr_wiki', name:'Wikipedia', path:'/api/search/wikipedia', method:'GET', params:['query'], cat:'SEARCH'},
   {id:'sr_anime', name:'Anime Search', path:'/api/search/anime', method:'GET', params:['q'], cat:'SEARCH'},
   {id:'sr_cookpad', name:'Cookpad', path:'/api/search/cookpad', method:'GET', params:['action','query','id'], cat:'SEARCH'},
@@ -629,7 +624,7 @@ var API_HUB_LIST = [
   {id:'sr_pinterest', name:'Search Pinterest', path:'/api/search/pinterest', method:'GET', params:['query','limit'], cat:'SEARCH'}
 ];
 
-// ===== TEMPMAIL v7.2 — Multi-Provider Paralel + Cache =====
+// ===== TEMPMAIL v10.0 =====
 var tmpToken=null, tmpEmail=null, tmpMsgs=[], tmpProvider='mail.tm';
 
 var TMP_PROVIDERS = {
@@ -639,11 +634,13 @@ var TMP_PROVIDERS = {
 
 function tmpBase(){ return TMP_PROVIDERS[tmpProvider] ? TMP_PROVIDERS[tmpProvider].base : TMP_PROVIDERS['mail.tm'].base; }
 
+// tmpFetchV2 dengan AbortController support
 async function tmpFetchV2(url, opts){
   opts = opts || {};
   var method = opts.method || 'GET';
   var headers = opts.headers || {};
   var body = opts.body || null;
+  var externalSignal = opts.signal;
 
   async function tryReturn(r){
     if(!r || !r.ok) return null;
@@ -657,28 +654,48 @@ async function tmpFetchV2(url, opts){
     }catch(e){ return null; }
   }
 
+  async function tryFetch(fetchUrl, timeoutMs){
+    if(externalSignal && externalSignal.aborted) throw new Error('aborted_by_user');
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs);
+    var onExtAbort = function(){ try{ ctrl.abort(); }catch(e){} };
+    if(externalSignal) externalSignal.addEventListener('abort', onExtAbort);
+    try{
+      var r = await fetch(fetchUrl, {method: method, headers: headers, body: body, signal: ctrl.signal});
+      clearTimeout(timer);
+      if(externalSignal) externalSignal.removeEventListener('abort', onExtAbort);
+      return r;
+    }catch(e){
+      clearTimeout(timer);
+      if(externalSignal) externalSignal.removeEventListener('abort', onExtAbort);
+      if(externalSignal && externalSignal.aborted) throw new Error('aborted_by_user');
+      throw e;
+    }
+  }
+
+  // LAYER 1: WORKER (12s)
   try{
     var wurl = WORKER + '/?url=' + encodeURIComponent(url);
-    var r = await fetchWithRetry(wurl, { method: method, headers: headers, body: body }, 20000, 1);
-    var valid = await tryReturn(r);
-    if(valid) return valid;
-  }catch(e){}
+    var r1 = await tryFetch(wurl, 12000);
+    var v1 = await tryReturn(r1);
+    if(v1) return v1;
+  }catch(e){ if(e.message === 'aborted_by_user') throw e; }
 
+  // LAYER 2: DIRECT (10s)
   try{
-    var r0 = await fetchWithRetry(url, { method: method, headers: headers, body: body }, 15000, 1);
-    var valid0 = await tryReturn(r0);
-    if(valid0) return valid0;
-  }catch(e){}
+    var r2 = await tryFetch(url, 10000);
+    var v2 = await tryReturn(r2);
+    if(v2) return v2;
+  }catch(e){ if(e.message === 'aborted_by_user') throw e; }
 
-  for(var i=0;i<Math.min(CORS.length, 2);i++){
-    try{
-      var p = CORS[i];
-      var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
-      var r2 = await fetchWithRetry(full, { method: method, headers: headers, body: body }, 15000, 1);
-      var valid2 = await tryReturn(r2);
-      if(valid2) return valid2;
-    }catch(e){}
-  }
+  // LAYER 3: CORS PROXY[0] (10s)
+  try{
+    var p1 = CORS[0];
+    var full1 = p1 + (p1.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
+    var r3 = await tryFetch(full1, 10000);
+    var v3 = await tryReturn(r3);
+    if(v3) return v3;
+  }catch(e){ if(e.message === 'aborted_by_user') throw e; }
 
   throw new Error('Semua layer gagal');
 }
@@ -776,6 +793,18 @@ function tmpInitProviderSelector(){
 }
 window.tmpInitProviderSelector = tmpInitProviderSelector;
 
+// STOP button
+window.__tmpAbort = null;
+if($id('tmp-stop')) $id('tmp-stop').onclick=function(){
+  if(window.__tmpAbort){
+    try{ window.__tmpAbort.abort(); }catch(e){}
+    window.__tmpAbort = null;
+  }
+  var sb = $id('tmp-stop'); if(sb) sb.style.display = 'none';
+  var gb = $id('tmp-gen'); if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
+  logTo('tmp-log','⛔ Dihentikan user','warn');
+};
+
 if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
   var log = document.getElementById('tmp-log');
   if(log) log.innerHTML = '';
@@ -791,21 +820,38 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
 
   var em = nm + '@' + dom;
   var pw = 'RyannTmp!' + Math.floor(Math.random()*99999);
+
+  var gb = $id('tmp-gen'); if(gb){ gb.disabled = true; gb.textContent = '⏳...'; }
+  var sb = $id('tmp-stop'); if(sb) sb.style.display = 'block';
+
+  window.__tmpAbort = new AbortController();
+
   logTo('tmp-log','⏳ Membuat ' + em + ' via ' + provKey + '...','in');
   try{
-    var r = await tmpFetchV2(base + '/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
+    var r = await tmpFetchV2(base + '/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw}), signal: window.__tmpAbort.signal});
     var j = await r.json();
-    if(!r.ok){ logTo('tmp-log','✗ '+(j.message || 'error'),'er'); return; }
+    if(!r.ok){ logTo('tmp-log','✗ '+(j.message || 'error'),'er'); throw new Error('account_error'); }
     logTo('tmp-log','✓ Account OK','ok');
-    var r2 = await tmpFetchV2(base + '/token', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
+    var r2 = await tmpFetchV2(base + '/token', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw}), signal: window.__tmpAbort.signal});
     var j2 = await r2.json();
-    if(!r2.ok){ logTo('tmp-log','✗ Login: '+(j2.message||'error'),'er'); return; }
+    if(!r2.ok){ logTo('tmp-log','✗ Login: '+(j2.message||'error'),'er'); throw new Error('token_error'); }
     tmpToken = j2.token; tmpEmail = em;
     $id('tmp-email').textContent = em;
     logTo('tmp-log','✓ Login OK [' + provKey + ']','ok');
     if(window.sndSuccess) window.sndSuccess();
-  }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
+  }catch(e){
+    if(e.name === 'AbortError' || (e.message && e.message.indexOf('aborted') !== -1)){
+      logTo('tmp-log','⛔ Dibatalkan','warn');
+    } else {
+      logTo('tmp-log','✗ '+e.message,'er');
+    }
+  }finally{
+    window.__tmpAbort = null;
+    if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
+    if(sb) sb.style.display = 'none';
+  }
 };
+
 if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail) navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); }); };
 if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
   if(!tmpToken){ alert('Generate dulu'); return; }
@@ -1117,9 +1163,7 @@ window.zyRunApiHub = async function(tabId, catName){
 };
 
 function extractMakerImages(data){
-  if(data && data.__binary && data.url){
-    return [data.url];
-  }
+  if(data && data.__binary && data.url){ return [data.url]; }
   var out = [];
   var seen = {};
   function push(u){
@@ -1225,7 +1269,7 @@ window.zyRenderApiResult = function(container, data, name, catName){
 };
 
 window.ZYVOR = {
-  version: '7.2',
+  version: '10.0',
   base: BASE,
   worker: WORKER,
   call: callAPIv2,
