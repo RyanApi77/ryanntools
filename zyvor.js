@@ -1,4 +1,4 @@
-// zyvor.js v6.7 — Engine
+// zyvor.js v6.8 — Engine
 (function(){
 'use strict';
 
@@ -137,12 +137,12 @@ function collectMedia(obj, out, baseKey){
 function extractResultItems(data){
   var items = [];
   if(!data) return items;
-  var arr = data.result || data.results || data.data || data.items || data.videos || data.list || data.array || data.entries || data.playlists || (Array.isArray(data) ? data : null);
+  var arr = data.result || data.results || data.data || data.items || data.videos || data.list || data.array || data.entries || (Array.isArray(data) ? data : null);
   if(!arr && data.result && typeof data.result === 'object'){
-    arr = data.result.videos || data.result.items || data.result.list || data.result.array || data.result.entries || null;
+    arr = data.result.videos || data.result.items || data.result.list || data.result.array || null;
   }
   if(!arr && data.data && typeof data.data === 'object'){
-    arr = data.data.videos || data.data.items || data.data.list || data.data.array || null;
+    arr = data.data.videos || data.data.items || data.data.list || null;
   }
   if(!arr || !Array.isArray(arr)) return items;
   arr.forEach(function(item){
@@ -175,6 +175,47 @@ async function uploadToCatbox(file){
   }catch(e){ return { ok:false, error: e.message || 'Upload failed' }; }
 }
 
+// ===== DOWNLOAD via blob (cross-origin works) =====
+window.zyDownload = async function(url, filename){
+  try{
+    window.zyToast('⏳ Downloading...');
+    var res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    var blob = await res.blob();
+    var blobUrl = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename || 'file';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(blobUrl); }, 2000);
+    window.zyToast('✓ Downloaded: ' + (filename || 'file'));
+  }catch(e){
+    window.zyToast('✗ Download gagal: ' + e.message, 'error');
+  }
+};
+
+// ===== PREVIEW MODAL =====
+window.zyOpenPreview = function(idx){
+  var m = window.__apiHubMedia && window.__apiHubMedia[idx];
+  if(!m) return;
+  var isVideo = classify(m.url) === 'video';
+  var overlay = document.getElementById('zy-preview-overlay');
+  if(!overlay){
+    overlay = document.createElement('div');
+    overlay.id = 'zy-preview-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px';
+    overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+  }
+  var inner = isVideo
+    ? '<video controls autoplay style="max-width:100%;max-height:90vh;border-radius:8px" src="'+m.url+'"></video>'
+    : '<img src="'+m.url+'" style="max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain">';
+  overlay.innerHTML = '<div style="position:relative;max-width:100%;max-height:100%">'+inner+'<button onclick="document.getElementById(\'zy-preview-overlay\').remove()" style="position:absolute;top:-40px;right:0;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button></div>';
+};
+
+// ===== TOAST =====
 (function(){
   if(document.getElementById('zy-toast-style')) return;
   var s = document.createElement('style');
@@ -204,6 +245,10 @@ window.zyToast = function(msg, type){
   }, 4000);
 };
 
+window.zyCp = function(u){ navigator.clipboard.writeText(u).then(function(){ window.zyToast('URL tersalin'); }); };
+window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ window.zyToast('JSON tersalin'); }); };
+
+// ===== PARAM TYPES =====
 var PARAM_LISTS = {
   'list-reso':      ['480p','720p','1080p','1440p','2160p (4K)'],
   'list-fps':       ['24','30','60','120'],
@@ -328,52 +373,53 @@ window.zyCollectParams = function(params, idPrefix, category){
   return out;
 };
 
-// ===== DATA LISTS =====
+// ===== SEARCH APIS =====
 var SEARCH_APIS = {
   'WEB': [
     { id:'wikipedia', name:'Wikipedia', path:'/api/search/wikipedia', params:['query'] },
-    { id:'nasa', name:'NASA', path:'/api/search/nasa', params:['query'] },
+    { id:'nasa', name:'NASA', path:'/api/search/nasa', params:['type','query'], fixed:{type:'image'} },
     { id:'dapodik', name:'Dapodik', path:'/api/search/dapodik', params:['query'] },
     { id:'nowsecure', name:'NowSecure', path:'/api/search/nowsecure', params:['query'] },
     { id:'sinopsis', name:'Sinopsis Film', path:'/api/search/sinopsis', params:['query'] },
     { id:'cookpad', name:'Cookpad', path:'/api/search/cookpad', params:['query'] },
-    { id:'prodi', name:'PDDIKTI', path:'/api/search/prodi', params:['query'] },
+    { id:'prodi', name:'PDDIKTI', path:'/api/search/prodi', params:['query','mode'], fixed:{mode:'nama'} },
     { id:'goal', name:'Goal.com', path:'/api/search/goal', params:['query'] }
   ],
   'VIDEO': [
     { id:'youtube', name:'YouTube', path:'/api/search/youtube-search', params:['query'] },
-    { id:'tiktok', name:'TikTok', path:'/api/search/tiktok-search', params:['query'] }
+    { id:'tiktok', name:'TikTok', path:'/api/search/tiktok-search', params:['query','region','type'], fixed:{region:'ID', type:'video'} }
   ],
   'MUSIC': [
-    { id:'spotify', name:'Spotify', path:'/api/search/spotify', params:['query'] },
-    { id:'soundcloud', name:'SoundCloud', path:'/api/search/soundcloud', params:['query'] }
+    { id:'spotify', name:'Spotify', path:'/api/search/spotify', params:['query'] }
   ]
 };
 
+// ===== BYPASS =====
 var BYPASS_LIST = [
-  { id:'bypasslink', name:'Bypass Link v1', path:'/api/bypass/bypasslink', method:'POST', params:['url','androidId'], desc:'sf.gl, sub2unlock, tinyurl' },
-  { id:'bypasslinkv2', name:'Bypass Link v2', path:'/api/bypass/bypasslinkv2', method:'POST', params:['url'], desc:'40+ shortlink' },
-  { id:'bypasslinkv3', name:'Bypass Link v3', path:'/api/bypass/bypasslinkv3', method:'POST', params:['url'], desc:'Universal safelink' },
-  { id:'modjall', name:'ModJall', path:'/api/bypass/modjall', method:'POST', params:['url'], desc:'ModJall' },
-  { id:'move2link', name:'Move2Link', path:'/api/bypass/move2link', method:'POST', params:['url'], desc:'move2link.com' },
-  { id:'ouo-bypass', name:'Ouo Bypass', path:'/api/bypass/ouo-bypass', method:'POST', params:['url'], desc:'ouo.io' },
-  { id:'safelink', name:'Safelink', path:'/api/bypass/safelink', method:'POST', params:['url'], desc:'sfl.gl' },
-  { id:'shrinkme', name:'ShrinkMe', path:'/api/bypass/shrinkme', method:'POST', params:['url'], desc:'shrinkme.click' },
-  { id:'wellbypass', name:'Wellbypass', path:'/api/bypass/wellbypass', method:'POST', params:['url','turnstileToken'], desc:'Linkvertise' }
+  { id:'bypasslink', name:'Bypass Link v1', path:'/api/bypass/bypasslink', method:'POST', params:['url','androidId'] },
+  { id:'bypasslinkv2', name:'Bypass Link v2', path:'/api/bypass/bypasslinkv2', method:'POST', params:['url'] },
+  { id:'bypasslinkv3', name:'Bypass Link v3', path:'/api/bypass/bypasslinkv3', method:'POST', params:['url'] },
+  { id:'modjall', name:'ModJall', path:'/api/bypass/modjall', method:'POST', params:['url'] },
+  { id:'move2link', name:'Move2Link', path:'/api/bypass/move2link', method:'POST', params:['url'] },
+  { id:'ouo-bypass', name:'Ouo Bypass', path:'/api/bypass/ouo-bypass', method:'POST', params:['url'] },
+  { id:'safelink', name:'Safelink', path:'/api/bypass/safelink', method:'POST', params:['url'] },
+  { id:'shrinkme', name:'ShrinkMe', path:'/api/bypass/shrinkme', method:'POST', params:['url'] },
+  { id:'wellbypass', name:'Wellbypass', path:'/api/bypass/wellbypass', method:'POST', params:['url','turnstileToken'] }
 ];
 
+// ===== DOWNLOADER =====
 var DOWNLOADER_LIST = [
   { id:'tikwm', name:'TikWM (recommended)', path:'TIKWM', method:'GET', params:['url'], cat:'TikTok', desc:'auto WM/NoWM/HD' },
   { id:'tiktokv2', name:'TikTok v2 (HD)', path:'/api/downloader/tiktokv2', method:'GET', params:['url'], cat:'TikTok' },
   { id:'tiktokv3', name:'TikTok v3', path:'/api/downloader/tiktokv3', method:'GET', params:['url'], cat:'TikTok' },
   { id:'tiktokv4', name:'TikTok v4', path:'/api/downloader/tiktokv4', method:'GET', params:['url'], cat:'TikTok' },
-  { id:'tiktokv5', name:'TikTok v5 (slide)', path:'/api/downloader/tiktokv5', method:'GET', params:['url'], cat:'TikTok', desc:'slideshow' },
+  { id:'tiktokv5', name:'TikTok v5 (slide)', path:'/api/downloader/tiktokv5', method:'GET', params:['url'], cat:'TikTok' },
   { id:'tiktokio', name:'TikTok.io', path:'/api/downloader/tiktokio', method:'GET', params:['url'], cat:'TikTok' },
   { id:'tiktok', name:'TikTok v1', path:'/api/downloader/tiktok', method:'GET', params:['url'], cat:'TikTok' },
   { id:'youtubev1', name:'YouTube v1', path:'/api/downloader/youtubev1', method:'GET', params:['url','quality'], cat:'YouTube' },
   { id:'youtubev2', name:'YouTube v2', path:'/api/downloader/youtubev2', method:'GET', params:['url'], cat:'YouTube' },
   { id:'youtubev3', name:'YouTube v3', path:'/api/downloader/youtubev3', method:'GET', params:['url','json'], cat:'YouTube' },
-  { id:'youtubev4', name:'YouTube v4 (y2mate)', path:'/api/downloader/youtubev4', method:'GET', params:['url'], cat:'YouTube' },
+  { id:'youtubev4', name:'YouTube v4', path:'/api/downloader/youtubev4', method:'GET', params:['url'], cat:'YouTube' },
   { id:'savetube', name:'SaveTube', path:'/api/downloader/savetube', method:'GET', params:['url','format'], cat:'YouTube' },
   { id:'insvid', name:'Insvid', path:'/api/downloader/insvid', method:'GET', params:['url','fileType'], cat:'YouTube' },
   { id:'ytplay', name:'YT Play', path:'/api/downloader/ytplay', method:'GET', params:['query'], cat:'YouTube' },
@@ -534,30 +580,30 @@ async function fetchTikTokSmart(url, logEl){
   return combined;
 }
 
-// ===== API HUB LIST — 156 endpoint =====
+// ===== API HUB LIST =====
 var API_HUB_LIST = [
-  // UPSCALE (5)
+  // UPSCALE
   {id:'up_ai', name:'Video Upscale AI', path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
   {id:'up_v1', name:'Video Upscale v1', path:'/api/hdvidio/upscale', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
   {id:'up_tohd', name:'HD Video Processor', path:'/api/hdvidio/tohd', method:'GET', params:['video','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
   {id:'up_wink', name:'Wink HD Video Enhancer', path:'/api/hdvidio/wink-hd-video', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
   {id:'up_v2', name:'Video HD Enhancer', path:'/api/hdvidio/enhance', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
 
-  // IMG AI (12)
+  // IMG AI
   {id:'ai_seek', name:'AI Seek Image', path:'/api/imageai/aiseek', method:'GET', params:['prompt'], cat:'IMG AI'},
   {id:'ai_bing', name:'AI Bing Image', path:'/api/imageai/bingimg', method:'GET', params:['query'], cat:'IMG AI'},
-  {id:'ai_dezgo', name:'Dezgo Image Generator', path:'/api/imageai/dezgo', method:'GET', params:['text','model','width','height','negative'], cat:'IMG AI'},
+  {id:'ai_dezgo', name:'Dezgo Image', path:'/api/imageai/dezgo', method:'GET', params:['text','model','width','height','negative'], cat:'IMG AI'},
   {id:'ai_freeforai', name:'FreeForAI Image', path:'/api/imageai/freeforai', method:'GET', params:['prompt','model','size'], cat:'IMG AI'},
   {id:'ai_gstory', name:'GStory AI Image', path:'/api/imageai/gstory', method:'GET', params:['prompt','style','ratio'], cat:'IMG AI'},
   {id:'ai_nano', name:'Nano Banana AI', path:'/api/imageai/nanobanana', method:'GET', params:['prompt','ratio','resolution'], cat:'IMG AI'},
   {id:'ai_poll', name:'Pollinations AI', path:'/api/imageai/pollinations', method:'GET', params:['prompt'], cat:'IMG AI'},
-  {id:'ai_quil', name:'Quillbot Image Gen', path:'/api/imageai/quil-image', method:'GET', params:['prompt','style','aspect'], cat:'IMG AI'},
-  {id:'ai_strom', name:'Strom-AI Text to Image', path:'/api/imageai/strom-img', method:'GET', params:['prompt'], cat:'IMG AI'},
+  {id:'ai_quil', name:'Quillbot Image', path:'/api/imageai/quil-image', method:'GET', params:['prompt','style','aspect'], cat:'IMG AI'},
+  {id:'ai_strom', name:'Strom-AI T2I', path:'/api/imageai/strom-img', method:'GET', params:['prompt'], cat:'IMG AI'},
   {id:'ai_t2i', name:'Text to Image (FreeGen)', path:'/api/imageai/text2image', method:'GET', params:['teks','ratio'], cat:'IMG AI'},
   {id:'ai_t2iv2', name:'Text to Image v2 (FLUX)', path:'/api/imageai/text2imgv2', method:'GET', params:['teks'], cat:'IMG AI'},
   {id:'ai_t2iv3', name:'Text to Image v3 (Baidu)', path:'/api/imageai/text2imgv3', method:'GET', params:['teks'], cat:'IMG AI'},
 
-  // IMG HD (33)
+  // IMG HD
   {id:'hd_en1', name:'AI Enhance HD', path:'/api/imagehd/ai-enhance', method:'GET', params:['url'], cat:'IMG HD'},
   {id:'hd_en2', name:'AI Enhance HD v2', path:'/api/imagehd/ai-enhancev2', method:'GET', params:['url','size'], cat:'IMG HD'},
   {id:'hd_en3', name:'AI Enhance HD v3', path:'/api/imagehd/ai-enhancev3', method:'GET', params:['url'], cat:'IMG HD'},
@@ -592,11 +638,11 @@ var API_HUB_LIST = [
   {id:'hd_hd3', name:'HD Converter v3', path:'/api/imagehd/hd-convertv3', method:'GET', params:['url'], cat:'IMG HD'},
   {id:'hd_hd4', name:'HD Converter v4', path:'/api/imagehd/hd-convertv4', method:'GET', params:['url'], cat:'IMG HD'},
 
-  // KALENDER (2)
+  // KALENDER
   {id:'kal_hari', name:'Hari Ini', path:'/api/kalender/hari-ini', method:'GET', params:[], cat:'KALENDER'},
   {id:'kal_libur', name:'Hari Libur Nasional', path:'/api/kalender/hari-libur', method:'GET', params:['tahun'], cat:'KALENDER'},
 
-  // MAKER (48)
+  // MAKER
   {id:'mk_bounty', name:'Fake Bounty', path:'/api/maker/bounty', method:'GET', params:['image','text'], cat:'MAKER'},
   {id:'mk_ektp', name:'EKTP Generator', path:'/api/maker/ektp', method:'GET', params:['nama','nik','provinsi','kota','ttl','jenis_kelamin','golongan_darah','alamat','rt/rw','kel/desa','kecamatan','agama','status','pekerjaan','kewarganegaraan','masa_berlaku','terbuat','pas_photo'], cat:'MAKER'},
   {id:'mk_afin', name:'Fake Afinitas ML', path:'/api/maker/fake-afinitas-ml', method:'GET', params:['ppurl'], cat:'MAKER'},
@@ -641,17 +687,18 @@ var API_HUB_LIST = [
   {id:'mk_textvid', name:'Text Video Generator', path:'/api/maker/textvideo', method:'GET', params:['text','duration','size'], cat:'MAKER'},
   {id:'mk_ttqc', name:'TikTok Quote Chat', path:'/api/maker/ttqc', method:'GET', params:['username','text','avatar'], cat:'MAKER'},
   {id:'mk_2btn', name:'Two Buttons Meme', path:'/api/maker/twobuttons', method:'GET', params:['teks1','teks2','teks3'], cat:'MAKER'},
-  {id:'mk_wafat', name:'Fake Wafat', path:'/api/maker/wafat', method:'GET', params:['fotourl','nama','lahir','wafat'], cat:'MAKER'},
+  {id:'mk_wafat', name:'Fake Wafat', path:'/api/maker/fakemati', method:'GET', params:['nama'], cat:'MAKER'},
+  {id:'mk_wafat2', name:'Fake Wafat', path:'/api/maker/wafat', method:'GET', params:['fotourl','nama','lahir','wafat'], cat:'MAKER'},
   {id:'mk_students', name:'Student ID Card', path:'/api/maker/students', method:'GET', params:['name','school','studentId','class','rollNo','dob','blood','guardian','contact','address','valid','photo'], cat:'MAKER'},
 
-  // SEARCH API (56) — untuk tab SRCH API (bukan search browser)
+  // SEARCH API
   {id:'sr_4k', name:'Search Wallpaper 4K', path:'/api/search/4kwallpapers', method:'GET', params:['action','query','slug','page'], cat:'SEARCH'},
   {id:'sr_anime', name:'Anime Search', path:'/api/search/anime', method:'GET', params:['q'], cat:'SEARCH'},
   {id:'sr_bacakomik', name:'BacaKomik', path:'/api/search/bacakomik', method:'GET', params:['action','query','url','page'], cat:'SEARCH'},
   {id:'sr_bansos', name:'Cek Bansos', path:'/api/search/cekbansos', method:'GET', params:['nik'], cat:'SEARCH'},
   {id:'sr_cinesubz', name:'CineSubz', path:'/api/search/cinesubz', method:'GET', params:['q','url','action'], cat:'SEARCH'},
   {id:'sr_cookpad', name:'Cookpad', path:'/api/search/cookpad', method:'GET', params:['action','query','id'], cat:'SEARCH'},
-  {id:'sr_dapodik', name:'Dapodik Sekolah', path:'/api/search/dapodik', method:'GET', params:['action','query','npsn'], cat:'SEARCH'},
+  {id:'sr_dapodik', name:'Dapodik', path:'/api/search/dapodik', method:'GET', params:['action','query','npsn'], cat:'SEARCH'},
   {id:'sr_douyin', name:'Douyin Search', path:'/api/search/douyin-search', method:'GET', params:['query'], cat:'SEARCH'},
   {id:'sr_flac', name:'FlacDownloader', path:'/api/search/flac', method:'GET', params:['q'], cat:'SEARCH'},
   {id:'sr_gempa', name:'Info Gempa BMKG', path:'/api/search/gempa', method:'GET', params:[], cat:'SEARCH'},
@@ -667,7 +714,7 @@ var API_HUB_LIST = [
   {id:'sr_manhwaindo', name:'Manhwaindo', path:'/api/search/manhwaindo', method:'GET', params:['query'], cat:'SEARCH'},
   {id:'sr_manhwaland', name:'Manhwaland', path:'/api/search/manhwaland', method:'GET', params:['action'], cat:'SEARCH'},
   {id:'sr_mcpedl', name:'MCPEDL', path:'/api/search/mcpedl', method:'GET', params:['query','url','slug','source','action','max','page'], cat:'SEARCH'},
-  {id:'sr_moviedetail', name:'Movie Detail TMDB', path:'/api/search/moviedetail', method:'GET', params:['url'], cat:'SEARCH'},
+  {id:'sr_moviedetail', name:'Movie Detail', path:'/api/search/moviedetail', method:'GET', params:['url'], cat:'SEARCH'},
   {id:'sr_murotal', name:'Murotal Quran', path:'/api/search/murotal-quran', method:'GET', params:['murotal','surat'], cat:'SEARCH'},
   {id:'sr_musix', name:'Musixmatch Lyrics', path:'/api/search/musixmatch', method:'GET', params:['url'], cat:'SEARCH'},
   {id:'sr_nasa', name:'NASA Search', path:'/api/search/nasa', method:'GET', params:['type','limit','query','detail'], cat:'SEARCH'},
@@ -693,7 +740,7 @@ var API_HUB_LIST = [
   {id:'sr_bilibili', name:'Bilibili', path:'/api/search/bilibili', method:'GET', params:['query','type','action','url','page','limit','lang'], cat:'SEARCH'}
 ];
 
-// ===== TEMPMAIL v6.7 =====
+// ===== TEMPMAIL =====
 var tmpToken=null, tmpEmail=null, tmpMsgs=[];
 
 async function tmpFetchV2(url, opts){
@@ -728,10 +775,12 @@ async function tmpLoad(){
       window.__selTmpDom.setItems(items);
     }
     logTo('tmp-log','✓ '+arr.length+' domain','ok');
-  }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
+  }catch(e){
+    logTo('tmp-log','✗ '+e.message,'er');
+    setTimeout(function(){ tmpLoad(); }, 3000);
+  }
 }
 window.tmpLoadDomains = tmpLoad;
-
 if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ tmpLoad(); };
 
 if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
@@ -744,37 +793,27 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
   var pw = 'RyannTmp!' + Math.floor(Math.random()*99999);
   logTo('tmp-log','⏳ Membuat ' + em + '...','in');
   try{
-    var r = await tmpFetchV2('https://api.mail.tm/accounts', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({address:em, password:pw})
-    });
+    var r = await tmpFetchV2('https://api.mail.tm/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
     var j = await r.json();
     if(!r.ok){ logTo('tmp-log','✗ '+(j.message || 'error'),'er'); return; }
     logTo('tmp-log','✓ Account OK','ok');
-    var r2 = await tmpFetchV2('https://api.mail.tm/token', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({address:em, password:pw})
-    });
+    var r2 = await tmpFetchV2('https://api.mail.tm/token', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({address:em, password:pw})});
     var j2 = await r2.json();
     if(!r2.ok){ logTo('tmp-log','✗ Login: '+(j2.message||'error'),'er'); return; }
-    tmpToken = j2.token;
-    tmpEmail = em;
+    tmpToken = j2.token; tmpEmail = em;
     $id('tmp-email').textContent = em;
     logTo('tmp-log','✓ Login OK','ok');
-    // Save to history
-    var h = JSON.parse(localStorage.getItem('rx_history') || '[]');
-    h.unshift({n:'Tempmail ['+em+']', s:'0.1', l:em.length, t:Date.now(), c:em});
-    if(h.length > 30) h = h.slice(0,30);
-    localStorage.setItem('rx_history', JSON.stringify(h));
+    try{
+      var hist = JSON.parse(localStorage.getItem('rx_history') || '[]');
+      hist.unshift({n:'Tempmail ['+em+']', s:'0.1', l:em.length, t:Date.now(), c:em});
+      if(hist.length > 30) hist = hist.slice(0,30);
+      localStorage.setItem('rx_history', JSON.stringify(hist));
+    }catch(e){}
     if(window.unlockAch) window.unlockAch('tmp_first');
     if(window.sndSuccess) window.sndSuccess();
   }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
 };
-
-if($id('tmp-copy')) $id('tmp-copy').onclick=function(){
-  if(tmpEmail) navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); });
-};
-
+if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail) navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); }); };
 if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
   if(!tmpToken){ alert('Generate dulu'); return; }
   try{
@@ -782,13 +821,10 @@ if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
     var j = await r.json();
     tmpMsgs = j['hydra:member'] || [];
     var el = $id('tmp-list');
-    el.innerHTML = tmpMsgs.map(function(m,i){
-      return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'</div>';
-    }).join('');
+    el.innerHTML = tmpMsgs.map(function(m,i){ return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'</div>'; }).join('');
     el.querySelectorAll('.msg-item').forEach(function(it){
       it.onclick=function(){
-        var idx = parseInt(it.dataset.i);
-        var m = tmpMsgs[idx];
+        var idx = parseInt(it.dataset.i); var m = tmpMsgs[idx];
         $id('tmp-msg-view').innerHTML='<b>From:</b> '+m.from.address+'<br><b>Subj:</b> '+m.subject+'<br><br>'+(m.intro||'');
         $id('tmp-msg-view').classList.remove('hd');
       };
@@ -797,7 +833,6 @@ if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
     if(window.sndSuccess) window.sndSuccess();
   }catch(e){ logTo('tmp-inbox-log','✗ '+e.message,'er'); }
 };
-
 if($id('tmp-inbox-dl')) $id('tmp-inbox-dl').onclick=function(){
   if(!tmpMsgs.length) return;
   var t = tmpMsgs.map(function(m){ return m.from.address+' | '+m.subject; }).join('\n');
@@ -806,11 +841,9 @@ if($id('tmp-inbox-dl')) $id('tmp-inbox-dl').onclick=function(){
   var a = document.createElement('a'); a.href=u; a.download='inbox.txt';
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 };
-
-// Force load tempmail saat halaman siap
 setTimeout(function(){ if(document.getElementById('tmp-domain')) tmpLoad(); }, 2000);
 
-// ===== SEARCH BROWSER RUNNER =====
+// ===== SEARCH BROWSER =====
 window.zyRunSearch = async function(){
   var q = document.getElementById('search-input');
   var cat = window.__searchCategory || 'ALL';
@@ -831,6 +864,7 @@ window.zyRunSearch = async function(){
   var promises = apis.map(async function(api){
     var p = {};
     api.params.forEach(function(k){ p[k] = query; });
+    if(api.fixed){ Object.keys(api.fixed).forEach(function(k){ p[k] = api.fixed[k]; }); }
     try{
       var r = await callAPIv2(api.path, p, 'GET');
       var items = extractResultItems(r);
@@ -838,7 +872,7 @@ window.zyRunSearch = async function(){
       return { api:api, items:items, raw:r };
     }catch(e){
       if(log){ var le = document.createElement('div'); le.className='er'; le.textContent='✗ '+api.name+': '+e.message; log.appendChild(le); log.scrollTop=log.scrollHeight; }
-      return { api:api, items:[], raw:null, error:e.message };
+      return { api:api, items:[], error:e.message };
     }
   });
 
@@ -853,10 +887,7 @@ window.zyRunSearch = async function(){
     html += '<div class="search-section"><div class="search-section-title">'+esc(r.api.name)+' — '+r.items.length+' hasil</div>';
     r.items.slice(0, 15).forEach(function(item){
       var thumbHtml = item.thumb ? '<img src="'+esc(item.thumb)+'" class="search-thumb" loading="lazy" onerror="this.style.display=\'none\'">' : '<div class="search-thumb-placeholder">📄</div>';
-      html += '<div class="search-item" onclick="zyOpenLink(\''+esc(item.url).replace(/'/g,"\\'")+'\')">';
-      html += thumbHtml;
-      html += '<div class="search-item-body">';
-      html += '<div class="search-item-title">'+esc(item.title)+'</div>';
+      html += '<div class="search-item" onclick="zyOpenLink(\''+esc(item.url).replace(/'/g,"\\'")+'\')">'+thumbHtml+'<div class="search-item-body"><div class="search-item-title">'+esc(item.title)+'</div>';
       if(item.author) html += '<div class="search-item-author">'+esc(item.author)+'</div>';
       if(item.desc) html += '<div class="search-item-desc">'+esc(String(item.desc).substring(0,140))+'</div>';
       html += '</div><div class="search-item-arrow">→</div></div>';
@@ -867,7 +898,6 @@ window.zyRunSearch = async function(){
   res.innerHTML = html;
   res.classList.remove('hd');
 };
-
 window.zyOpenLink = function(url){ window.open(url, '_blank', 'noopener,noreferrer'); };
 
 // ===== BYPASS =====
@@ -875,7 +905,7 @@ var bypassSelected = 'ALL';
 window.zyInitBypass = function(){
   var sel = $id('bp-api-custom');
   if(!sel || typeof window.initCustomSelect !== 'function') return;
-  var items = [{id:'ALL', name:'ALL — fallback 9 API', desc:'Coba semua'}].concat(BYPASS_LIST.map(function(b){ return {id:b.id, name:b.name, desc:b.desc||''}; }));
+  var items = [{id:'ALL', name:'ALL — fallback 9 API', desc:'Coba semua'}].concat(BYPASS_LIST.map(function(b){ return {id:b.id, name:b.name}; }));
   window.__bpSel = window.initCustomSelect('bp-api-custom', items, bypassSelected, function(id){ bypassSelected = id; window.zyRenderBypassParams(); });
   window.zyRenderBypassParams();
 };
@@ -883,8 +913,7 @@ window.zyRenderBypassParams = function(){
   var wrap = $id('bp-params'); if(!wrap) return;
   if(bypassSelected === 'ALL'){ wrap.innerHTML = '<label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">'; }
   else {
-    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; });
-    if(!api) return;
+    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; }); if(!api) return;
     wrap.innerHTML = api.params.map(function(p){ return '<label>'+p+'</label><input id="bp-'+p+'" placeholder="'+(p==='url'?'https://...':'(opsional)')+'">'; }).join('');
   }
 };
@@ -898,8 +927,7 @@ window.zyRunBypass = async function(){
     if(!url){ alert('Masukkan URL'); return; }
     params = {url:url.trim()}; list = BYPASS_LIST;
   } else {
-    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; });
-    list = [api]; params = {};
+    var api = BYPASS_LIST.find(function(x){ return x.id===bypassSelected; }); list = [api]; params = {};
     api.params.forEach(function(p){ var el = $id('bp-'+p); if(el) params[p] = el.value.trim(); });
     if(!params.url){ alert('URL kosong'); return; }
   }
@@ -909,14 +937,11 @@ window.zyRunBypass = async function(){
     html += '<details class="zy-raw" open><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(out.result,null,2))+'</pre></details>';
     html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
     res.innerHTML = html; res.classList.remove('hd');
-  } else {
-    res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd');
-  }
+  } else { res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd'); }
 };
 
 // ===== DL =====
-var dlCat = 'ALL';
-var dlApi = 'tikwm';
+var dlCat = 'ALL'; var dlApi = 'tikwm';
 window.zyInitDownloader = function(){
   var catSel = $id('dl-cat-custom'), apiSel = $id('dl-api-custom');
   if(!catSel || !apiSel || typeof window.initCustomSelect !== 'function') return;
@@ -952,10 +977,8 @@ window.zyRenderDlParams = function(){
   }).join('');
 };
 function isTikTokUrl(url){ if(!url) return false; return /tiktok\.com|vt\.tiktok\.com|vm\.tiktok\.com/.test(url.toLowerCase()); }
-
 window.zyRunDownloader = async function(){
-  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-  if(!api){ alert('Pilih API'); return; }
+  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ alert('Pilih API'); return; }
   var log = $id('dl-log'), res = $id('dl-result');
   if(log){ log.innerHTML=''; log.classList.remove('hd'); }
   if(res){ res.innerHTML=''; res.classList.add('hd'); }
@@ -974,10 +997,8 @@ window.zyRunDownloader = async function(){
   if(out) window.zyRenderDlResult(res, {api:out.api, result:out.result, type:'generic'}, url);
   else { res.innerHTML='<div class="zy-head er">✗ API GAGAL</div>'; res.classList.remove('hd'); }
 };
-
 window.zyRunDownloaderAll = async function(){
-  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; });
-  if(!api){ alert('Pilih API dulu'); return; }
+  var api = DOWNLOADER_LIST.find(function(x){ return x.id===dlApi; }); if(!api){ alert('Pilih API dulu'); return; }
   var log = $id('dl-log'), res = $id('dl-result');
   if(log){ log.innerHTML=''; log.classList.remove('hd'); }
   if(res){ res.innerHTML=''; res.classList.add('hd'); }
@@ -998,7 +1019,6 @@ window.zyRunDownloaderAll = async function(){
   if(out) window.zyRenderDlResult(res, {api:out.api, result:out.result, type:'generic'}, value);
   else { res.innerHTML='<div class="zy-head er">✗ SEMUA GAGAL</div>'; res.classList.remove('hd'); }
 };
-
 window.zyRenderDlResult = function(container, smart, sourceUrl){
   var type = smart.type;
   var variants = smart.allVariants || extractTikTokVariants(smart.result);
@@ -1007,10 +1027,9 @@ window.zyRenderDlResult = function(container, smart, sourceUrl){
     if(variants.title) slideHtml += '<div class="zy-meta"><div class="zy-meta-t">'+esc(variants.title)+'</div></div>';
     slideHtml += '<div class="zy-slide-grid">';
     variants.images.forEach(function(img, i){
-      slideHtml += '<div class="zy-slide-item-card"><img src="'+esc(img)+'" loading="lazy"><div class="zy-slide-item-num">'+(i+1)+'</div><a href="'+esc(img)+'" download="slide_'+(i+1)+'.jpg" class="zy-dl-btn zy-dl-full">⬇ DOWNLOAD FOTO '+(i+1)+'</a></div>';
+      slideHtml += '<div class="zy-slide-item-card"><img src="'+esc(img)+'" loading="lazy"><div class="zy-slide-item-num">'+(i+1)+'</div><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(img).replace(/'/g,"\\'")+'\',\'slide_'+(i+1)+'.jpg\')">⬇ DOWNLOAD FOTO '+(i+1)+'</button></div>';
     });
     slideHtml += '</div>';
-    slideHtml += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(smart.result,null,2))+'</pre></details>';
     container.innerHTML = slideHtml; container.classList.remove('hd');
     return;
   }
@@ -1022,10 +1041,10 @@ window.zyRenderDlResult = function(container, smart, sourceUrl){
     videoHtml += '</div>';
   }
   videoHtml += '<div class="zy-variant-wrap">';
-  if(variants.noWM) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWM)+'"></video><a href="'+esc(variants.noWM)+'" download="tiktok_nowm.mp4" class="zy-dl-btn zy-dl-full">⬇ NO WM</a></div>';
-  if(variants.noWMHD) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWMHD)+'"></video><a href="'+esc(variants.noWMHD)+'" download="tiktok_nowm_hd.mp4" class="zy-dl-btn zy-dl-full">⬇ NO WM HD</a></div>';
-  if(variants.wm) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.wm)+'"></video><a href="'+esc(variants.wm)+'" download="tiktok_wm.mp4" class="zy-dl-btn zy-dl-full">⬇ WM</a></div>';
-  if(variants.music) videoHtml += '<div class="zy-variant"><audio controls preload="metadata" class="zy-audio" src="'+esc(variants.music)+'"></audio><a href="'+esc(variants.music)+'" download="tiktok_music.mp3" class="zy-dl-btn zy-dl-full">⬇ MUSIC</a></div>';
+  if(variants.noWM) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWM)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.noWM).replace(/'/g,"\\'")+'\',\'tiktok_nowm.mp4\')">⬇ NO WM</button></div>';
+  if(variants.noWMHD) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.noWMHD)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.noWMHD).replace(/'/g,"\\'")+'\',\'tiktok_nowm_hd.mp4\')">⬇ NO WM HD</button></div>';
+  if(variants.wm) videoHtml += '<div class="zy-variant"><video controls preload="metadata" class="zy-video" src="'+esc(variants.wm)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.wm).replace(/'/g,"\\'")+'\',\'tiktok_wm.mp4\')">⬇ WM</button></div>';
+  if(variants.music) videoHtml += '<div class="zy-variant"><audio controls preload="metadata" class="zy-audio" src="'+esc(variants.music)+'"></audio><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(variants.music).replace(/'/g,"\\'")+'\',\'tiktok_music.mp3\')">⬇ MUSIC</button></div>';
   videoHtml += '</div>';
   if(!variants.noWM && !variants.noWMHD && !variants.wm && !variants.music){
     var mediaItems = collectMedia(smart.result, []);
@@ -1033,27 +1052,19 @@ window.zyRenderDlResult = function(container, smart, sourceUrl){
       videoHtml += '<div class="zy-media-wrap"><div class="zy-media-title">📥 MEDIA</div>';
       mediaItems.forEach(function(item){
         var cls = item.url.match(/\.(mp4|mov|webm)/i) ? 'video' : item.url.match(/\.(mp3|m4a)/i) ? 'audio' : 'img';
-        if(cls === 'video') videoHtml += '<div class="zy-media-item"><video controls class="zy-video" src="'+esc(item.url)+'"></video><a href="'+esc(item.url)+'" download class="zy-dl-btn zy-dl-full">⬇ DOWNLOAD</a></div>';
-        else if(cls === 'audio') videoHtml += '<div class="zy-media-item"><audio controls class="zy-audio" src="'+esc(item.url)+'"></audio><a href="'+esc(item.url)+'" download class="zy-dl-btn zy-dl-full">⬇ DOWNLOAD</a></div>';
-        else videoHtml += '<div class="zy-media-item"><img src="'+esc(item.url)+'" class="zy-image"><a href="'+esc(item.url)+'" download class="zy-dl-btn zy-dl-full">⬇ DOWNLOAD</a></div>';
+        if(cls === 'video') videoHtml += '<div class="zy-media-item"><video controls class="zy-video" src="'+esc(item.url)+'"></video><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'video.mp4\')">⬇ DOWNLOAD</button></div>';
+        else if(cls === 'audio') videoHtml += '<div class="zy-media-item"><audio controls class="zy-audio" src="'+esc(item.url)+'"></audio><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'audio.mp3\')">⬇ DOWNLOAD</button></div>';
+        else videoHtml += '<div class="zy-media-item"><img src="'+esc(item.url)+'" class="zy-image"><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(item.url).replace(/'/g,"\\'")+'\',\'image.jpg\')">⬇ DOWNLOAD</button></div>';
       });
       videoHtml += '</div>';
     } else { videoHtml += '<div class="zy-head er">⚠ Tidak ada media</div>'; }
   }
-  videoHtml += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(smart.result,null,2))+'</pre></details>';
   container.innerHTML = videoHtml; container.classList.remove('hd');
 };
-
 window.zyPreviewResult = function(){
   var res = $id('dl-result');
   if(!res || res.classList.contains('hd')){ alert('Belum ada hasil'); return; }
   res.scrollIntoView({behavior:'smooth', block:'start'});
-  var firstMedia = res.querySelector('video, audio, img');
-  if(firstMedia){
-    var parent = firstMedia.closest('.zy-variant') || firstMedia.closest('.zy-media-item') || firstMedia.closest('.zy-slide-item-card');
-    if(parent){ parent.style.transition='box-shadow .3s'; parent.style.boxShadow='0 0 30px var(--ac)'; setTimeout(function(){ parent.style.boxShadow=''; }, 1200); }
-    try{ firstMedia.play && firstMedia.play(); }catch(e){}
-  }
 };
 window.zyClearDownloader = function(){
   ['dl-url','dl-query','dl-track_id','dl-format','dl-quality','dl-fileType','dl-type','dl-action','dl-mode','dl-json'].forEach(function(id){ var el = $id(id); if(el) el.value=''; });
@@ -1062,7 +1073,7 @@ window.zyClearDownloader = function(){
   if(res){ res.innerHTML=''; res.classList.add('hd'); }
 };
 
-// ===== API HUB ENGINE =====
+// ===== API HUB =====
 var apiHubState = {};
 window.zyInitApiHub = function(tabId, catName){
   if(typeof window.initCustomSelect !== 'function') return;
@@ -1076,7 +1087,6 @@ window.zyInitApiHub = function(tabId, catName){
   });
   window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
 };
-
 window.zyRunApiHub = async function(tabId, catName){
   var st = apiHubState[tabId];
   if(!st || !st.endpoint){ alert('Pilih endpoint'); return; }
@@ -1088,10 +1098,7 @@ window.zyRunApiHub = async function(tabId, catName){
 
   var loadingMsg = '⏳ Tunggu sebentar ya...';
   if(catName === 'UPSCALE') loadingMsg = '🎬 Memproses video... tunggu sebentar ya...';
-  else if(catName === 'IMG AI'){
-    var p = params.prompt || params.teks || params.query || params.text || '';
-    loadingMsg = '🎨 Membuat sketsa ' + (p ? String(p).substring(0,50) : 'objek') + '...';
-  }
+  else if(catName === 'IMG AI'){ var p = params.prompt || params.teks || params.query || params.text || ''; loadingMsg = '🎨 Membuat sketsa ' + (p ? String(p).substring(0,50) : 'objek') + '...'; }
   else if(catName === 'IMG HD') loadingMsg = '🖼 Enhancing image... tunggu sebentar ya...';
   else if(catName === 'KALENDER') loadingMsg = '📅 Mengambil data kalender...';
   else if(catName === 'MAKER') loadingMsg = '🎨 Membuat ' + st.endpoint.name + '...';
@@ -1103,8 +1110,6 @@ window.zyRunApiHub = async function(tabId, catName){
     var r = await callAPIv2(st.endpoint.path, params, st.endpoint.method || 'GET');
     if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='✓ Selesai'; log.appendChild(l2); }
     window.zyRenderApiResult(res, r, st.endpoint.name, catName);
-
-    // Save history
     try{
       var txt = JSON.stringify(r);
       var h = JSON.parse(localStorage.getItem('rx_history') || '[]');
@@ -1117,27 +1122,18 @@ window.zyRunApiHub = async function(tabId, catName){
     if(res){ res.innerHTML='<div class="zy-head er">✗ '+esc(e.message)+'</div>'; res.classList.remove('hd'); }
   }
 };
-
 window.zyRenderApiResult = function(container, data, name, catName){
   var html = '<div class="zy-head">✓ '+esc(name)+'</div>';
-
   if(catName === 'KALENDER'){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">📅 DATA KALENDER</div>';
-    html += '<pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre>';
-    html += '</div>';
-    container.innerHTML = html; container.classList.remove('hd');
-    return;
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">📅 DATA KALENDER</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre></div>';
+    container.innerHTML = html; container.classList.remove('hd'); return;
   }
-
   var mediaItems = collectMedia(data, []);
   var seen = {}; var unique = [];
   mediaItems.forEach(function(m){ if(!seen[m.url]){ seen[m.url]=1; unique.push(m); } });
   var images = unique.filter(function(x){ return classify(x.url)==='image'; });
   var videos = unique.filter(function(x){ return classify(x.url)==='video'; });
-  var others = unique.filter(function(x){ return classify(x.url)!=='image' && classify(x.url)!=='video'; });
-
   window.__apiHubMedia = unique;
-
   if(images.length){
     html += '<div class="zy-media-wrap"><div class="zy-media-title">🖼 IMAGE ('+images.length+')</div>';
     images.slice(0,12).forEach(function(img, i){
@@ -1146,7 +1142,7 @@ window.zyRenderApiResult = function(container, data, name, catName){
       html += '<img src="'+esc(img.url)+'" class="zy-image" loading="lazy" onclick="zyOpenPreview('+idx+')" style="cursor:pointer">';
       html += '<div class="zy-media-actions">';
       html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🖼 PREVIEW</button>';
-      html += '<a href="'+esc(img.url)+'" download="result_'+i+'.jpg" class="zy-dl-btn">⬇ DOWNLOAD</a>';
+      html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(img.url).replace(/'/g,"\\'")+'\',\'result_'+i+'.jpg\')">⬇ DOWNLOAD</button>';
       html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(img.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
       html += '</div></div>';
     });
@@ -1160,43 +1156,19 @@ window.zyRenderApiResult = function(container, data, name, catName){
       html += '<video controls preload="metadata" class="zy-video" src="'+esc(v.url)+'"></video>';
       html += '<div class="zy-media-actions">';
       html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🖼 PREVIEW</button>';
-      html += '<a href="'+esc(v.url)+'" download class="zy-dl-btn">⬇ DOWNLOAD</a>';
+      html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(v.url).replace(/'/g,"\\'")+'\',\'video_'+i+'.mp4\')">⬇ DOWNLOAD</button>';
       html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(v.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
       html += '</div></div>';
     });
     html += '</div>';
   }
   if(!images.length && !videos.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">📄 RESPONSE</div>';
-    html += '<pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre>';
-    html += '</div>';
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">📄 RESPONSE</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre></div>';
   }
   html += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>';
   html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
   container.innerHTML = html; container.classList.remove('hd');
 };
-
-window.zyOpenPreview = function(idx){
-  var m = window.__apiHubMedia && window.__apiHubMedia[idx];
-  if(!m) return;
-  var media = m.url;
-  var isVideo = classify(media) === 'video';
-  var overlay = document.getElementById('zy-preview-overlay');
-  if(!overlay){
-    overlay = document.createElement('div');
-    overlay.id = 'zy-preview-overlay';
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .25s';
-    overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.remove(); });
-    document.body.appendChild(overlay);
-  }
-  var inner = isVideo
-    ? '<video controls autoplay style="max-width:100%;max-height:90vh;border-radius:8px" src="'+m.url+'"></video>'
-    : '<img src="'+m.url+'" style="max-width:100%;max-height:90vh;border-radius:8px;object-fit:contain">';
-  overlay.innerHTML = '<div style="position:relative;max-width:100%;max-height:100%">'+inner+'<button onclick="document.getElementById(\'zy-preview-overlay\').remove()" style="position:absolute;top:-40px;right:0;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;border:none;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button></div>';
-};
-
-window.zyCp = function(u){ navigator.clipboard.writeText(u).then(function(){ window.zyToast('URL tersalin'); }); };
-window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ window.zyToast('JSON tersalin'); }); };
 
 // ===== AUTO-INIT =====
 function __zyReady(){
