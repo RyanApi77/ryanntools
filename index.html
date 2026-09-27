@@ -11,12 +11,36 @@
 <style>
 :root{--bg:#04080f;--card:rgba(10,20,35,.78);--border:#1e4d5c;--bl:#2a6b7f;--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--tx:#e0f2fe;--txd:#64748b;--ok:#4ade80;--er:#f87171;--wr:#fbbf24;--fs:13px;--fh:'Orbitron',sans-serif;--fm:'JetBrains Mono',monospace}
 *{margin:0;padding:0;box-sizing:border-box}html{font-size:var(--fs)}
-body{background:var(--bg);color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;overflow-x:hidden;position:relative;padding-bottom:96px}
-body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg)}
 
-#passwordGate{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 25%,rgba(10,21,37,.55),transparent 60%),radial-gradient(circle at 70% 75%,rgba(13,24,48,.55),transparent 55%),rgba(4,8,15,.75);transition:opacity .6s,visibility .6s;overflow:hidden}
+/* ===== BODY + GALAXY NEBULA (background body sendiri, bukan ::before) ===== */
+body{
+  background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),
+             radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),
+             var(--bg);
+  background-attachment:fixed;
+  color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;
+  overflow-x:hidden;position:relative;padding-bottom:96px;
+}
+
+/* ===== PASSWORD GATE — TRANSPARAN TOTAL ===== */
+#passwordGate{
+  position:fixed;inset:0;z-index:999999;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;    /* GAK ada background — biar galaxy tembus 100% */
+  transition:opacity .6s,visibility .6s;overflow:hidden;
+}
 #passwordGate.gate-hidden{opacity:0;visibility:hidden;pointer-events:none}
-.access-card{width:min(94%,500px);padding:36px 26px 28px;background:linear-gradient(180deg,rgba(14,18,24,.88),rgba(8,12,18,.94));border:1.5px solid rgba(148,163,184,.30);border-radius:22px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.78);position:relative;overflow:hidden;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+
+/* card login — semi transparan dengan blur */
+.access-card{
+  width:min(94%,500px);padding:36px 26px 28px;
+  background:linear-gradient(180deg,rgba(14,18,24,.72),rgba(8,12,18,.85));
+  border:1.5px solid rgba(148,163,184,.30);
+  border-radius:22px;text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,.78);
+  position:relative;overflow:hidden;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
 .card-line{width:56px;height:3px;margin:0 auto 20px;border-radius:20px;background:linear-gradient(90deg,transparent,rgba(148,163,184,.9),transparent)}
 .access-card h1{margin:0;font-family:'Orbitron',sans-serif;font-size:22px;letter-spacing:3.5px;color:#e2e8f0;font-weight:900}
 .access-card h1 span{color:#94a3b8;opacity:.95}
@@ -74,12 +98,11 @@ body[data-theme="t-fuchsia"]{--ac:#e879f9;--ac2:#f0abfc;--acd:rgba(232,121,249,.
 body[data-theme="t-slate"]{--ac:#94a3b8;--ac2:#cbd5e1;--acd:rgba(148,163,184,.15);--bl:#4a5c73;--border:#334155}
 body[data-theme="t-mono"]{--ac:#e0f2fe;--ac2:#f8fafc;--acd:rgba(224,242,254,.15);--bl:#4a5c73;--border:#334155}
 
-/* ===== BG LAYER ===== */
+/* ===== BG LAYER — z-index 0, di atas body, di bawah konten ===== */
 .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .bg-layer > .starfield,.bg-layer > .shooting-star-1,.bg-layer > .shooting-star-2,.bg-layer > .blackhole,.bg-layer > .planet-1,.bg-layer > .planet-2,.bg-layer > .bin-rain,.bg-layer > .ufo-scene{display:none}
 
-/* GALAXY */
-body.bg-galaxy::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg)}
+/* GALAXY — bintang & planet ke-trigger ===== */
 body.bg-galaxy .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent),radial-gradient(1px 1px at 25% 85%,#fff,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
 body.bg-galaxy .shooting-star-1{display:block;position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:shootingStar1 6s linear infinite}
 body.bg-galaxy .shooting-star-2{display:block;position:absolute;top:35%;left:-15%;width:2px;height:2px;border-radius:50%;background:#fff;animation:shootingStar2 9s linear infinite 3s}
@@ -94,28 +117,28 @@ body.bg-galaxy .blackhole .bh-disk2{position:absolute;top:50%;left:50%;width:80p
 body.bg-galaxy .planet-1{display:block;position:absolute;top:18%;left:8%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fb923c,#7c2d12)}
 body.bg-galaxy .planet-2{display:block;position:absolute;top:72%;left:15%;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985)}
 
-/* ===== BINARY RAIN — MATRIX RAIN BENERAN ===== */
-body.bg-binary::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,10,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(4,28,16,.9),transparent 55%),#000400}
+/* BINARY */
+body.bg-binary{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,10,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(4,28,16,.9),transparent 55%),#000400;background-attachment:fixed}
 body.bg-binary .bg-layer{display:block;z-index:0}
 body.bg-binary .bin-rain{display:block !important;position:fixed;inset:0;pointer-events:none;overflow:hidden;opacity:.9}
 .bin-rain canvas{display:block;width:100%;height:100%}
 
 /* UFO */
-body.bg-ufo::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.85),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.85),transparent 55%),#050210}
+body.bg-ufo{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.9),transparent 55%),#050210;background-attachment:fixed}
 body.bg-ufo .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
 body.bg-ufo .ufo-scene{display:block;position:absolute;inset:0;overflow:hidden}
 body.bg-ufo .ufo-scene .ufo-craft{position:absolute;bottom:30%;left:-200px;width:100px;height:56px;animation:ufoWarp 10s ease-in infinite}
 @keyframes ufoWarp{0%{transform:translate(0,0) scale(.6);opacity:0}5%{transform:translate(60px,-20px) scale(1);opacity:1}35%{transform:translate(50vw,-10px);opacity:1}70%{transform:translate(90vw,-25vh) scale(.5);opacity:.7}100%{transform:translate(120vw,-45vh) scale(0);opacity:0}}
 
-body.bg-plain::before{background:var(--bg)}
+body.bg-plain{background:var(--bg)}
 body.bg-plain .bg-layer{display:none}
-body.bg-custom::before{background:rgba(0,0,0,.55)}
 body.bg-custom{background-size:cover;background-attachment:fixed;background-position:center}
 body.bg-custom .bg-layer{display:none}
 body.no-anim *{animation:none!important}
 body.light{--bg:#f0f4f8;--card:rgba(255,255,255,.94);--border:#cbd5e1;--tx:#0f172a;--txd:#475569;background:#f0f4f8;color:#0f172a}
 body.light .bg-layer{display:none}
-body.light #passwordGate{background:radial-gradient(circle at 30% 25%,rgba(200,210,220,.5),transparent 60%),radial-gradient(circle at 70% 75%,rgba(180,190,210,.5),transparent 55%),rgba(240,244,248,.85)}
+body.light #passwordGate{background:transparent}
+body.light .access-card{background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(240,244,248,.92))}
 
 .w{max-width:520px;margin:0 auto;padding:10px;position:relative;z-index:2}
 .tb{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -231,9 +254,9 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 .pwd-status.revoked{background:rgba(248,113,113,.15);color:var(--er);border:1px solid var(--er)}
 .device-id{font-family:var(--fm);font-size:.5rem;color:var(--txd);word-break:break-all;background:rgba(0,0,0,.3);padding:4px 6px;border-radius:4px;margin-top:4px}
 
-#accessCodeGate{position:fixed;inset:0;z-index:999998;background:rgba(4,8,15,.94);display:none;align-items:center;justify-content:center;padding:20px}
+#accessCodeGate{position:fixed;inset:0;z-index:999998;background:rgba(4,8,15,.6);display:none;align-items:center;justify-content:center;padding:20px}
 #accessCodeGate.show{display:flex}
-.acc-box{background:linear-gradient(180deg,rgba(14,18,24,.96),rgba(8,12,18,.98));border:1.5px solid var(--wr);border-radius:18px;padding:28px 24px;width:100%;max-width:420px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.acc-box{background:linear-gradient(180deg,rgba(14,18,24,.85),rgba(8,12,18,.92));border:1.5px solid var(--wr);border-radius:18px;padding:28px 24px;width:100%;max-width:420px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .acc-title{font-family:var(--fh);font-weight:900;font-size:1.1rem;letter-spacing:3px;color:var(--wr);margin-bottom:8px;text-transform:uppercase}
 .acc-sub{font-size:.6rem;color:var(--txd);letter-spacing:1.5px;margin-bottom:16px;text-transform:uppercase}
 .acc-input{width:100%;padding:16px 14px;border-radius:12px;border:1.5px solid var(--wr);background:rgba(4,8,15,.8);color:var(--wr);font-family:var(--fh);font-size:1.4rem;font-weight:900;letter-spacing:6px;text-align:center;text-transform:lowercase;outline:none}
@@ -394,11 +417,11 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
       <div class="wm-ver">v10.0</div>
       <div class="wm-changes-title">WHAT'S NEW?</div>
       <ul class="wm-changes">
-        <li><b>Binary matrix rain</b> — rapi, gak bug</li>
-        <li><b>Galaxy di login bar</b> — tembus kaca</li>
-        <li><b>Multi-provider tempmail</b> — mail.tm + mail.gw</li>
-        <li><b>Login wajib tiap buka</b> — device lock tetap</li>
-        <li><b>Dev panel + access code</b> — owner only</li>
+        <li><b>Galaxy gate</b> — tembus 100%</li>
+        <li><b>Binary matrix</b> — smooth canvas rain</li>
+        <li><b>Tombol STOP</b> — buat batalin tempmail</li>
+        <li><b>Multi-provider tempmail</b></li>
+        <li><b>Login wajib tiap buka</b></li>
       </ul>
       <button id="wm-start">MULAI</button>
     </div>
@@ -579,6 +602,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 <label>Nama (opsional)</label><input id="tmp-name" placeholder="namalo">
 <label>Domain</label><div id="tmp-domain"></div>
 <div class="br3"><button class="g" id="tmp-gen">GEN</button><button class="g" id="tmp-copy">COPY</button><button class="g" id="tmp-reaload">RELOAD</button></div>
+<button class="d" id="tmp-stop" style="display:none;margin-top:6px">⛔ STOP</button>
 <div id="tmp-log" class="console-log" style="height:100px"></div>
 <div class="r" id="tmp-email">—</div>
 </div>
@@ -655,13 +679,13 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
   <div class="nb" data-p="set"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>SET</div>
 </div>
 
-<!-- ===== BINARY RAIN SCRIPT — MATRIX EFFECT ===== -->
+<!-- ===== BINARY RAIN — matrix canvas ===== -->
 <script>
 (function initBinaryRain(){
   function startRain(){
     var container = document.getElementById('bin-rain');
     if(!container) return;
-    if(container.querySelector('canvas')) return; // sudah ada, skip
+    if(container.querySelector('canvas')) return;
 
     var canvas = document.createElement('canvas');
     canvas.style.display = 'block';
@@ -675,7 +699,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
     var columns = 0;
     var drops = [];
     var lastTime = 0;
-    var frameInterval = 1000 / 30; // 30fps
+    var frameInterval = 1000 / 30;
 
     function resize(){
       var w = container.clientWidth || window.innerWidth;
@@ -696,18 +720,15 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
     window.addEventListener('resize', resize);
 
     function draw(now){
-      // throttle 30fps biar hemat baterai
       if(now - lastTime < frameInterval){ requestAnimationFrame(draw); return; }
       lastTime = now;
 
       var w = canvas.width / dpr;
       var h = canvas.height / dpr;
 
-      // fade trail
       ctx.fillStyle = 'rgba(0,4,0,0.08)';
       ctx.fillRect(0, 0, w, h);
 
-      // glow hijau
       ctx.shadowColor = 'rgba(74,222,128,0.9)';
       ctx.shadowBlur = 6;
 
@@ -716,18 +737,14 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
         var x = i * fontSize;
         var y = drops[i] * fontSize;
 
-        // karakter kepala lebih terang
         ctx.fillStyle = 'rgba(200,255,220,0.95)';
         ctx.font = 'bold ' + fontSize + 'px "JetBrains Mono", monospace';
         ctx.fillText(char, x, y);
 
-        // ekor
         ctx.fillStyle = 'rgba(74,222,128,0.85)';
         ctx.fillText(char, x, y);
 
-        if(y > h && Math.random() > 0.975){
-          drops[i] = 0;
-        }
+        if(y > h && Math.random() > 0.975) drops[i] = 0;
         drops[i]++;
       }
 
@@ -738,7 +755,6 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
     requestAnimationFrame(draw);
   }
 
-  // start saat DOM ready
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', startRain);
   } else {
