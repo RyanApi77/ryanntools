@@ -1,4 +1,4 @@
-// app.js v7.2 — Full rebuild
+// app.js v10.0 — Full rebuild
 (function(){
 'use strict';
 
@@ -50,7 +50,6 @@ function makeFingerprint(){
   }catch(e){ return 'fp' + Math.random().toString(36).slice(2, 10); }
 }
 
-// v7.2: device_id TETAP disimpen (buat device lock), tapi session GAK.
 function getDeviceId(){
   var id = S.get('device_id', null);
   if(id) return id;
@@ -66,21 +65,18 @@ var DEVICE_ID = getDeviceId();
 var DEVICE_FP = S.get('device_fp', makeFingerprint());
 
 // ============================================================
-// SESSION — v7.2: cuma di memory, GAK di localStorage
+// SESSION — cuma memory, tiap buka web wajib login
 // ============================================================
-var SESSION = null;   // { role, password, verifiedAt }
+var SESSION = null;
 
 function saveSession(role, password){
-  // v7.2: TIDAK disave ke localStorage. cuma memory.
   SESSION = { role: role, password: password, verifiedAt: Date.now() };
 }
 function clearSession(){ SESSION = null; }
-
 function isOwner(){ return SESSION && SESSION.role === 'OWNER'; }
-function isUser(){ return SESSION && (SESSION.role === 'USER' || SESSION.role === 'OWNER'); }
 
 // ============================================================
-// WORKER API
+// WORKER API (device)
 // ============================================================
 async function deviceApi(path, opts){
   opts = opts || {};
@@ -96,6 +92,128 @@ async function deviceApi(path, opts){
     return { ok:false, error:'network', message: e.message };
   }
 }
+
+// ============================================================
+// SOUND + LOG
+// ============================================================
+function sndSuccess(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='sine'; o.frequency.setValueAtTime(880, a.currentTime); o.frequency.exponentialRampToValueAtTime(1320, a.currentTime+0.08); g.gain.setValueAtTime(0.05, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.18); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.2); }catch(e){} }
+function sndClick(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='square'; o.frequency.value=800; g.gain.setValueAtTime(0.03, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.05); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.06); }catch(e){} }
+function sndError(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='square'; o.frequency.value=220; g.gain.setValueAtTime(0.04, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.15); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.18); }catch(e){} }
+function logTo(id,msg,cls){
+  var el=$(id); if(!el)return;
+  var d=document.createElement('div'); d.className=cls||'ok';
+  d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;
+  el.appendChild(d); el.scrollTop=el.scrollHeight;
+}
+window.logTo = logTo;
+window.sndSuccess = sndSuccess;
+window.sndError = sndError;
+window.sndClick = sndClick;
+
+// ============================================================
+// ACHIEVEMENTS
+// ============================================================
+var ACH_LIST = [
+  {id:'first_gen', name:'The Beginning', desc:'Pertama kali generate'},
+  {id:'ten_gen', name:'Taking Off', desc:'10x generate'},
+  {id:'fifty_gen', name:'Benchmarking', desc:'50x generate'},
+  {id:'hundred_gen', name:'The Beginning.', desc:'100x generate'},
+  {id:'tmp_first', name:'Beam Me Up', desc:'Pertama generate tempmail'},
+  {id:'inbox_first', name:'Monster Hunter', desc:'Pertama refresh inbox'},
+  {id:'bypass_first', name:'Bypass Rookie', desc:'Pertama bypass link'},
+  {id:'search_first', name:'Seek & Find', desc:'Pertama pakai search'},
+  {id:'dl_first', name:'Download Master', desc:'Pertama download file'},
+  {id:'imgai_first', name:'AI Artist', desc:'Pertama generate AI image'},
+  {id:'imghd_first', name:'Enhancer', desc:'Pertama enhance image'},
+  {id:'maker_first', name:'Canvas Master', desc:'Pertama pakai maker'},
+  {id:'upscale_first', name:'Upscaler', desc:'Pertama pakai upscale'},
+  {id:'preview', name:'Sneak Peek', desc:'Pertama preview media'},
+  {id:'dev_panel', name:'Dev Access', desc:'Pertama buka dev panel'},
+  {id:'gen_pass', name:'Password Smith', desc:'Pertama generate password'},
+  {id:'copy_email', name:'Copy Cat', desc:'Copy email tempmail'},
+  {id:'theme_change', name:'Delicious Fish', desc:'Ganti theme'},
+  {id:'dark', name:'We Need to Go Deeper', desc:'Aktifkan dark mode'},
+  {id:'all', name:'The End.', desc:'Semua fitur dipakai'}
+];
+var ACH_KEY = 'rx_ach_unlocked';
+
+function getAch(){ try{ return JSON.parse(localStorage.getItem(ACH_KEY) || '{}'); }catch(e){ return {}; } }
+function setAch(a){ try{ localStorage.setItem(ACH_KEY, JSON.stringify(a)); }catch(e){} }
+
+function renderAch(){
+  var wrap = document.getElementById('ach-wrap');
+  if(!wrap) return;
+  var ach = getAch();
+  var count = Object.keys(ach).length;
+  var counter = document.getElementById('achCounter');
+  if(counter) counter.innerHTML = count + ' <span>/ ' + ACH_LIST.length + '</span>';
+  wrap.innerHTML = ACH_LIST.map(function(a){
+    var u = ach[a.id];
+    return '<div class="ach ' + (u ? 'unlocked' : 'locked') + '">' +
+      '<div>' + (u ? '🏆 ' : '🔒 ') + a.name + '</div>' +
+      '<div class="desc">' + a.desc + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+window.unlockAch = function(id){
+  var ach = getAch();
+  if(ach[id]) return;
+  ach[id] = Date.now();
+  setAch(ach);
+  var a = ACH_LIST.find(function(x){ return x.id === id; });
+  if(a && typeof window.zyToast === 'function') window.zyToast('🏆 ' + a.name);
+  renderAch();
+};
+
+// ============================================================
+// CUSTOM SELECT
+// ============================================================
+window.initCustomSelect = function(containerId, items, selectedId, onSelect, opts){
+  opts = opts || {};
+  var container = document.getElementById(containerId);
+  if(!container) return null;
+  container.innerHTML = '';
+  var btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'zy-select-btn';
+  function labelFor(id){
+    var it = items.find(function(x){ return x.id === id; });
+    if(it) return it.name;
+    return opts.placeholder || '— CHOOSE —';
+  }
+  function updateLabel(){ var lbl = btn.querySelector('.zy-btn-label'); if(lbl) lbl.textContent = labelFor(selectedId); }
+  btn.innerHTML = '<span class="zy-btn-label">' + labelFor(selectedId) + '</span><span class="zy-select-arrow">▾</span>';
+  var list = document.createElement('div'); list.className = 'zy-select-list';
+  function renderList(){
+    list.innerHTML = '';
+    items.forEach(function(it){
+      var opt = document.createElement('div');
+      opt.className = 'zy-select-opt' + (it.id === selectedId ? ' active' : '');
+      opt.innerHTML = '<span>' + it.name + '</span>' + (it.desc ? '<small>' + it.desc + '</small>' : '');
+      opt.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        selectedId = it.id; updateLabel(); closeList();
+        if(typeof onSelect === 'function') onSelect(it.id, it);
+      });
+      list.appendChild(opt);
+    });
+  }
+  function openList(){ renderList(); list.classList.add('open'); btn.classList.add('open'); }
+  function closeList(){ list.classList.remove('open'); btn.classList.remove('open'); }
+  function toggleList(){ if(list.classList.contains('open')) closeList(); else openList(); }
+  btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleList(); });
+  container.appendChild(btn); container.appendChild(list);
+  return {
+    getValue: function(){ return selectedId; },
+    setValue: function(id){ selectedId = id; updateLabel(); },
+    setItems: function(newItems){
+      items = newItems;
+      if(!items.find(function(x){ return x.id === selectedId; }) && items.length) selectedId = items[0].id;
+      updateLabel();
+      if(list.classList.contains('open')) renderList();
+    }
+  };
+};
 
 // ============================================================
 // PASSWORD GATE
@@ -163,10 +281,7 @@ async function deviceApi(path, opts){
 
   async function verifyPassword(){
     var raw = (input.value || '').trim().toLowerCase();
-    if(raw.length !== 8){
-      shakeError('PASSWORD HARUS 8 KARAKTER');
-      return;
-    }
+    if(raw.length !== 8){ shakeError('PASSWORD HARUS 8 KARAKTER'); return; }
 
     statusText.textContent = 'VERIFYING...';
     statusText.classList.add('ok');
@@ -234,7 +349,7 @@ async function deviceApi(path, opts){
 })();
 
 // ============================================================
-// ACCESS CODE GATE 2 (user biasa)
+// ACCESS CODE GATE
 // ============================================================
 (function accessCodeGateInit(){
   var gate = $('accessCodeGate');
@@ -245,11 +360,7 @@ async function deviceApi(path, opts){
 
   async function submit(){
     var code = (input.value || '').trim().toLowerCase();
-    if(code.length !== 8){
-      msg.textContent = 'KODE HARUS 8 KARAKTER';
-      msg.style.color = 'var(--er)';
-      return;
-    }
+    if(code.length !== 8){ msg.textContent = 'KODE HARUS 8 KARAKTER'; msg.style.color = 'var(--er)'; return; }
     msg.textContent = 'VERIFIKASI...';
     msg.style.color = 'var(--txd)';
 
@@ -264,24 +375,17 @@ async function deviceApi(path, opts){
       if(res.error === 'locked_other_device') m = 'KODE DIPAKAI DI DEVICE LAIN';
       else if(res.error === 'revoked') m = 'KODE DIBLOKIR';
       else if(res.error === 'network') m = 'TIDAK BISA HUBUNGI SERVER';
-      msg.textContent = m;
-      msg.style.color = 'var(--er)';
+      msg.textContent = m; msg.style.color = 'var(--er)';
       return;
     }
 
     saveSession(res.role || 'USER', code);
-    msg.textContent = 'BERHASIL';
-    msg.style.color = 'var(--ok)';
-    setTimeout(function(){
-      gate.classList.remove('show');
-      bootAfterLogin();
-    }, 700);
+    msg.textContent = 'BERHASIL'; msg.style.color = 'var(--ok)';
+    setTimeout(function(){ gate.classList.remove('show'); bootAfterLogin(); }, 700);
   }
 
   if(btn) btn.addEventListener('click', submit);
-  if(input) input.addEventListener('keydown', function(e){
-    if(e.key === 'Enter'){ e.preventDefault(); submit(); }
-  });
+  if(input) input.addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); submit(); } });
 })();
 
 window.showAccessCodeGate = function(){
@@ -290,87 +394,20 @@ window.showAccessCodeGate = function(){
 };
 
 // ============================================================
-// CUSTOM SELECT
-// ============================================================
-window.initCustomSelect = function(containerId, items, selectedId, onSelect, opts){
-  opts = opts || {};
-  var container = document.getElementById(containerId);
-  if(!container) return null;
-  container.innerHTML = '';
-  var btn = document.createElement('button');
-  btn.type = 'button'; btn.className = 'zy-select-btn';
-  function labelFor(id){
-    var it = items.find(function(x){ return x.id === id; });
-    if(it) return it.name;
-    return opts.placeholder || '— CHOOSE —';
-  }
-  function updateLabel(){ var lbl = btn.querySelector('.zy-btn-label'); if(lbl) lbl.textContent = labelFor(selectedId); }
-  btn.innerHTML = '<span class="zy-btn-label">' + labelFor(selectedId) + '</span><span class="zy-select-arrow">▾</span>';
-  var list = document.createElement('div'); list.className = 'zy-select-list';
-  function renderList(){
-    list.innerHTML = '';
-    items.forEach(function(it){
-      var opt = document.createElement('div');
-      opt.className = 'zy-select-opt' + (it.id === selectedId ? ' active' : '');
-      opt.innerHTML = '<span>' + it.name + '</span>' + (it.desc ? '<small>' + it.desc + '</small>' : '');
-      opt.addEventListener('click', function(e){
-        e.preventDefault(); e.stopPropagation();
-        selectedId = it.id; updateLabel(); closeList();
-        if(typeof onSelect === 'function') onSelect(it.id, it);
-      });
-      list.appendChild(opt);
-    });
-  }
-  function openList(){ renderList(); list.classList.add('open'); btn.classList.add('open'); }
-  function closeList(){ list.classList.remove('open'); btn.classList.remove('open'); }
-  function toggleList(){ if(list.classList.contains('open')) closeList(); else openList(); }
-  btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); toggleList(); });
-  container.appendChild(btn); container.appendChild(list);
-  return {
-    getValue: function(){ return selectedId; },
-    setValue: function(id){ selectedId = id; updateLabel(); },
-    setItems: function(newItems){
-      items = newItems;
-      if(!items.find(function(x){ return x.id === selectedId; }) && items.length) selectedId = items[0].id;
-      updateLabel();
-      if(list.classList.contains('open')) renderList();
-    }
-  };
-};
-
-// ============================================================
-// SOUND + LOG
-// ============================================================
-function sndSuccess(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='sine'; o.frequency.setValueAtTime(880, a.currentTime); o.frequency.exponentialRampToValueAtTime(1320, a.currentTime+0.08); g.gain.setValueAtTime(0.05, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.18); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.2); }catch(e){} }
-function sndClick(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='square'; o.frequency.value=800; g.gain.setValueAtTime(0.03, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.05); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.06); }catch(e){} }
-function sndError(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='square'; o.frequency.value=220; g.gain.setValueAtTime(0.04, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.15); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.18); }catch(e){} }
-function logTo(id,msg,cls){
-  var el=$(id); if(!el)return;
-  var d=document.createElement('div'); d.className=cls||'ok';
-  d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;
-  el.appendChild(d); el.scrollTop=el.scrollHeight;
-}
-window.logTo = logTo;
-window.sndSuccess = sndSuccess;
-window.sndError = sndError;
-window.sndClick = sndClick;
-
-// ============================================================
-// THEME + MODE
+// THEME + BG + MODE
 // ============================================================
 function setTema(t){
   document.body.setAttribute('data-theme',t);
   S.set('theme',t);
   $$('.to').forEach(function(o){ o.classList.toggle('a',o.dataset.t===t); });
+  unlockAch('theme_change');
 }
-$$('.to').forEach(function(o){
-  o.addEventListener('click', function(){ setTema(o.dataset.t); sndClick(); });
-});
+$$('.to').forEach(function(o){ o.addEventListener('click', function(){ setTema(o.dataset.t); sndClick(); }); });
 
 var mode=S.get('mode','dark');
 function applyMode(){ if(mode==='light') document.body.classList.add('light'); else document.body.classList.remove('light'); if($('mode-tgl')) $('mode-tgl').textContent=mode==='light'?'☀️':'🌙'; }
-if($('mode-tgl')) $('mode-tgl').onclick=function(){ mode=(mode==='dark')?'light':'dark'; S.set('mode',mode); applyMode(); sndClick(); };
-if($('tg-dark')) $('tg-dark').onchange=function(){ mode=this.checked?'dark':'light'; S.set('mode',mode); applyMode(); sndClick(); };
+if($('mode-tgl')) $('mode-tgl').onclick=function(){ mode=(mode==='dark')?'light':'dark'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark') unlockAch('dark'); };
+if($('tg-dark')) $('tg-dark').onchange=function(){ mode=this.checked?'dark':'light'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark') unlockAch('dark'); };
 
 function setBg(b){
   S.set('bg', b);
@@ -418,6 +455,7 @@ function switchPage(name){
   if(name === 'dl' && typeof window.zyInitDownloader === 'function'){ try{ window.zyInitDownloader(); }catch(e){} }
   if(name === 'hst'){ try{ renderHist(); }catch(e){} }
   if(name === 'tmp'){ try{ if(typeof window.tmpLoadDomains === 'function') window.tmpLoadDomains(); }catch(e){} }
+  if(name === 'home'){ try{ renderAch(); }catch(e){} }
   if(name === 'up' && typeof window.zyInitApiHub === 'function'){ try{ window.zyInitApiHub('apihub-up','UPSCALE'); }catch(e){} }
   if(name === 'imgai' && typeof window.zyInitApiHub === 'function'){ try{ window.zyInitApiHub('apihub-ai','IMG AI'); }catch(e){} }
   if(name === 'imghd' && typeof window.zyInitApiHub === 'function'){ try{ window.zyInitApiHub('apihub-hd','IMG HD'); }catch(e){} }
@@ -454,7 +492,7 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
 
   devBtn.addEventListener('click', function(){
     if(!isOwner()){ alert('Akses ditolak. Hanya OWNER.'); return; }
-    sndClick();
+    sndClick(); unlockAch('dev_panel');
     modal.classList.add('show');
     if(isOwner()){
       loginSec.classList.add('hd');
@@ -466,9 +504,7 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
     }
   });
 
-  if(closeBtn) closeBtn.addEventListener('click', function(){
-    modal.classList.remove('show');
-  });
+  if(closeBtn) closeBtn.addEventListener('click', function(){ modal.classList.remove('show'); });
 
   if(loginBtn) loginBtn.addEventListener('click', async function(){
     var pwd = (pwdInput.value || '').trim().toLowerCase();
@@ -526,7 +562,7 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
       if(cb) cb.onclick = function(){
         navigator.clipboard.writeText(res.password.toUpperCase()).then(function(){ sndSuccess(); alert('Tersalin!'); });
       };
-      sndSuccess();
+      sndSuccess(); unlockAch('gen_pass');
     } else {
       $('genResult').innerHTML = '<div class="err-box">✗ Gagal: ' + (res.error || 'unknown') + '</div>';
       sndError();
@@ -633,7 +669,15 @@ function wireApiHub(tabId, catName){
   var clearBtn = $('apihub-'+tabId+'-clear');
   if(runBtn) runBtn.addEventListener('click', function(){
     sndClick();
-    if(typeof window.zyRunApiHub === 'function'){ try{ window.zyRunApiHub('apihub-'+tabId, catName); }catch(e){ alert('Error: '+e.message); } }
+    if(typeof window.zyRunApiHub === 'function'){
+      try{
+        window.zyRunApiHub('apihub-'+tabId, catName);
+        if(catName === 'IMG AI') unlockAch('imgai_first');
+        if(catName === 'IMG HD') unlockAch('imghd_first');
+        if(catName === 'MAKER') unlockAch('maker_first');
+        if(catName === 'UPSCALE') unlockAch('upscale_first');
+      }catch(e){ alert('Error: '+e.message); }
+    }
   });
   if(clearBtn) clearBtn.addEventListener('click', function(){
     sndClick();
@@ -661,7 +705,7 @@ $$('.search-cat').forEach(function(el){
   });
 });
 if($('search-go')) $('search-go').onclick = function(){
-  sndClick();
+  sndClick(); unlockAch('search_first');
   if(typeof window.zyRunSearch === 'function'){ try{ window.zyRunSearch(); }catch(e){ alert('Search error: '+e.message); } }
 };
 if($('search-input')) $('search-input').addEventListener('keydown', function(e){
@@ -671,12 +715,15 @@ if($('search-input')) $('search-input').addEventListener('keydown', function(e){
 // ============================================================
 // OTHER WIRES
 // ============================================================
-if($('bp-run')) $('bp-run').onclick=function(){ sndClick(); if(typeof window.zyRunBypass==='function') try{ window.zyRunBypass(); }catch(e){ alert('Bypass error: '+e.message); } };
+if($('bp-run')) $('bp-run').onclick=function(){ sndClick(); unlockAch('bypass_first'); if(typeof window.zyRunBypass==='function') try{ window.zyRunBypass(); }catch(e){ alert('Bypass error: '+e.message); } };
 if($('bp-clear')) $('bp-clear').onclick=function(){ $('bp-log').innerHTML=''; $('bp-log').classList.add('hd'); $('bp-result').innerHTML=''; $('bp-result').classList.add('hd'); sndClick(); };
-if($('dl-run')) $('dl-run').onclick=function(){ sndClick(); if(typeof window.zyRunDownloader==='function') try{ window.zyRunDownloader(); }catch(e){ alert('DL error: '+e.message); } };
-if($('dl-run-all')) $('dl-run-all').onclick=function(){ sndClick(); if(typeof window.zyRunDownloaderAll==='function') try{ window.zyRunDownloaderAll(); }catch(e){ alert('DL error: '+e.message); } };
-if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){} };
+if($('dl-run')) $('dl-run').onclick=function(){ sndClick(); unlockAch('dl_first'); if(typeof window.zyRunDownloader==='function') try{ window.zyRunDownloader(); }catch(e){ alert('DL error: '+e.message); } };
+if($('dl-run-all')) $('dl-run-all').onclick=function(){ sndClick(); unlockAch('dl_first'); if(typeof window.zyRunDownloaderAll==='function') try{ window.zyRunDownloaderAll(); }catch(e){ alert('DL error: '+e.message); } };
+if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); unlockAch('preview'); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){} };
 if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window.zyClearDownloader==='function') try{ window.zyClearDownloader(); }catch(e){} };
+
+// hook tempmail copy
+if($('tmp-copy')) $('tmp-copy').addEventListener('click', function(){ unlockAch('copy_email'); });
 
 // ============================================================
 // HISTORY
@@ -710,7 +757,7 @@ if($('imst')) $('imst').onclick=function(){ var inp=document.createElement('inpu
 if($('wipe')) $('wipe').onclick=function(){ if(confirm('Wipe ALL?')){ Object.keys(localStorage).forEach(function(k){ if(k.indexOf('rx_')===0) localStorage.removeItem(k); }); location.reload(); } };
 
 // ============================================================
-// WELCOME MODAL
+// WELCOME
 // ============================================================
 (function(){
   var modal = $('welcome-modal');
@@ -746,8 +793,8 @@ function bootAfterLogin(){
 
   try{ if(typeof window.zyInitBypass === 'function') window.zyInitBypass(); }catch(e){}
   try{ if(typeof window.zyInitDownloader === 'function') window.zyInitDownloader(); }catch(e){}
+  try{ renderAch(); }catch(e){}
 
-  // init dropdown TMP + provider
   try{
     if(window.initCustomSelect && $('tmp-domain')){
       window.__selTmpDom = window.initCustomSelect('tmp-domain', [{id:'',name:'— CHOOSE —'}], '', function(){});
@@ -766,15 +813,15 @@ function boot(){
   try{ setBg(S.get('bg','galaxy')); }catch(e){}
   try{ applyMode(); }catch(e){}
   try{ renderHist(); }catch(e){}
+  try{ renderAch(); }catch(e){}
 }
 
 // ============================================================
-// AUTO-START — v7.2: SELALU minta login
+// AUTO-START
 // ============================================================
-// device_id tetep disimpen (buat device lock), tapi session gak.
 SESSION = null;
 S.del('session');
 boot();
-// gate bakal handle login → bootAfterLogin() dipanggil setelah verify sukses
+setInterval(renderAch, 5000);
 
 })();
