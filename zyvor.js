@@ -1,4 +1,4 @@
-// zyvor.js v10.0 — Engine
+// zyvor.js v10.0 — FIXED tempmail
 (function(){
 'use strict';
 
@@ -624,7 +624,7 @@ var API_HUB_LIST = [
   {id:'sr_pinterest', name:'Search Pinterest', path:'/api/search/pinterest', method:'GET', params:['query','limit'], cat:'SEARCH'}
 ];
 
-// ===== TEMPMAIL v10.0 =====
+// ===== TEMPMAIL v10.0 — FIXED =====
 var tmpToken=null, tmpEmail=null, tmpMsgs=[], tmpProvider='mail.tm';
 
 var TMP_PROVIDERS = {
@@ -634,6 +634,7 @@ var TMP_PROVIDERS = {
 
 function tmpBase(){ return TMP_PROVIDERS[tmpProvider] ? TMP_PROVIDERS[tmpProvider].base : TMP_PROVIDERS['mail.tm'].base; }
 
+// FIXED: direct dulu (bukan worker), timeout pendek, return JSON apapun
 async function tmpFetchV2(url, opts){
   opts = opts || {};
   var method = opts.method || 'GET';
@@ -641,15 +642,14 @@ async function tmpFetchV2(url, opts){
   var body = opts.body || null;
   var externalSignal = opts.signal;
 
-  // v10.0: jangan skip error JSON — biar lu liat pesan aslinya
   async function tryReturn(r){
     if(!r) return null;
     try{
       var txt = await r.clone().text();
       var trimmed = txt.trim();
-      if(trimmed.indexOf('<') === 0) return null;  // HTML skip
+      if(trimmed.indexOf('<') === 0) return null;  // HTML → skip
       var j = JSON.parse(txt);
-      if(j && typeof j === 'object') return r;     // JSON apapun = return
+      if(j && typeof j === 'object') return r;     // JSON apapun → return (biar lu liat error asli)
       return null;
     }catch(e){ return null; }
   }
@@ -673,23 +673,26 @@ async function tmpFetchV2(url, opts){
     }
   }
 
+  // LAYER 1: DIRECT dulu — mail.tm kadang kasih CORS header
+  try{
+    var rd = await tryFetch(url, 8000);
+    var vd = await tryReturn(rd);
+    if(vd) return vd;
+  }catch(e){ if(e.message === 'aborted_by_user') throw e; }
+
+  // LAYER 2: WORKER
   try{
     var wurl = WORKER + '/?url=' + encodeURIComponent(url);
-    var r1 = await tryFetch(wurl, 12000);
+    var r1 = await tryFetch(wurl, 8000);
     var v1 = await tryReturn(r1);
     if(v1) return v1;
   }catch(e){ if(e.message === 'aborted_by_user') throw e; }
 
-  try{
-    var r2 = await tryFetch(url, 10000);
-    var v2 = await tryReturn(r2);
-    if(v2) return v2;
-  }catch(e){ if(e.message === 'aborted_by_user') throw e; }
-
+  // LAYER 3: CORS PROXY[0]
   try{
     var p1 = CORS[0];
     var full1 = p1 + (p1.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
-    var r3 = await tryFetch(full1, 10000);
+    var r3 = await tryFetch(full1, 8000);
     var v3 = await tryReturn(r3);
     if(v3) return v3;
   }catch(e){ if(e.message === 'aborted_by_user') throw e; }
@@ -792,7 +795,7 @@ if($id('tmp-stop')) $id('tmp-stop').onclick=function(){
   logTo('tmp-log','⛔ Dihentikan user','warn');
 };
 
-// v10.0 GEN — deteksi akun duplikat + auto login
+// GEN v10.0 — akun duplikat + auto login + pesan error asli
 var _lastGenTime = 0;
 if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
   if(Date.now() - _lastGenTime < 3000){ alert('Tunggu 3 detik'); return; }
@@ -820,7 +823,7 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
   logTo('tmp-log','⏳ Membuat ' + em + ' via ' + provKey + '...','in');
 
   try{
-    // STEP 1: create
+    // STEP 1: create account
     var r = await tmpFetchV2(base + '/accounts', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({address:em, password:pw}),
@@ -828,7 +831,7 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
     });
     var j = null; try{ j = await r.json(); }catch(e){}
 
-    // error handling
+    // deteksi error
     if(r.status >= 400){
       var errMsg = (j && (j['hydra:description'] || j.message || j.error || j.detail)) || ('HTTP ' + r.status);
 
@@ -849,6 +852,7 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
           $id('tmp-email').textContent = em;
           logTo('tmp-log','✓ Login ke akun lama OK','ok');
           if(window.sndSuccess) window.sndSuccess();
+          if(window.unlockAch) window.unlockAch('tmp_first');
           return;
         } else {
           var lm = (jLogin && (jLogin['hydra:description'] || jLogin.message)) || 'password beda';
@@ -865,6 +869,7 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
         return;
       }
 
+      // error lain
       logTo('tmp-log','✗ ' + errMsg,'er');
       return;
     }
@@ -884,6 +889,7 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
       $id('tmp-email').textContent = em;
       logTo('tmp-log','✓ Login OK [' + provKey + ']','ok');
       if(window.sndSuccess) window.sndSuccess();
+      if(window.unlockAch) window.unlockAch('tmp_first');
     } else {
       var tm = (j2 && (j2['hydra:description'] || j2.message)) || ('HTTP ' + r2.status);
       logTo('tmp-log','✗ Login: ' + tm,'er');
@@ -901,7 +907,7 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
   }
 };
 
-if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail) navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); }); };
+if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail){ navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); if(window.unlockAch) window.unlockAch('copy_email'); }); } };
 if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
   if(!tmpToken){ alert('Generate dulu'); return; }
   var base = tmpBase();
@@ -919,6 +925,7 @@ if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
       };
     });
     if(window.sndSuccess) window.sndSuccess();
+    if(window.unlockAch) window.unlockAch('inbox_first');
   }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
 };
 if($id('tmp-inbox-dl')) $id('tmp-inbox-dl').onclick=function(){
