@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>TOOLS BY RYANNXD · v7.1</title>
+<title>TOOLS BY RYANNXD · v10.0</title>
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,10 +74,11 @@ body[data-theme="t-fuchsia"]{--ac:#e879f9;--ac2:#f0abfc;--acd:rgba(232,121,249,.
 body[data-theme="t-slate"]{--ac:#94a3b8;--ac2:#cbd5e1;--acd:rgba(148,163,184,.15);--bl:#4a5c73;--border:#334155}
 body[data-theme="t-mono"]{--ac:#e0f2fe;--ac2:#f8fafc;--acd:rgba(224,242,254,.15);--bl:#4a5c73;--border:#334155}
 
-/* ===== BG LAYER z-index 0 — galaxy & binary tembus di gate ===== */
+/* ===== BG LAYER ===== */
 .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .bg-layer > .starfield,.bg-layer > .shooting-star-1,.bg-layer > .shooting-star-2,.bg-layer > .blackhole,.bg-layer > .planet-1,.bg-layer > .planet-2,.bg-layer > .bin-rain,.bg-layer > .ufo-scene{display:none}
 
+/* GALAXY */
 body.bg-galaxy::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg)}
 body.bg-galaxy .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent),radial-gradient(1px 1px at 25% 85%,#fff,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
 body.bg-galaxy .shooting-star-1{display:block;position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:shootingStar1 6s linear infinite}
@@ -93,17 +94,19 @@ body.bg-galaxy .blackhole .bh-disk2{position:absolute;top:50%;left:50%;width:80p
 body.bg-galaxy .planet-1{display:block;position:absolute;top:18%;left:8%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fb923c,#7c2d12)}
 body.bg-galaxy .planet-2{display:block;position:absolute;top:72%;left:15%;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985)}
 
-/* ===== BINARY — z-index 0 (FIX: gak nutup konten) ===== */
-body.bg-binary::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,10,.85),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(4,28,16,.85),transparent 55%),#020805}
+/* ===== BINARY RAIN — MATRIX RAIN BENERAN ===== */
+body.bg-binary::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,10,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(4,28,16,.9),transparent 55%),#000400}
 body.bg-binary .bg-layer{display:block;z-index:0}
-body.bg-binary .bin-rain{display:block !important;position:fixed;top:0;left:0;right:0;bottom:0;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;line-height:1.4;color:rgba(74,222,128,.85);text-shadow:0 0 8px rgba(74,222,128,.9);letter-spacing:2px;word-break:break-all;white-space:pre-wrap;padding:0 6px;pointer-events:none;overflow:hidden;animation:binFullFall 30s linear infinite;will-change:transform}
-@keyframes binFullFall{0%{transform:translateY(-50%)}100%{transform:translateY(0%)}}
+body.bg-binary .bin-rain{display:block !important;position:fixed;inset:0;pointer-events:none;overflow:hidden;opacity:.9}
+.bin-rain canvas{display:block;width:100%;height:100%}
 
+/* UFO */
 body.bg-ufo::before{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.85),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.85),transparent 55%),#050210}
 body.bg-ufo .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
 body.bg-ufo .ufo-scene{display:block;position:absolute;inset:0;overflow:hidden}
 body.bg-ufo .ufo-scene .ufo-craft{position:absolute;bottom:30%;left:-200px;width:100px;height:56px;animation:ufoWarp 10s ease-in infinite}
 @keyframes ufoWarp{0%{transform:translate(0,0) scale(.6);opacity:0}5%{transform:translate(60px,-20px) scale(1);opacity:1}35%{transform:translate(50vw,-10px);opacity:1}70%{transform:translate(90vw,-25vh) scale(.5);opacity:.7}100%{transform:translate(120vw,-45vh) scale(0);opacity:0}}
+
 body.bg-plain::before{background:var(--bg)}
 body.bg-plain .bg-layer{display:none}
 body.bg-custom::before{background:rgba(0,0,0,.55)}
@@ -138,7 +141,6 @@ body.light #passwordGate{background:radial-gradient(circle at 30% 25%,rgba(200,2
 .nb.a{color:var(--ac);background:var(--acd)}
 .nb.a .i{background:var(--ac);color:#04080f;transform:scale(1.15)}
 .nb.a .i svg{stroke:#04080f}
-.nav-spot{display:none}
 .c{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:12px;margin-bottom:9px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .cl{font-size:.55rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px;padding-left:8px;position:relative}
 .cl::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:11px;background:var(--ac);border-radius:2px}
@@ -348,7 +350,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <div id="passwordGate">
   <div class="access-card" id="accessCard">
     <div class="card-line"></div>
-    <h1>RYANNTOOLS <span>v7.1</span></h1>
+    <h1>RYANNTOOLS <span>v10.0</span></h1>
     <div class="subtitle">ACCESS VERIFICATION</div>
     <p class="description">Enter your password to continue</p>
     <textarea id="passwordInput" maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" rows="1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px"></textarea>
@@ -379,7 +381,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   <div class="blackhole"><div class="bh-disk"></div><div class="bh-disk2"></div><div class="bh-core"></div></div>
   <div class="planet-1"></div>
   <div class="planet-2"></div>
-  <div class="bin-rain">01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100</div>
+  <div class="bin-rain" id="bin-rain"></div>
   <div class="ufo-scene"><div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(165,243,252,.95)"/><stop offset="60%" stop-color="rgba(103,232,249,.65)"/></radialGradient><linearGradient id="bodyG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG2)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG2)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div></div>
 </div>
 
@@ -389,14 +391,14 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
     <img class="wm-banner" id="wm-banner" src="banner.png" alt="Ryann Tools">
     <div class="wm-body">
       <div class="wm-title">WELCOME TO RYANN <span class="y">TOOLS</span></div>
-      <div class="wm-ver">v7.1</div>
+      <div class="wm-ver">v10.0</div>
       <div class="wm-changes-title">WHAT'S NEW?</div>
       <ul class="wm-changes">
-        <li><b>Login bar galaxy</b> — tembus di gate</li>
-        <li><b>Binary fixed</b> — z-index gak nutup konten</li>
-        <li><b>Tempmail multi-provider</b> — mail.tm + mail.gw</li>
-        <li><b>Device lock</b> — 1 password, 1 device</li>
-        <li><b>Dev panel</b> — generate, kick, reset</li>
+        <li><b>Binary matrix rain</b> — rapi, gak bug</li>
+        <li><b>Galaxy di login bar</b> — tembus kaca</li>
+        <li><b>Multi-provider tempmail</b> — mail.tm + mail.gw</li>
+        <li><b>Login wajib tiap buka</b> — device lock tetap</li>
+        <li><b>Dev panel + access code</b> — owner only</li>
       </ul>
       <button id="wm-start">MULAI</button>
     </div>
@@ -450,7 +452,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v7.1</span>
+<span class="ch">v10.0</span>
 <span class="role-badge" id="role-badge">OWNER</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
@@ -635,7 +637,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v7.1</div>
+<div class="ft">RYANN • TOOLS · v10.0</div>
 </div>
 
 <div class="nv" id="nav-main">
@@ -652,6 +654,98 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
   <div class="nb" data-p="hst"><span class="i"><svg viewBox="0 0 24 24"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg></span>HIST</div>
   <div class="nb" data-p="set"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>SET</div>
 </div>
+
+<!-- ===== BINARY RAIN SCRIPT — MATRIX EFFECT ===== -->
+<script>
+(function initBinaryRain(){
+  function startRain(){
+    var container = document.getElementById('bin-rain');
+    if(!container) return;
+    if(container.querySelector('canvas')) return; // sudah ada, skip
+
+    var canvas = document.createElement('canvas');
+    canvas.style.display = 'block';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    container.appendChild(canvas);
+
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var fontSize = 14;
+    var columns = 0;
+    var drops = [];
+    var lastTime = 0;
+    var frameInterval = 1000 / 30; // 30fps
+
+    function resize(){
+      var w = container.clientWidth || window.innerWidth;
+      var h = container.clientHeight || window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      columns = Math.floor(w / fontSize);
+      drops = [];
+      for(var i=0;i<columns;i++) drops[i] = Math.random() * -50;
+      ctx.fillStyle = 'rgba(0,4,0,0.15)';
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    function draw(now){
+      // throttle 30fps biar hemat baterai
+      if(now - lastTime < frameInterval){ requestAnimationFrame(draw); return; }
+      lastTime = now;
+
+      var w = canvas.width / dpr;
+      var h = canvas.height / dpr;
+
+      // fade trail
+      ctx.fillStyle = 'rgba(0,4,0,0.08)';
+      ctx.fillRect(0, 0, w, h);
+
+      // glow hijau
+      ctx.shadowColor = 'rgba(74,222,128,0.9)';
+      ctx.shadowBlur = 6;
+
+      for(var i=0;i<drops.length;i++){
+        var char = Math.random() > 0.5 ? '1' : '0';
+        var x = i * fontSize;
+        var y = drops[i] * fontSize;
+
+        // karakter kepala lebih terang
+        ctx.fillStyle = 'rgba(200,255,220,0.95)';
+        ctx.font = 'bold ' + fontSize + 'px "JetBrains Mono", monospace';
+        ctx.fillText(char, x, y);
+
+        // ekor
+        ctx.fillStyle = 'rgba(74,222,128,0.85)';
+        ctx.fillText(char, x, y);
+
+        if(y > h && Math.random() > 0.975){
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+
+      ctx.shadowBlur = 0;
+      requestAnimationFrame(draw);
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  // start saat DOM ready
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', startRain);
+  } else {
+    startRain();
+  }
+})();
+</script>
 
 <script src="templates.js"></script>
 <script src="scraper.js"></script>
