@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>TOOLS BY RYANNXD</title>
+<title>TOOLS BY RYANNXD · v5.6</title>
 <meta name="theme-color" content="#22d3ee">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -14,12 +14,43 @@ body::before{content:"";position:fixed;inset:0;z-index:-3;background:radial-grad
 .bg-layer{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
 .stars{position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1px 1px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 75% 40%,#a5f3fc,transparent);background-size:300px 300px;animation:starTwinkle 5s infinite}
 @keyframes starTwinkle{0%,100%{opacity:.5}50%{opacity:1}}
-body.bg-plain .stars,body.bg-custom .stars{display:none}
+/* ===== BACKGROUND VARIANTS ===== */
+body.bg-binary .bg-layer::before{
+  content:"01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100 00100000 00110001 00110000 00110001 00110000 00110001";
+  position:absolute;inset:0;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;line-height:1.4;
+  color:rgba(74,222,128,.22);
+  word-break:break-all;padding:20px;
+  animation:binScroll 20s linear infinite;
+  text-shadow:0 0 6px rgba(74,222,128,.35);
+}
+@keyframes binScroll{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+body.bg-ufo .bg-layer::before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(103,232,249,.06) 2px 3px),radial-gradient(circle at 50% 30%,rgba(34,211,238,.18),transparent 40%);
+  animation:ufoScan 6s linear infinite;
+}
+body.bg-ufo .bg-layer::after{
+  content:"";position:absolute;
+  top:20%;left:50%;
+  width:120px;height:120px;
+  margin-left:-60px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(103,232,249,.35),transparent 70%);
+  box-shadow:0 0 60px rgba(103,232,249,.4);
+  animation:ufoHover 8s ease-in-out infinite;
+}
+@keyframes ufoScan{from{background-position:0 0,0 0}to{background-position:0 100px,0 0}}
+@keyframes ufoHover{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.1)}}
+body.bg-plain .stars,body.bg-plain .bg-layer::before,body.bg-plain .bg-layer::after{display:none}
+body.bg-custom .stars,body.bg-custom .bg-layer::before,body.bg-custom .bg-layer::after{display:none}
+body.bg-custom{background-size:cover;background-attachment:fixed;background-position:center}
 body.no-anim *{animation:none!important;transition:none!important}
 body.light{--bg:#f0f4f8;--card:rgba(255,255,255,.92);--border:#cbd5e1;--tx:#0f172a;--txd:#475569;background:#f0f4f8;color:#0f172a}
 body.light .bg-layer{display:none}
 body.light .tb,body.light .c,body.light .s{background:rgba(255,255,255,.92)}
-body.light .nb{background:rgba(255,255,255,.7);color:#475569}
+body.light .nb{color:#475569}
 body.light input,body.light textarea,body.light select{background:#fff;color:#0f172a}
 .w{max-width:520px;margin:0 auto;padding:10px;position:relative;z-index:1}
 .tb{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:10px}
@@ -30,10 +61,19 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#0f
 .pl .d{width:5px;height:5px;border-radius:50%;background:var(--ok);animation:pulse 1.8s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .tgl{width:26px;height:26px;border:1px solid var(--bl);border-radius:5px;background:var(--acd);color:var(--ac);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:5px}
-.nv{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:10px}
-.nb{border:1px solid var(--border);border-radius:7px;background:rgba(10,20,35,.6);padding:8px 3px;text-align:center;cursor:pointer;font-weight:700;font-size:.5rem;color:var(--txd);text-transform:uppercase;user-select:none}
-.nb.a{border-color:var(--ac);color:var(--ac);background:var(--acd);box-shadow:0 0 15px var(--acd)}
-.nb .i{display:block;font-size:13px;margin-bottom:1px}
+
+/* ===== NAV TABS v2 — pill floating ===== */
+.nv{position:relative;display:flex;justify-content:space-between;align-items:stretch;gap:0;margin:0 auto 12px;padding:6px;max-width:100%;border-radius:999px;background:linear-gradient(180deg,rgba(20,30,50,.95),rgba(10,18,32,.98));border:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.04);overflow:hidden;transition:padding .35s cubic-bezier(.6,.05,.3,1)}
+.nv::before{content:"";position:absolute;left:8px;right:8px;top:50%;height:1px;background:linear-gradient(90deg,transparent,var(--bl),transparent);opacity:.35;pointer-events:none}
+.nb{position:relative;flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:9px 1px 8px;border:none;border-radius:999px;background:transparent;color:var(--txd);font-family:var(--fm);font-size:.42rem;font-weight:700;letter-spacing:.3px;text-transform:uppercase;cursor:pointer;user-select:none;transition:color .25s;z-index:2;white-space:nowrap;overflow:hidden}
+.nb .i{display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;width:24px;height:24px;border-radius:50%;transition:background .3s,color .3s,transform .3s}
+.nb:hover{color:var(--ac2)}
+.nb:hover .i{transform:translateY(-1px)}
+.nb.a{color:#fff;background:transparent;box-shadow:none}
+.nb.a .i{background:var(--ac);color:#04080f;box-shadow:0 0 14px var(--acd)}
+.nv .nav-spot{position:absolute;top:0;height:100%;width:calc(100% / 11);left:0;border-radius:999px;background:radial-gradient(circle at 50% 45%,rgba(239,68,68,.28),rgba(239,68,68,0) 70%);border:1.5px solid rgba(239,68,68,.55);box-shadow:0 0 22px rgba(239,68,68,.35),inset 0 0 18px rgba(239,68,68,.08);pointer-events:none;transition:transform .38s cubic-bezier(.6,.05,.3,1),width .38s cubic-bezier(.6,.05,.3,1);z-index:1}
+.nv .nav-spot::after{content:"";position:absolute;left:50%;top:6px;width:6px;height:6px;border-radius:50%;background:#ef4444;transform:translateX(-50%);box-shadow:0 0 10px #ef4444}
+
 .c{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:12px;margin-bottom:9px}
 .cl{font-size:.55rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:8px;padding-left:8px;position:relative}
 .cl::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:11px;background:var(--ac);border-radius:2px}
@@ -198,6 +238,28 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 .zy-select-opt:hover{background:var(--acd);color:var(--ac)}
 .zy-select-opt.active{background:var(--acd);color:var(--ac);font-weight:700}
 .zy-select-opt small{color:var(--txd);font-size:.5rem;font-weight:400}
+
+/* ===== GULP DELETE BUTTON ===== */
+.gulp{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;padding:0 22px;border:none;border-radius:999px;background:linear-gradient(180deg,#8b2fc9,#6d1fa6);color:#fff;font-family:var(--fm);font-size:.85rem;font-weight:800;letter-spacing:1px;cursor:pointer;overflow:hidden;box-shadow:0 6px 18px rgba(139,47,201,.45),inset 0 1px 0 rgba(255,255,255,.18);transition:width .5s cubic-bezier(.6,.05,.3,1),padding .5s cubic-bezier(.6,.05,.3,1),background .3s;margin-top:7px;-webkit-tap-highlight-color:transparent}
+.gulp[data-state="idle"]:hover{background:linear-gradient(180deg,#9d3ae0,#7a25b8)}
+.gulp[data-state="pending"]{background:linear-gradient(180deg,#5b1a8c,#3f0f66);width:56px!important;padding:0!important}
+.gulp[data-state="done"]{background:linear-gradient(180deg,#3f0f66,#2a0a45);width:56px!important;padding:0!important}
+.gulp .gulp_face{position:relative;display:flex;align-items:center;gap:9px;height:100%;transition:opacity .25s .15s,transform .35s .05s;transform-origin:left center;white-space:nowrap;z-index:2}
+.gulp .gulp_cam{display:inline-flex}
+.gulp .gulp_icon{width:20px;height:20px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.gulp .gulp_label{font-weight:800}
+.gulp .gulp_bin{position:absolute;right:14px;top:50%;width:26px;height:26px;transform:translateY(-50%) scale(.7);opacity:0;z-index:3;transition:opacity .25s,transform .35s,right .35s}
+.gulp .gulp_lid{transform-origin:center top;transition:transform .4s cubic-bezier(.6,.05,.3,1)}
+.gulp[data-state="idle"]:hover .gulp_bin{opacity:1;transform:translateY(-50%) scale(1)}
+.gulp[data-state="eat"] .gulp_face{opacity:0;transform:translateX(38px) scale(.72);transition:opacity .2s,transform .45s cubic-bezier(.6,.05,.3,1)}
+.gulp[data-state="eat"] .gulp_bin{opacity:1;transform:translateY(-50%) scale(1.15);right:50%;margin-right:-13px}
+.gulp[data-state="eat"] .gulp_lid{transform:translateY(-9px) rotate(-14deg)}
+.gulp[data-state="pending"] .gulp_bin{right:50%;margin-right:-13px;opacity:1;transform:translateY(-50%) scale(1.1)}
+.gulp[data-state="pending"] .gulp_lid{animation:lidPulse 1.1s infinite ease-in-out;transform-origin:center top}
+.gulp[data-state="done"] .gulp_bin{right:50%;margin-right:-13px;opacity:1;transform:translateY(-50%) scale(.85)}
+.gulp[data-state="done"] .gulp_bin circle{stroke-dasharray:100;stroke-dashoffset:0;animation:ringSeal .55s ease-out forwards}
+@keyframes lidPulse{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-8deg)}}
+@keyframes ringSeal{from{stroke-dashoffset:100;opacity:.2}to{stroke-dashoffset:0;opacity:1}}
 </style>
 </head>
 <body data-theme="t-cyan">
@@ -208,7 +270,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   <div class="wm-box">
     <button class="wm-skip" id="wm-skip">✕</button>
     <div class="wm-title">RYANN <span class="y">• TOOLS</span></div>
-    <div class="wm-ver">v5.5</div>
+    <div class="wm-ver">v5.6</div>
     <div class="wm-tag">INJECTOR · FUN · OSINT · SCRAPE · BYPASS · DL</div>
     <div class="wm-credit">by <b>RyanApi77</b></div>
     <button id="wm-start">🚀 MULAI</button>
@@ -221,24 +283,25 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v5.5</span>
+<span class="ch">v5.6</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
 <button class="tgl" id="mode-tgl">🌙</button>
 </div>
 
-<div class="nv">
-<div class="nb a" data-p="home"><span class="i">🏠</span>HOME</div>
-<div class="nb" data-p="spy"><span class="i">💀</span>SPYWARE INJECT</div>
-<div class="nb" data-p="utl"><span class="i">🔧</span>FUN TOOLS</div>
-<div class="nb" data-p="osi"><span class="i">🕵</span>OSINT</div>
-<div class="nb" data-p="scr"><span class="i">🕸</span>SCRAPE</div>
-<div class="nb" data-p="bp"><span class="i">🔓</span>BYPASS</div>
-<div class="nb" data-p="dl"><span class="i">⬇</span>DOWNLOADER</div>
-<div class="nb" data-p="tmp"><span class="i">📧</span>TEMPMAIL</div>
-<div class="nb" data-p="tpl"><span class="i">📄</span>TPL</div>
-<div class="nb" data-p="hst"><span class="i">📜</span>HIST</div>
-<div class="nb" data-p="set"><span class="i">⚙</span>SET</div>
+<div class="nv" id="nav-main">
+  <span class="nav-spot" id="nav-spot"></span>
+  <div class="nb a" data-p="home"><span class="i">🏠</span>HOME</div>
+  <div class="nb" data-p="spy"><span class="i">💀</span>SPY</div>
+  <div class="nb" data-p="utl"><span class="i">🔧</span>FUN</div>
+  <div class="nb" data-p="osi"><span class="i">🕵</span>OSINT</div>
+  <div class="nb" data-p="scr"><span class="i">🕸</span>SCRAPE</div>
+  <div class="nb" data-p="bp"><span class="i">🔓</span>BYPASS</div>
+  <div class="nb" data-p="dl"><span class="i">⬇</span>DL</div>
+  <div class="nb" data-p="tmp"><span class="i">📧</span>TMP</div>
+  <div class="nb" data-p="tpl"><span class="i">📄</span>TPL</div>
+  <div class="nb" data-p="hst"><span class="i">📜</span>HIST</div>
+  <div class="nb" data-p="set"><span class="i">⚙</span>SET</div>
 </div>
 
 <div class="pg" id="pg-home">
@@ -287,7 +350,25 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 <label>Nama File</label><input id="on" value="spyware_ryan">
 </div>
 <div class="c"><div class="cl">GENERATE</div>
-<button id="gb">⚡ GENERATE FILE</button>
+<button class="gulp" id="gulp-generate" data-state="idle">
+  <span class="gulp_face">
+    <span class="gulp_cam">
+      <svg class="gulp_icon" viewBox="0 0 24 24">
+        <path d="M4 7h16"/>
+        <path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        <path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/>
+        <path d="M10 11v6M14 11v6"/>
+      </svg>
+    </span>
+    <span class="gulp_label" id="gulp-label">GENERATE FILE</span>
+  </span>
+  <svg class="gulp_bin" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1"/>
+    <path class="gulp_lid" d="M8 9h8l-1 9a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2L8 9z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M10 9V7a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v2" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+</button>
+<input type="hidden" id="gb">
 <div class="br"><button class="g" id="cb">🗑 CLEAR</button><button class="g" id="vb">✓ VALIDATE</button></div>
 <div id="sw"></div>
 </div>
@@ -641,7 +722,7 @@ https://test.cors.workers.dev/?</textarea>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v5.5</div>
+<div class="ft">RYANN • TOOLS · v5.6</div>
 </div>
 
 <script src="templates.js"></script>
