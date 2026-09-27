@@ -1,16 +1,10 @@
-// app.js v10.0 — Full rebuild
+// app.js v10.0 — Full rebuild, achievements fixed
 (function(){
 'use strict';
 
-// ============================================================
-// KONFIG
-// ============================================================
 var DEVICE_API = 'https://ryanndevice.hasbiiryan.workers.dev';
 var OWNER_FALLBACK_PWD = 'ryanndev';
 
-// ============================================================
-// UTIL
-// ============================================================
 function $(i){ return document.getElementById(i); }
 var $$ = function(q){ return document.querySelectorAll(q); };
 
@@ -20,9 +14,7 @@ var S = {
   del: function(k){ try{ localStorage.removeItem('rx_'+k); }catch(e){} }
 };
 
-// ============================================================
-// DEVICE FINGERPRINT
-// ============================================================
+// ============ DEVICE FINGERPRINT ============
 function makeFingerprint(){
   try{
     var parts = [
@@ -64,20 +56,12 @@ function getDeviceId(){
 var DEVICE_ID = getDeviceId();
 var DEVICE_FP = S.get('device_fp', makeFingerprint());
 
-// ============================================================
-// SESSION — cuma memory, tiap buka web wajib login
-// ============================================================
+// ============ SESSION ============
 var SESSION = null;
-
-function saveSession(role, password){
-  SESSION = { role: role, password: password, verifiedAt: Date.now() };
-}
+function saveSession(role, password){ SESSION = { role: role, password: password, verifiedAt: Date.now() }; }
 function clearSession(){ SESSION = null; }
 function isOwner(){ return SESSION && SESSION.role === 'OWNER'; }
 
-// ============================================================
-// WORKER API (device)
-// ============================================================
 async function deviceApi(path, opts){
   opts = opts || {};
   var url = DEVICE_API + path;
@@ -93,9 +77,7 @@ async function deviceApi(path, opts){
   }
 }
 
-// ============================================================
-// SOUND + LOG
-// ============================================================
+// ============ SOUND ============
 function sndSuccess(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='sine'; o.frequency.setValueAtTime(880, a.currentTime); o.frequency.exponentialRampToValueAtTime(1320, a.currentTime+0.08); g.gain.setValueAtTime(0.05, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.18); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.2); }catch(e){} }
 function sndClick(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='square'; o.frequency.value=800; g.gain.setValueAtTime(0.03, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.05); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.06); }catch(e){} }
 function sndError(){ try{ var a=new (window.AudioContext||window.webkitAudioContext)(); var o=a.createOscillator(), g=a.createGain(); o.type='square'; o.frequency.value=220; g.gain.setValueAtTime(0.04, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+0.15); o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+0.18); }catch(e){} }
@@ -110,9 +92,7 @@ window.sndSuccess = sndSuccess;
 window.sndError = sndError;
 window.sndClick = sndClick;
 
-// ============================================================
-// ACHIEVEMENTS
-// ============================================================
+// ============ ACHIEVEMENTS FIXED ============
 var ACH_LIST = [
   {id:'first_gen', name:'The Beginning', desc:'Pertama kali generate'},
   {id:'ten_gen', name:'Taking Off', desc:'10x generate'},
@@ -133,7 +113,7 @@ var ACH_LIST = [
   {id:'copy_email', name:'Copy Cat', desc:'Copy email tempmail'},
   {id:'theme_change', name:'Delicious Fish', desc:'Ganti theme'},
   {id:'dark', name:'We Need to Go Deeper', desc:'Aktifkan dark mode'},
-  {id:'all', name:'The End.', desc:'Semua fitur dipakai'}
+  {id:'all', name:'The End.', desc:'Semua achievement kebuka'}
 ];
 var ACH_KEY = 'rx_ach_unlocked';
 
@@ -147,28 +127,56 @@ function renderAch(){
   var count = Object.keys(ach).length;
   var counter = document.getElementById('achCounter');
   if(counter) counter.innerHTML = count + ' <span>/ ' + ACH_LIST.length + '</span>';
-  wrap.innerHTML = ACH_LIST.map(function(a){
+
+  var html = '';
+  for(var i=0;i<ACH_LIST.length;i++){
+    var a = ACH_LIST[i];
     var u = ach[a.id];
-    return '<div class="ach ' + (u ? 'unlocked' : 'locked') + '">' +
-      '<div>' + (u ? '🏆 ' : '🔒 ') + a.name + '</div>' +
-      '<div class="desc">' + a.desc + '</div>' +
-    '</div>';
-  }).join('');
+    html += '<div class="ach ' + (u ? 'unlocked' : 'locked') + '">';
+    html += '<div>' + (u ? '🏆 ' : '🔒 ') + a.name + '</div>';
+    html += '<div class="desc">' + a.desc + '</div>';
+    html += '</div>';
+  }
+  wrap.innerHTML = html;
 }
 
 window.unlockAch = function(id){
-  var ach = getAch();
-  if(ach[id]) return;
-  ach[id] = Date.now();
-  setAch(ach);
-  var a = ACH_LIST.find(function(x){ return x.id === id; });
-  if(a && typeof window.zyToast === 'function') window.zyToast('🏆 ' + a.name);
-  renderAch();
+  try{
+    var ach = getAch();
+    if(ach[id]) return;
+    ach[id] = Date.now();
+    setAch(ach);
+    var a = null;
+    for(var i=0;i<ACH_LIST.length;i++){ if(ACH_LIST[i].id === id){ a = ACH_LIST[i]; break; } }
+    console.log('[ACH] unlock:', id, '| found:', !!a);
+    if(a && typeof window.zyToast === 'function') window.zyToast('🏆 ' + a.name);
+    renderAch();
+
+    // cek "all" — semua kecuali 'all' udah kebuka
+    var totalUnlocked = Object.keys(ach).length;
+    if(!ach['all'] && totalUnlocked >= (ACH_LIST.length - 1)){
+      ach['all'] = Date.now();
+      setAch(ach);
+      if(typeof window.zyToast === 'function') window.zyToast('🏆 The End.');
+      renderAch();
+    }
+  }catch(e){ console.error('[ACH] error:', e); }
 };
 
-// ============================================================
-// CUSTOM SELECT
-// ============================================================
+// generator counter
+window.__genCount = parseInt(localStorage.getItem('rx_gen_count') || '0', 10);
+window.__addGen = function(){
+  window.__genCount++;
+  localStorage.setItem('rx_gen_count', String(window.__genCount));
+  if(window.__genCount >= 1) window.unlockAch('first_gen');
+  if(window.__genCount >= 10) window.unlockAch('ten_gen');
+  if(window.__genCount >= 50) window.unlockAch('fifty_gen');
+  if(window.__genCount >= 100) window.unlockAch('hundred_gen');
+};
+
+window.renderAch = renderAch;
+
+// ============ CUSTOM SELECT ============
 window.initCustomSelect = function(containerId, items, selectedId, onSelect, opts){
   opts = opts || {};
   var container = document.getElementById(containerId);
@@ -215,9 +223,7 @@ window.initCustomSelect = function(containerId, items, selectedId, onSelect, opt
   };
 };
 
-// ============================================================
-// PASSWORD GATE
-// ============================================================
+// ============ PASSWORD GATE ============
 (function passwordGateInit(){
   var gate = $('passwordGate');
   if(!gate) return;
@@ -348,9 +354,7 @@ window.initCustomSelect = function(containerId, items, selectedId, onSelect, opt
   setTimeout(function(){ try{ input.focus(); }catch(e){} }, 300);
 })();
 
-// ============================================================
-// ACCESS CODE GATE
-// ============================================================
+// ============ ACCESS CODE GATE ============
 (function accessCodeGateInit(){
   var gate = $('accessCodeGate');
   if(!gate) return;
@@ -393,21 +397,19 @@ window.showAccessCodeGate = function(){
   if(gate) gate.classList.add('show');
 };
 
-// ============================================================
-// THEME + BG + MODE
-// ============================================================
+// ============ THEME + MODE + BG ============
 function setTema(t){
   document.body.setAttribute('data-theme',t);
   S.set('theme',t);
   $$('.to').forEach(function(o){ o.classList.toggle('a',o.dataset.t===t); });
-  unlockAch('theme_change');
+  if(window.unlockAch) window.unlockAch('theme_change');
 }
 $$('.to').forEach(function(o){ o.addEventListener('click', function(){ setTema(o.dataset.t); sndClick(); }); });
 
 var mode=S.get('mode','dark');
 function applyMode(){ if(mode==='light') document.body.classList.add('light'); else document.body.classList.remove('light'); if($('mode-tgl')) $('mode-tgl').textContent=mode==='light'?'☀️':'🌙'; }
-if($('mode-tgl')) $('mode-tgl').onclick=function(){ mode=(mode==='dark')?'light':'dark'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark') unlockAch('dark'); };
-if($('tg-dark')) $('tg-dark').onchange=function(){ mode=this.checked?'dark':'light'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark') unlockAch('dark'); };
+if($('mode-tgl')) $('mode-tgl').onclick=function(){ mode=(mode==='dark')?'light':'dark'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark' && window.unlockAch) window.unlockAch('dark'); };
+if($('tg-dark')) $('tg-dark').onchange=function(){ mode=this.checked?'dark':'light'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark' && window.unlockAch) window.unlockAch('dark'); };
 
 function setBg(b){
   S.set('bg', b);
@@ -436,9 +438,7 @@ if($('bg-file')) $('bg-file').onchange=function(e){
   r.readAsDataURL(f);
 };
 
-// ============================================================
-// NAV
-// ============================================================
+// ============ NAV ============
 var currentPage = 'home';
 function switchPage(name){
   if(name === currentPage) return;
@@ -454,8 +454,8 @@ function switchPage(name){
   if(name === 'bp' && typeof window.zyInitBypass === 'function'){ try{ window.zyInitBypass(); }catch(e){} }
   if(name === 'dl' && typeof window.zyInitDownloader === 'function'){ try{ window.zyInitDownloader(); }catch(e){} }
   if(name === 'hst'){ try{ renderHist(); }catch(e){} }
-  if(name === 'tmp'){ try{ if(typeof window.tmpLoadDomains === 'function') window.tmpLoadDomains(); }catch(e){} }
   if(name === 'home'){ try{ renderAch(); }catch(e){} }
+  if(name === 'tmp'){ try{ if(typeof window.tmpLoadDomains === 'function') window.tmpLoadDomains(); }catch(e){} }
   if(name === 'up' && typeof window.zyInitApiHub === 'function'){ try{ window.zyInitApiHub('apihub-up','UPSCALE'); }catch(e){} }
   if(name === 'imgai' && typeof window.zyInitApiHub === 'function'){ try{ window.zyInitApiHub('apihub-ai','IMG AI'); }catch(e){} }
   if(name === 'imghd' && typeof window.zyInitApiHub === 'function'){ try{ window.zyInitApiHub('apihub-hd','IMG HD'); }catch(e){} }
@@ -476,9 +476,7 @@ $$('.nb').forEach(function(b){
 
 window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); if(b && !b.classList.contains('a')) b.click(); };
 
-// ============================================================
-// DEV PANEL
-// ============================================================
+// ============ DEV PANEL ============
 (function devPanelInit(){
   var modal = $('devModal');
   var devBtn = $('dev-btn');
@@ -492,7 +490,8 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
 
   devBtn.addEventListener('click', function(){
     if(!isOwner()){ alert('Akses ditolak. Hanya OWNER.'); return; }
-    sndClick(); unlockAch('dev_panel');
+    sndClick();
+    if(window.unlockAch) window.unlockAch('dev_panel');
     modal.classList.add('show');
     if(isOwner()){
       loginSec.classList.add('hd');
@@ -562,7 +561,8 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
       if(cb) cb.onclick = function(){
         navigator.clipboard.writeText(res.password.toUpperCase()).then(function(){ sndSuccess(); alert('Tersalin!'); });
       };
-      sndSuccess(); unlockAch('gen_pass');
+      sndSuccess();
+      if(window.unlockAch) window.unlockAch('gen_pass');
     } else {
       $('genResult').innerHTML = '<div class="err-box">✗ Gagal: ' + (res.error || 'unknown') + '</div>';
       sndError();
@@ -580,7 +580,7 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
       box.innerHTML = '<div class="warn-box">Belum ada password yang digenerate.</div>';
       return;
     }
-    box.innerHTML = res.list.map(function(p, i){
+    box.innerHTML = res.list.map(function(p){
       var status = p.revoked ? 'revoked' : (p.deviceId ? 'used' : 'free');
       var statusTxt = p.revoked ? 'REVOKED' : (p.deviceId ? 'USED' : 'FREE');
       var roleClass = p.role === 'OWNER' ? ' owner' : '';
@@ -661,22 +661,14 @@ window.go = function(p){ var b = document.querySelector('.nb[data-p="'+p+'"]'); 
   };
 })();
 
-// ============================================================
-// API HUB WIRE
-// ============================================================
+// ============ API HUB WIRE ============
 function wireApiHub(tabId, catName){
   var runBtn = $('apihub-'+tabId+'-run');
   var clearBtn = $('apihub-'+tabId+'-clear');
   if(runBtn) runBtn.addEventListener('click', function(){
     sndClick();
     if(typeof window.zyRunApiHub === 'function'){
-      try{
-        window.zyRunApiHub('apihub-'+tabId, catName);
-        if(catName === 'IMG AI') unlockAch('imgai_first');
-        if(catName === 'IMG HD') unlockAch('imghd_first');
-        if(catName === 'MAKER') unlockAch('maker_first');
-        if(catName === 'UPSCALE') unlockAch('upscale_first');
-      }catch(e){ alert('Error: '+e.message); }
+      try{ window.zyRunApiHub('apihub-'+tabId, catName); }catch(e){ alert('Error: '+e.message); }
     }
   });
   if(clearBtn) clearBtn.addEventListener('click', function(){
@@ -692,9 +684,7 @@ wireApiHub('hd','IMG HD');
 wireApiHub('mk','MAKER');
 wireApiHub('sr','SEARCH');
 
-// ============================================================
-// SEARCH WIRE
-// ============================================================
+// ============ SEARCH WIRE ============
 window.__searchCategory = 'ALL';
 $$('.search-cat').forEach(function(el){
   el.addEventListener('click', function(){
@@ -705,29 +695,55 @@ $$('.search-cat').forEach(function(el){
   });
 });
 if($('search-go')) $('search-go').onclick = function(){
-  sndClick(); unlockAch('search_first');
-  if(typeof window.zyRunSearch === 'function'){ try{ window.zyRunSearch(); }catch(e){ alert('Search error: '+e.message); } }
+  sndClick();
+  if(typeof window.zyRunSearch === 'function'){
+    try{
+      var p = window.zyRunSearch();
+      if(p && p.then){ p.then(function(){ if(window.unlockAch) window.unlockAch('search_first'); }); }
+    }catch(e){ alert('Search error: '+e.message); }
+  }
 };
 if($('search-input')) $('search-input').addEventListener('keydown', function(e){
   if(e.key === 'Enter'){ e.preventDefault(); if($('search-go')) $('search-go').click(); }
 });
 
-// ============================================================
-// OTHER WIRES
-// ============================================================
-if($('bp-run')) $('bp-run').onclick=function(){ sndClick(); unlockAch('bypass_first'); if(typeof window.zyRunBypass==='function') try{ window.zyRunBypass(); }catch(e){ alert('Bypass error: '+e.message); } };
+// ============ OTHER WIRES ============
+if($('bp-run')) $('bp-run').onclick=function(){
+  sndClick();
+  if(typeof window.zyRunBypass==='function'){
+    try{
+      var p = window.zyRunBypass();
+      if(p && p.then){ p.then(function(){ if(window.unlockAch) window.unlockAch('bypass_first'); }); }
+    }catch(e){ alert('Bypass error: '+e.message); }
+  }
+};
 if($('bp-clear')) $('bp-clear').onclick=function(){ $('bp-log').innerHTML=''; $('bp-log').classList.add('hd'); $('bp-result').innerHTML=''; $('bp-result').classList.add('hd'); sndClick(); };
-if($('dl-run')) $('dl-run').onclick=function(){ sndClick(); unlockAch('dl_first'); if(typeof window.zyRunDownloader==='function') try{ window.zyRunDownloader(); }catch(e){ alert('DL error: '+e.message); } };
-if($('dl-run-all')) $('dl-run-all').onclick=function(){ sndClick(); unlockAch('dl_first'); if(typeof window.zyRunDownloaderAll==='function') try{ window.zyRunDownloaderAll(); }catch(e){ alert('DL error: '+e.message); } };
-if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); unlockAch('preview'); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){} };
+if($('dl-run')) $('dl-run').onclick=function(){
+  sndClick();
+  if(typeof window.zyRunDownloader==='function'){
+    try{
+      var p = window.zyRunDownloader();
+      if(p && p.then){ p.then(function(){ if(window.unlockAch) window.unlockAch('dl_first'); }); }
+    }catch(e){ alert('DL error: '+e.message); }
+  }
+};
+if($('dl-run-all')) $('dl-run-all').onclick=function(){
+  sndClick();
+  if(typeof window.zyRunDownloaderAll==='function'){
+    try{
+      var p = window.zyRunDownloaderAll();
+      if(p && p.then){ p.then(function(){ if(window.unlockAch) window.unlockAch('dl_first'); }); }
+    }catch(e){ alert('DL error: '+e.message); }
+  }
+};
+if($('dl-preview')) $('dl-preview').onclick=function(){
+  sndClick();
+  if(window.unlockAch) window.unlockAch('preview');
+  if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){}
+};
 if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window.zyClearDownloader==='function') try{ window.zyClearDownloader(); }catch(e){} };
 
-// hook tempmail copy
-if($('tmp-copy')) $('tmp-copy').addEventListener('click', function(){ unlockAch('copy_email'); });
-
-// ============================================================
-// HISTORY
-// ============================================================
+// ============ HISTORY ============
 function renderHist(){
   var h = S.get('history', []);
   var el = $('hl');
@@ -749,16 +765,12 @@ window.dlHist = function(i){
 if($('hclr')) $('hclr').onclick=function(){ if(confirm('Clear?')){ S.del('history'); renderHist(); sndSuccess(); } };
 if($('hexp')) $('hexp').onclick=function(){ var h=S.get('history',[]); var b=new Blob([JSON.stringify(h,null,2)],{type:'application/json'}); var u=URL.createObjectURL(b); var a=document.createElement('a'); a.href=u; a.download='history.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); sndSuccess(); };
 
-// ============================================================
-// DATA EXPORT/IMPORT
-// ============================================================
+// ============ DATA EXPORT/IMPORT ============
 if($('exst')) $('exst').onclick=function(){ var d={}; Object.keys(localStorage).forEach(function(k){ if(k.indexOf('rx_')===0) d[k]=localStorage[k]; }); var b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'}); var u=URL.createObjectURL(b); var a=document.createElement('a'); a.href=u; a.download='ryanntools_settings.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); sndSuccess(); };
 if($('imst')) $('imst').onclick=function(){ var inp=document.createElement('input'); inp.type='file'; inp.accept='.json'; inp.onchange=function(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(ev){ try{ var d=JSON.parse(ev.target.result); Object.keys(d).forEach(function(k){ localStorage.setItem(k,d[k]); }); location.reload(); }catch(er){ alert('Error: '+er.message); } }; r.readAsText(f); }; inp.click(); };
 if($('wipe')) $('wipe').onclick=function(){ if(confirm('Wipe ALL?')){ Object.keys(localStorage).forEach(function(k){ if(k.indexOf('rx_')===0) localStorage.removeItem(k); }); location.reload(); } };
 
-// ============================================================
-// WELCOME
-// ============================================================
+// ============ WELCOME ============
 (function(){
   var modal = $('welcome-modal');
   if(!modal) return;
@@ -767,9 +779,7 @@ if($('wipe')) $('wipe').onclick=function(){ if(confirm('Wipe ALL?')){ Object.key
   if($('wm-skip')) $('wm-skip').onclick = closeWm;
 })();
 
-// ============================================================
-// BOOT AFTER LOGIN
-// ============================================================
+// ============ BOOT AFTER LOGIN ============
 function bootAfterLogin(){
   if(!isOwner()){
     deviceApi('/device/me?deviceId=' + encodeURIComponent(DEVICE_ID), { method: 'GET' }).then(function(res){
@@ -805,9 +815,7 @@ function bootAfterLogin(){
   }catch(e){}
 }
 
-// ============================================================
-// BOOT
-// ============================================================
+// ============ BOOT ============
 function boot(){
   try{ setTema(S.get('theme','t-cyan')); }catch(e){}
   try{ setBg(S.get('bg','galaxy')); }catch(e){}
@@ -816,12 +824,12 @@ function boot(){
   try{ renderAch(); }catch(e){}
 }
 
-// ============================================================
-// AUTO-START
-// ============================================================
+// ============ AUTO-START ============
 SESSION = null;
 S.del('session');
 boot();
-setInterval(renderAch, 5000);
+setInterval(renderAch, 3000);
+// hook global biar zyvor.js bisa panggil
+window.__appAchievementsReady = true;
 
 })();
