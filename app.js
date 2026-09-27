@@ -1,101 +1,154 @@
-// app.js v6.2 — Logic utama RYANN TOOLS + Password Gate
+// app.js v6.3 — Logic utama RYANN TOOLS + Password Gate 8-box + Eye Toggle
 (function(){
 'use strict';
 
 // ============================================================
-// PASSWORD GATE v6.2 — layer pertama sebelum website utama
+// PASSWORD GATE v6.3 — 8 box + eye toggle + orbit verify
 // ============================================================
 (function passwordGateInit(){
-  var PASSWORD = 'ryanndev'; // 8 karakter
+  var PASSWORD = 'ryanndev';
   var gate = document.getElementById('passwordGate');
   if(!gate) return;
 
-  var card = gate.querySelector('.access-card');
+  var card = document.getElementById('accessCard');
   var input = document.getElementById('passwordInput');
   var boxes = gate.querySelectorAll('.password-box');
-  var boxesWrap = gate.querySelector('.password-boxes');
+  var boxesWrap = document.getElementById('passwordBoxes');
   var statusText = document.getElementById('statusText');
   var continueBtn = document.getElementById('continueBtn');
+  var eyeToggle = document.getElementById('eyeToggle');
+  var eyeOpen = document.getElementById('eyeOpen');
+  var eyeClosed = document.getElementById('eyeClosed');
+  var verifyOverlay = document.getElementById('gateVerifying');
+  var orbitStatus = document.getElementById('orbitStatus');
   var verified = false;
+  var passwordVisible = false;
 
   if(!input || !boxesWrap || !continueBtn) return;
 
-  // klik area box → fokus input
-  boxesWrap.addEventListener('click', function(){ input.focus(); });
+  // ===== EYE TOGGLE — lihat / sembunyikan password =====
+  if(eyeToggle){
+    eyeToggle.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      passwordVisible = !passwordVisible;
+      eyeToggle.classList.toggle('visible', passwordVisible);
+      if(eyeOpen) eyeOpen.style.display = passwordVisible ? 'none' : '';
+      if(eyeClosed) eyeClosed.style.display = passwordVisible ? '' : 'none';
+      // update tampilan box: kalau visible tampil char, kalau engga tampil bullet
+      updateBoxes(input.value);
+    });
+  }
 
-  // input handler
-  input.addEventListener('input', function(){
-    var value = input.value.slice(0, 8);
+  // ===== UPDATE BOXES =====
+  function updateBoxes(raw){
+    var value = (raw || '').slice(0, 8);
     Array.prototype.forEach.call(boxes, function(box, index){
-      box.classList.remove('filled');
-      box.classList.remove('active');
+      box.classList.remove('filled','active');
       if(index < value.length){
-        box.textContent = '•';
+        box.textContent = passwordVisible ? value[index] : '•';
         box.classList.add('filled');
       } else {
         box.textContent = '';
       }
     });
     if(value.length < 8 && boxes[value.length]) boxes[value.length].classList.add('active');
-    statusText.classList.remove('ok','err','success');
-    statusText.textContent = value.length === 8 ? 'PRESS ENTER TO VERIFY' : 'WAITING FOR PASSWORD';
+  }
+
+  // ===== KLIK AREA BOX → FOKUS INPUT =====
+  boxesWrap.addEventListener('click', function(e){
+    if(eyeToggle && e.target.closest('#eyeToggle')) return;
+    input.focus();
   });
 
-  // Enter
+  // ===== INPUT HANDLER =====
+  input.addEventListener('input', function(){
+    // sanitize: lowercase, hapus whitespace & karakter aneh
+    var raw = input.value || '';
+    var cleaned = raw.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 8);
+    if(cleaned !== raw){
+      var pos = input.selectionStart;
+      input.value = cleaned;
+      try{ input.setSelectionRange(pos, pos); }catch(e){}
+    }
+    updateBoxes(cleaned);
+    statusText.classList.remove('ok','err','success');
+    statusText.textContent = cleaned.length === 8 ? 'PRESS ENTER TO VERIFY' : 'WAITING FOR PASSWORD';
+  });
+
+  // ===== ENTER KEY =====
   input.addEventListener('keydown', function(event){
     if(event.key === 'Enter') verifyPassword();
   });
 
-  // CONTINUE button
+  // ===== CONTINUE BUTTON =====
   continueBtn.addEventListener('click', function(){
-    if(input.value.length === 8 && !verified){ verifyPassword(); return; }
     if(verified){
       gate.classList.add('gate-hidden');
-      setTimeout(function(){ gate.style.display = 'none'; }, 600);
+      setTimeout(function(){ gate.style.display = 'none'; }, 700);
+      return;
     }
+    verifyPassword();
   });
 
-  // Verify
+  // ===== VERIFY =====
   function verifyPassword(){
-    if(input.value !== PASSWORD){
+    var raw = input.value || '';
+    var cleaned = raw.replace(/[^a-zA-Z0-9]/g, '').toLowerCase().slice(0, 8);
+    var expected = PASSWORD.toLowerCase();
+
+    // debug
+    try{
+      console.log('[GATE] raw:', JSON.stringify(raw), 'len', raw.length);
+      console.log('[GATE] cleaned:', JSON.stringify(cleaned), 'len', cleaned.length);
+      console.log('[GATE] expected:', JSON.stringify(expected), 'len', expected.length);
+      console.log('[GATE] match:', cleaned === expected);
+    }catch(e){}
+
+    if(cleaned !== expected){
+      // error shake
       card.classList.remove('shake');
       void card.offsetWidth;
       card.classList.add('shake');
       statusText.textContent = 'INVALID PASSWORD';
       statusText.classList.add('err');
       Array.prototype.forEach.call(boxes, function(box){
-        box.textContent = '';
-        box.classList.remove('filled','active','error','success');
+        box.classList.remove('filled','active','success');
         box.classList.add('error');
       });
       setTimeout(function(){
-        Array.prototype.forEach.call(boxes, function(box){ box.classList.remove('error'); });
+        Array.prototype.forEach.call(boxes, function(box){ box.classList.remove('error','filled','active'); box.textContent = ''; });
       }, 600);
       input.value = '';
       setTimeout(function(){
-        Array.prototype.forEach.call(boxes, function(box){ box.textContent = ''; box.classList.remove('error'); });
-        boxes[0].classList.add('active');
+        Array.prototype.forEach.call(boxes, function(box){ box.textContent = ''; box.classList.remove('error','filled','active'); });
+        if(boxes[0]) boxes[0].classList.add('active');
         statusText.textContent = 'WAITING FOR PASSWORD';
         statusText.classList.remove('err');
-      }, 700);
+      }, 1500);
       return;
     }
 
-    // Benar
+    // BENAR
     verified = true;
     statusText.textContent = 'VERIFYING ACCESS...';
     statusText.classList.remove('err');
     statusText.classList.add('ok');
-    Array.prototype.forEach.call(boxes, function(box){ box.classList.remove('active'); });
-    boxesWrap.classList.add('verifying');
+    Array.prototype.forEach.call(boxes, function(box){ box.classList.remove('active','filled'); });
+
+    // tampilkan overlay orbit
+    if(verifyOverlay) verifyOverlay.classList.add('on');
+    if(orbitStatus){ orbitStatus.textContent = 'VERIFYING ACCESS...'; orbitStatus.classList.remove('done'); }
 
     setTimeout(function(){
-      boxesWrap.classList.remove('verifying');
+      // done state
+      if(orbitStatus){ orbitStatus.textContent = '✓ ACCESS VERIFIED'; orbitStatus.classList.add('done'); }
       Array.prototype.forEach.call(boxes, function(box){
         box.textContent = '✓';
         box.classList.add('success');
       });
-      card.classList.add('success');
+      if(orbitStatus) orbitStatus.textContent = 'ACCESS VERIFIED';
+      if(card) card.classList.add('success');
       statusText.textContent = 'ACCESS VERIFIED';
       statusText.classList.remove('ok');
       statusText.classList.add('success');
@@ -106,6 +159,11 @@
 
   // autofocus kalau di desktop
   setTimeout(function(){ try{ input.focus(); }catch(e){} }, 300);
+
+  // klik gate area luar card → fokus input juga
+  gate.addEventListener('click', function(e){
+    if(e.target === gate) input.focus();
+  });
 })();
 
 function $(i){ return document.getElementById(i); }
@@ -117,7 +175,7 @@ var S = {
   del: function(k){ try{ localStorage.removeItem('rx_'+k); }catch(e){} }
 };
 
-// ===== CUSTOM SELECT ENGINE v6.2 — inline list =====
+// ===== CUSTOM SELECT ENGINE =====
 window.initCustomSelect = function(containerId, items, selectedId, onSelect, opts){
   opts = opts || {};
   var container = document.getElementById(containerId);
@@ -302,7 +360,6 @@ window.unlockAch=unlockAch;
   var nav = document.getElementById('nav-main');
   var spot = document.getElementById('nav-spot');
   if(!nav || !spot) return;
-
   var currentPage = 'home';
   var allPages = ['home','spy','utl','osi','scr','bp','dl','tmp','tpl','hst','set'];
 
@@ -316,7 +373,6 @@ window.unlockAch=unlockAch;
     spot.style.width = w + 'px';
     spot.style.transform = 'translateX(' + (idx * w) + 'px)';
   }
-
   function switchPage(name){
     if(name === currentPage) return;
     var oldPg = document.getElementById('pg-' + currentPage);
@@ -337,7 +393,6 @@ window.unlockAch=unlockAch;
     if(name === 'hst'){ try{ renderHist(); }catch(e){} }
     if(name === 'tmp' && typeof window.tmpLoadDomains === 'function'){ try{ window.tmpLoadDomains(); }catch(e){} }
   }
-
   nav.querySelectorAll('.nb').forEach(function(b){
     b.addEventListener('click', function(){
       if(b.classList.contains('a')) return;
@@ -348,7 +403,6 @@ window.unlockAch=unlockAch;
       switchPage(b.dataset.p);
     });
   });
-
   var active = nav.querySelector('.nb.a') || nav.querySelector('.nb');
   if(active){
     active.classList.add('a');
@@ -360,12 +414,7 @@ window.unlockAch=unlockAch;
     });
     requestAnimationFrame(function(){ requestAnimationFrame(function(){ moveSpot(active); }); });
   }
-
-  window.addEventListener('resize', function(){
-    var a = nav.querySelector('.nb.a');
-    if(a) moveSpot(a);
-  });
-
+  window.addEventListener('resize', function(){ var a = nav.querySelector('.nb.a'); if(a) moveSpot(a); });
   window.__navActivate = function(btn){ if(!btn || btn.classList.contains('a')) return; btn.click(); };
 })();
 
@@ -375,6 +424,7 @@ document.addEventListener('click',function(e){
   if(e.target.closest && e.target.closest('.gulp')) return;
   if(e.target.closest && e.target.closest('.gulp-mini')) return;
   if(e.target.closest && e.target.closest('.zy-select-wrap')) return;
+  if(e.target.closest && e.target.closest('#passwordGate')) return;
   if(e.target.tagName==='BUTTON'&&!e.target.classList.contains('tgl')&&!e.target.disabled&&e.target.id!=='wm-skip'){ sndClick(); vib(15); }
 },true);
 
@@ -701,7 +751,7 @@ function renderTpl(){
 if($('tplsrc')) $('tplsrc').onclick=function(){ var kw=prompt('Cari apa?'); if(!kw)return; var t=$('tplarea').value; if(!t){ alert('Pilih template'); return; } var found=[]; t.split('\n').forEach(function(l,i){ if(l.indexOf(kw)!==-1) found.push((i+1)+': '+l); }); $('tplres').innerHTML=found.length?'Found '+found.length+'<br>'+found.slice(0,10).join('<br>'):'Not found'; sndSuccess(); };
 if($('tplexp')) $('tplexp').onclick=function(){ var t=$('tplarea').value; if(!t){ sndError(); return; } var b=new Blob([t],{type:'text/plain'}); var u=URL.createObjectURL(b); var a=document.createElement('a'); a.href=u; a.download='template.py'; document.body.appendChild(a); a.click(); document.body.removeChild(a); sndSuccess(); };
 
-// ===== HISTORY + gulp-mini =====
+// ===== HISTORY =====
 function gulpMiniHTML(idx){
   return '<button class="gulp-mini" data-state="idle" data-idx="'+idx+'" type="button">'+
     '<span class="gulp_face">'+
@@ -713,7 +763,6 @@ function gulpMiniHTML(idx){
     '</svg>'+
   '</button>';
 }
-
 function renderHist(){
   var h = S.get('history', []);
   var el = $('hl');
@@ -729,7 +778,6 @@ function renderHist(){
       '</div>'+
     '</div>';
   }).join('');
-
   el.querySelectorAll('.gulp-mini').forEach(function(btn){
     btn.addEventListener('click', function(e){
       e.stopPropagation();
@@ -746,7 +794,6 @@ function renderHist(){
     });
   });
 }
-
 window.dlHist = function(i){
   var h = S.get('history', []);
   if(!h[i]) return;
@@ -758,7 +805,6 @@ window.dlHist = function(i){
   sndSuccess();
   setTimeout(function(){ URL.revokeObjectURL(u); }, 1000);
 };
-
 if($('hclr')) $('hclr').onclick=function(){ if(confirm('Clear?')){ S.del('history'); renderHist(); sndSuccess(); } };
 if($('hexp')) $('hexp').onclick=function(){ var h=S.get('history',[]); var b=new Blob([JSON.stringify(h,null,2)],{type:'application/json'}); var u=URL.createObjectURL(b); var a=document.createElement('a'); a.href=u; a.download='history.json'; document.body.appendChild(a); a.click(); document.body.removeChild(a); sndSuccess(); };
 
@@ -802,7 +848,6 @@ function boot(){
       function(id){ S.set('sel_template', id); var h=$('ts'); if(h) h.value = id; }
     );
   } catch(e){}
-
   try {
     window.__selSep = initCustomSelect('sel-sep',
       [
@@ -817,7 +862,6 @@ function boot(){
       function(id){ S.set('pg_sep', id); }
     );
   } catch(e){}
-
   try {
     var encItems = [
       {id:'base64', name:'Base64'},
@@ -832,7 +876,6 @@ function boot(){
       function(id){ S.set('enc_method', id); var h=$('enc-method'); if(h) h.value = id; }
     );
   } catch(e){}
-
   try {
     var fontItems = [
       {id:"'JetBrains Mono',monospace", name:'JetBrains Mono', desc:'monospace default'},
@@ -876,7 +919,6 @@ function boot(){
       }
     );
   } catch(e){}
-
   try {
     window.__selTmpDom = initCustomSelect('sel-tmpdom',
       [{id:'', name:'— CHOOSE —'}],
@@ -884,7 +926,6 @@ function boot(){
       function(id){ var h = $('tmp-domain'); if(h) h.value = id; }
     );
   } catch(e){}
-
   try {
     window.__selTpl = initCustomSelect('sel-tpl',
       [
