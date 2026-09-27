@@ -1,4 +1,4 @@
-// zyvor.js v6.9 — Engine
+// zyvor.js v6.9-fixed — Engine
 (function(){
 'use strict';
 
@@ -14,7 +14,6 @@ var CORS = [
 ];
 
 function timeoutFor(path){
-  // Endpoint berat = 10 menit. Biasa = 2 menit.
   if(!path) return 120000;
   var heavy = ['/api/imagehd/', '/api/hdvidio/', '/api/maker/', '/api/downloader/'];
   for(var i=0;i<heavy.length;i++){
@@ -47,33 +46,39 @@ async function fetchWithRetry(url, opts, timeoutMs, retries){
   throw lastErr || new Error('Fetch failed');
 }
 
-async function proxyFetch(url, opts, timeoutMs){
+// proxyFetch — support raw (arrayBuffer) buat binary
+async function proxyFetch(url, opts, timeoutMs, raw){
   opts = opts || {};
   timeoutMs = timeoutMs || 120000;
   var lastErr = null;
 
-  // LAYER 1: DIRECT
+  async function readBody(r){
+    if(raw){
+      var buf = await r.arrayBuffer();
+      return { ok:true, buffer: buf, contentType: r.headers.get('content-type') || '' };
+    }
+    return { ok:true, text: await r.text() };
+  }
+
   try{
     var r1 = await fetchWithRetry(url, opts, Math.min(timeoutMs, 10000), 1);
-    if(r1.ok) return { ok:true, text: await r1.text() };
+    if(r1.ok) return await readBody(r1);
     lastErr = new Error('Direct HTTP ' + r1.status);
   }catch(e){ lastErr = e; }
 
-  // LAYER 2: WORKER
   try{
     var wurl = WORKER + '/?url=' + encodeURIComponent(url);
     var r2 = await fetchWithRetry(wurl, {method: opts.method || 'GET', headers: opts.headers || {}, body: opts.body}, timeoutMs, 2);
-    if(r2.ok) return { ok:true, text: await r2.text() };
+    if(r2.ok) return await readBody(r2);
     lastErr = new Error('Worker HTTP ' + r2.status);
   }catch(e){ lastErr = e; }
 
-  // LAYER 3-6: PUBLIC PROXIES
   for(var i=0;i<CORS.length;i++){
     var p = CORS[i];
     var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
     try{
       var r3 = await fetchWithRetry(full, {method: opts.method || 'GET', headers: opts.headers || {}, body: opts.body}, Math.min(timeoutMs, 60000), 1);
-      if(r3.ok) return { ok:true, text: await r3.text() };
+      if(r3.ok) return await readBody(r3);
       lastErr = new Error('Proxy ' + i + ' HTTP ' + r3.status);
     }catch(e){ lastErr = e; }
   }
@@ -81,6 +86,7 @@ async function proxyFetch(url, opts, timeoutMs){
   throw lastErr || new Error('All proxy layers failed');
 }
 
+// callAPIv2 — auto-deteksi binary PNG/JPEG/GIF/WebP → blob URL
 async function callAPIv2(path, params, method){
   method = method || 'GET';
   var qs = '';
@@ -88,21 +94,46 @@ async function callAPIv2(path, params, method){
   var url = BASE + path + qs;
   var opts = { method: method };
   if(method === 'POST'){ opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(params); }
-  var res = await proxyFetch(url, opts, timeoutFor(path));
+
+  var res = await proxyFetch(url, opts, timeoutFor(path), true);
+  var ct = (res.contentType || '').toLowerCase();
+  var buf = res.buffer;
+
+  var bytes = new Uint8Array(buf.slice(0, 12));
+  var mime = null;
+  if(bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E) mime = 'image/png';
+  else if(bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) mime = 'image/jpeg';
+  else if(bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) mime = 'image/gif';
+  else if(bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 && bytes[8] === 0x57) mime = 'image/webp';
+  else if(bytes[0] === 0x42 && bytes[1] === 0x4D) mime = 'image/bmp';
+
+  if(mime){
+    var blob = new Blob([buf], { type: mime });
+    return { __binary:true, url: URL.createObjectURL(blob), blob: blob, mime: mime, size: buf.byteLength };
+  }
+
+  if(ct.indexOf('image/') === 0){
+    var ctClean = ct.split(';')[0];
+    var blob2 = new Blob([buf], { type: ctClean });
+    return { __binary:true, url: URL.createObjectURL(blob2), blob: blob2, mime: ctClean, size: buf.byteLength };
+  }
+
+  var txt = '';
+  try{ txt = new TextDecoder('utf-8').decode(buf); }catch(e){ txt = ''; }
   var json;
-  try{ json = JSON.parse(res.text); }catch(e){ json = { raw: res.text }; }
+  try{ json = JSON.parse(txt); }catch(e){ json = { raw: txt }; }
   return json;
 }
 
 function $id(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function classify(url){ var u = String(url).toLowerCase(); if(/\.(mp4|mov|webm|mkv)(\?|$)/.test(u)) return 'video'; if(/\.(mp3|m4a|flac|wav|aac|opus)(\?|$)/.test(u)) return 'audio'; if(/\.(jpg|jpeg|png|webp|gif|bmp)(\?|$)/.test(u)) return 'image'; return 'other'; }
+function classify(url){ var u = String(url).toLowerCase(); if(/\.(mp4|mov|webm|mkv)(\?|$)/.test(u)) return 'video'; if(/\.(mp3|m4a|flac|wav|aac|opus)(\?|$)/.test(u)) return 'audio'; if(/\.(jpg|jpeg|png|webp|gif|bmp)(\?|$)/.test(u)) return 'image'; if(/^blob:/.test(u) || /^data:image/.test(u)) return 'image'; return 'other'; }
 
 function collectMedia(obj, out, baseKey){
   out = out || [];
   if(!obj) return out;
   if(typeof obj === 'string'){
-    if(/^https?:\/\/.+\.(jpg|jpeg|png|webp|gif|mp4|mov|webm|mp3|m4a|wav)(\?|$)/i.test(obj) || /^https?:\/\/.+/.test(obj)){
+    if(/^https?:\/\/.+\.(jpg|jpeg|png|webp|gif|mp4|mov|webm|mp3|m4a|wav)(\?|$)/i.test(obj) || /^https?:\/\//.test(obj)){
       out.push({ url: obj, key: baseKey || 'url' });
     }
     return out;
@@ -111,7 +142,7 @@ function collectMedia(obj, out, baseKey){
     out.push({ url: obj.result, key: 'result' });
     return out;
   }
-  if(typeof obj === 'object' && obj.url && typeof obj.url === 'string' && /^https?:\/\//.test(obj.url)){
+  if(typeof obj === 'object' && obj.url && typeof obj.url === 'string' && /^(https?:\/\/|blob:|data:image)/.test(obj.url)){
     out.push({ url: obj.url, key: 'url' });
     return out;
   }
@@ -246,7 +277,7 @@ window.zyToast = function(msg, type){
 };
 
 window.zyCp = function(u){ navigator.clipboard.writeText(u).then(function(){ window.zyToast('URL tersalin'); }); };
-window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ window.zyToast('JSON tersalin'); }); };
+window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ window.zyToast('Tersalin'); }); };
 
 var PARAM_LISTS = {
   'list-reso':      ['480p','720p','1080p','1440p','2160p (4K)'],
@@ -521,7 +552,7 @@ async function fetchWithFallback(list, params, logEl){
     if(logEl){ var l1 = document.createElement('div'); l1.className='ok'; l1.textContent='['+(i+1)+'/'+list.length+'] '+api.name; logEl.appendChild(l1); logEl.scrollTop=logEl.scrollHeight; }
     try{
       var res = api.path === 'TIKWM' ? await fetchTikWM(callParams.url) : await callAPIv2(api.path, callParams, api.method);
-      var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url) || (!res.error && !res.message));
+      var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url) || (!res.error && !res.message) || res.__binary);
       if(success){
         if(logEl){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='  ✓ '+api.name; logEl.appendChild(l2); logEl.scrollTop=logEl.scrollHeight; }
         return { api:api, result:res };
@@ -579,14 +610,12 @@ async function fetchTikTokSmart(url, logEl){
 
 // ===== API HUB LIST =====
 var API_HUB_LIST = [
-  // UPSCALE
   {id:'up_ai', name:'Video Upscale AI', path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
   {id:'up_v1', name:'Video Upscale v1', path:'/api/hdvidio/upscale', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
   {id:'up_tohd', name:'HD Video Processor', path:'/api/hdvidio/tohd', method:'GET', params:['video','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
   {id:'up_wink', name:'Wink HD Video Enhancer', path:'/api/hdvidio/wink-hd-video', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
   {id:'up_v2', name:'Video HD Enhancer', path:'/api/hdvidio/enhance', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
 
-  // IMG AI
   {id:'ai_seek', name:'AI Seek Image', path:'/api/imageai/aiseek', method:'GET', params:['prompt'], cat:'IMG AI'},
   {id:'ai_bing', name:'AI Bing Image', path:'/api/imageai/bingimg', method:'GET', params:['query'], cat:'IMG AI'},
   {id:'ai_dezgo', name:'Dezgo Image', path:'/api/imageai/dezgo', method:'GET', params:['text','model','width','height','negative'], cat:'IMG AI'},
@@ -600,7 +629,6 @@ var API_HUB_LIST = [
   {id:'ai_t2iv2', name:'Text to Image v2 (FLUX)', path:'/api/imageai/text2imgv2', method:'GET', params:['teks'], cat:'IMG AI'},
   {id:'ai_t2iv3', name:'Text to Image v3 (Baidu)', path:'/api/imageai/text2imgv3', method:'GET', params:['teks'], cat:'IMG AI'},
 
-  // IMG HD
   {id:'hd_en1', name:'AI Enhance HD', path:'/api/imagehd/ai-enhance', method:'GET', params:['url'], cat:'IMG HD'},
   {id:'hd_en2', name:'AI Enhance HD v2', path:'/api/imagehd/ai-enhancev2', method:'GET', params:['url','size'], cat:'IMG HD'},
   {id:'hd_en3', name:'AI Enhance HD v3', path:'/api/imagehd/ai-enhancev3', method:'GET', params:['url'], cat:'IMG HD'},
@@ -635,11 +663,9 @@ var API_HUB_LIST = [
   {id:'hd_hd3', name:'HD Converter v3', path:'/api/imagehd/hd-convertv3', method:'GET', params:['url'], cat:'IMG HD'},
   {id:'hd_hd4', name:'HD Converter v4', path:'/api/imagehd/hd-convertv4', method:'GET', params:['url'], cat:'IMG HD'},
 
-  // KALENDER
   {id:'kal_hari', name:'Hari Ini', path:'/api/kalender/hari-ini', method:'GET', params:[], cat:'KALENDER'},
   {id:'kal_libur', name:'Hari Libur Nasional', path:'/api/kalender/hari-libur', method:'GET', params:['tahun'], cat:'KALENDER'},
 
-  // MAKER
   {id:'mk_bounty', name:'Fake Bounty', path:'/api/maker/bounty', method:'GET', params:['image','text'], cat:'MAKER'},
   {id:'mk_ektp', name:'EKTP Generator', path:'/api/maker/ektp', method:'GET', params:['nama','nik','provinsi','kota','ttl','jenis_kelamin','golongan_darah','alamat','rt/rw','kel/desa','kecamatan','agama','status','pekerjaan','kewarganegaraan','masa_berlaku','terbuat','pas_photo'], cat:'MAKER'},
   {id:'mk_afin', name:'Fake Afinitas ML', path:'/api/maker/fake-afinitas-ml', method:'GET', params:['ppurl'], cat:'MAKER'},
@@ -687,7 +713,6 @@ var API_HUB_LIST = [
   {id:'mk_wafat', name:'Fake Wafat', path:'/api/maker/wafat', method:'GET', params:['fotourl','nama','lahir','wafat'], cat:'MAKER'},
   {id:'mk_students', name:'Student ID Card', path:'/api/maker/students', method:'GET', params:['name','school','studentId','class','rollNo','dob','blood','guardian','contact','address','valid','photo'], cat:'MAKER'},
 
-  // SEARCH API
   {id:'sr_4k', name:'Search Wallpaper 4K', path:'/api/search/4kwallpapers', method:'GET', params:['action','query','slug','page'], cat:'SEARCH'},
   {id:'sr_anime', name:'Anime Search', path:'/api/search/anime', method:'GET', params:['q'], cat:'SEARCH'},
   {id:'sr_bacakomik', name:'BacaKomik', path:'/api/search/bacakomik', method:'GET', params:['action','query','url','page'], cat:'SEARCH'},
@@ -740,21 +765,18 @@ var API_HUB_LIST = [
 // ===== TEMPMAIL v6.9 =====
 var tmpToken=null, tmpEmail=null, tmpMsgs=[];
 
-// FIX: forward method/headers/body ke worker + direct fallback
 async function tmpFetchV2(url, opts){
   opts = opts || {};
   var method = opts.method || 'GET';
   var headers = opts.headers || {};
   var body = opts.body || null;
 
-  // LAYER 1: WORKER — bawa method + headers + body beneran
   try{
     var wurl = WORKER + '/?url=' + encodeURIComponent(url);
     var r = await fetchWithRetry(wurl, { method: method, headers: headers, body: body }, 30000, 2);
     if(r.ok) return r;
   }catch(e){}
 
-  // LAYER 2: CORS PROXIES
   for(var i=0;i<CORS.length;i++){
     try{
       var p = CORS[i];
@@ -764,7 +786,6 @@ async function tmpFetchV2(url, opts){
     }catch(e){}
   }
 
-  // LAYER 3: DIRECT — mail.tm kasih CORS header
   try{
     var r3 = await fetchWithRetry(url, { method: method, headers: headers, body: body }, 20000, 1);
     if(r3.ok) return r3;
@@ -946,7 +967,8 @@ window.zyRunBypass = async function(){
   var out = await fetchWithFallback(list, params, log);
   if(out){
     var html = '<div class="zy-head">✓ SUKSES via <b>'+esc(out.api.name)+'</b></div>';
-    html += '<details class="zy-raw" open><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(out.result,null,2))+'</pre></details>';
+    var rawTxt = out.result && out.result.__binary ? '[BINARY]' : JSON.stringify(out.result,null,2);
+    html += '<details class="zy-raw" open><summary>RAW JSON</summary><pre>'+esc(rawTxt)+'</pre></details>';
     html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
     res.innerHTML = html; res.classList.remove('hd');
   } else { res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd'); }
@@ -1042,7 +1064,8 @@ window.zyRenderDlResult = function(container, smart, sourceUrl){
       slideHtml += '<div class="zy-slide-item-card"><img src="'+esc(img)+'" loading="lazy"><div class="zy-slide-item-num">'+(i+1)+'</div><button class="zy-dl-btn zy-dl-full" onclick="zyDownload(\''+esc(img).replace(/'/g,"\\'")+'\',\'slide_'+(i+1)+'.jpg\')">⬇ DOWNLOAD FOTO '+(i+1)+'</button></div>';
     });
     slideHtml += '</div>';
-    container.innerHTML = slideHtml; container.classList.remove('hd'); return;
+    container.innerHTML = slideHtml; container.classList.remove('hd');
+    return;
   }
   var videoHtml = '<div class="zy-head">✓ '+(type==='video'?'VIDEO':'SUKSES')+' via <b>'+esc(smart.api.name)+'</b></div>';
   if(variants.title || variants.author){
@@ -1122,7 +1145,7 @@ window.zyRunApiHub = async function(tabId, catName){
     if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='✓ Selesai'; log.appendChild(l2); }
     window.zyRenderApiResult(res, r, st.endpoint.name, catName);
     try{
-      var txt = JSON.stringify(r);
+      var txt = (r && r.__binary) ? ('[BINARY ' + r.mime + ' ' + (r.size/1024).toFixed(1) + ' KB]') : JSON.stringify(r);
       var h = JSON.parse(localStorage.getItem('rx_history') || '[]');
       h.unshift({n: st.endpoint.name + ' [' + catName + ']', s: (txt.length/1024).toFixed(1), l: txt.length, t: Date.now(), c: txt.substring(0, 40000)});
       if(h.length > 30) h = h.slice(0,30);
@@ -1134,14 +1157,16 @@ window.zyRunApiHub = async function(tabId, catName){
   }
 };
 
-// ===== FIX MAKER: ekstrak semua gambar dari response MAKER =====
-// nangkep URL di result/url/image/photo/output/file/link + base64 data:image
+// ===== MAKER: ekstrak gambar dari response (blob/URL/base64) =====
 function extractMakerImages(data){
+  if(data && data.__binary && data.url){
+    return [data.url];
+  }
   var out = [];
   var seen = {};
   function push(u){
     if(!u || typeof u !== 'string') return;
-    if(!/^https?:\/\//.test(u) && u.indexOf('data:image') !== 0) return;
+    if(!/^https?:\/\//.test(u) && u.indexOf('data:image') !== 0 && u.indexOf('blob:') !== 0) return;
     if(seen[u]) return;
     seen[u] = 1; out.push(u);
   }
@@ -1167,40 +1192,39 @@ function extractMakerImages(data){
 }
 
 window.zyRenderApiResult = function(container, data, name, catName){
+  // === MAKER / binary: tampil FOTO ===
+  if(catName === 'MAKER' || (data && data.__binary)){
+    var mkImgs = extractMakerImages(data);
+    if(mkImgs.length){
+      var html = '<div class="zy-head">✓ '+esc(name)+'</div>';
+      html += '<div class="zy-media-wrap"><div class="zy-media-title">🖼 HASIL ('+mkImgs.length+')</div>';
+      window.__apiHubMedia = mkImgs.map(function(u){ return { url:u, key:'maker' }; });
+      var safeName = String(name).replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'');
+      mkImgs.forEach(function(u, i){
+        html += '<div class="zy-media-item">';
+        html += '<img src="'+esc(u)+'" class="zy-image" loading="lazy" onclick="zyOpenPreview('+i+')" style="cursor:pointer">';
+        html += '<div class="zy-media-actions">';
+        html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+i+')">🖼 PREVIEW</button>';
+        html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(u).replace(/'/g,"\\'")+'\',\''+safeName+'_'+i+'.png\')">⬇ DOWNLOAD</button>';
+        if(u.indexOf('data:') !== 0) html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(u).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+      var rawDisplay = (data && data.__binary)
+        ? '[BINARY IMAGE — '+(data.mime||'?')+' — '+((data.size||0)/1024).toFixed(1)+' KB]'
+        : JSON.stringify(data, null, 2);
+      html += '<details class="zy-raw"><summary>RAW</summary><pre>'+esc(rawDisplay)+'</pre></details>';
+      html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY</button>';
+      container.innerHTML = html; container.classList.remove('hd');
+      return;
+    }
+  }
+
   var html = '<div class="zy-head">✓ '+esc(name)+'</div>';
 
   if(catName === 'KALENDER'){
     html += '<div class="zy-media-wrap"><div class="zy-media-title">📅 DATA KALENDER</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre></div>';
     container.innerHTML = html; container.classList.remove('hd'); return;
-  }
-
-  // ===== MAKER: semua hasil dipaksa jadi FOTO =====
-  if(catName === 'MAKER'){
-    var mkImgs = extractMakerImages(data);
-    if(mkImgs.length){
-      html += '<div class="zy-media-wrap"><div class="zy-media-title">🖼 HASIL ('+mkImgs.length+')</div>';
-      window.__apiHubMedia = mkImgs.map(function(u){ return { url:u, key:'maker' }; });
-      var safeName = esc(name).replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'');
-      mkImgs.forEach(function(u, i){
-        var isB64 = u.indexOf('data:image') === 0;
-        html += '<div class="zy-media-item">';
-        html += '<img src="'+esc(u)+'" class="zy-image" loading="lazy" onclick="zyOpenPreview('+i+')" style="cursor:pointer">';
-        html += '<div class="zy-media-actions">';
-        html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+i+')">🖼 PREVIEW</button>';
-        if(isB64){
-          html += '<button class="zy-dl-btn" data-b64="'+i+'" onclick="zyDownloadB64(this)">⬇ DOWNLOAD</button>';
-        } else {
-          html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(u).replace(/'/g,"\\'")+'\',\''+safeName+'_'+i+'.png\')">⬇ DOWNLOAD</button>';
-          html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(u).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
-        }
-        html += '</div></div>';
-      });
-      html += '</div>';
-      html += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>';
-      html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
-      container.innerHTML = html; container.classList.remove('hd'); return;
-    }
-    // kalau gak ada gambar sama sekali → jatuh ke branch umum di bawah
   }
 
   var mediaItems = collectMedia(data, []);
@@ -1238,38 +1262,18 @@ window.zyRenderApiResult = function(container, data, name, catName){
     html += '</div>';
   }
   if(!images.length && !videos.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">📄 RESPONSE</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(JSON.stringify(data,null,2))+'</pre></div>';
+    var rawDisplay2 = (data && data.__binary)
+      ? '[BINARY '+(data.mime||'?')+' — '+((data.size||0)/1024).toFixed(1)+' KB]'
+      : JSON.stringify(data,null,2);
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">📄 RESPONSE</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(rawDisplay2)+'</pre></div>';
   }
   html += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>';
   html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
   container.innerHTML = html; container.classList.remove('hd');
 };
 
-// ===== DOWNLOAD BASE64 (buat MAKER yang balikin data:image/...) =====
-window.zyDownloadB64 = function(btn){
-  var idx = parseInt(btn.getAttribute('data-b64'), 10);
-  var m = window.__apiHubMedia && window.__apiHubMedia[idx];
-  if(!m || !m.url) return;
-  try{
-    var parts = m.url.split(',');
-    var meta = parts[0].match(/data:image\/([a-zA-Z0-9]+)/);
-    var ext = (meta && meta[1]) ? meta[1] : 'png';
-    var bin = atob(parts[1]);
-    var bytes = new Uint8Array(bin.length);
-    for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
-    var blob = new Blob([bytes], {type:'image/'+ext});
-    var u = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = u; a.download = 'maker_'+idx+'.'+ext;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(u); }, 2000);
-    window.zyToast('✓ Downloaded');
-  }catch(e){ window.zyToast('✗ Gagal: '+e.message, 'error'); }
-};
-
 // >>> [PART_B_END]
 // ===== LOG HELPER =====
-// [GANTI KALAU UDAH ADA DI FILE LAIN]
 if(typeof window.logTo !== 'function'){
   window.logTo = function(id, msg, cls){
     var el = document.getElementById(id);
@@ -1283,7 +1287,6 @@ if(typeof window.logTo !== 'function'){
 }
 
 // ===== CUSTOM SELECT =====
-// [GANTI KALAU UDAH ADA DI FILE LAIN]
 if(typeof window.initCustomSelect !== 'function'){
   window.initCustomSelect = function(wrapId, items, defaultId, onChange){
     var wrap = document.getElementById(wrapId);
@@ -1365,7 +1368,6 @@ if(typeof window.initCustomSelect !== 'function'){
 }
 
 // ===== ACHIEVEMENT =====
-// [GANTI KALAU UDAH ADA DI FILE LAIN]
 if(typeof window.unlockAch !== 'function'){
   var ACH_KEY = 'rx_achievements';
   var ACH_DEFS = {
@@ -1384,7 +1386,6 @@ if(typeof window.unlockAch !== 'function'){
 }
 
 // ===== SOUND =====
-// [GANTI KALAU UDAH ADA DI FILE LAIN]
 if(typeof window.sndSuccess !== 'function'){
   var _audioCtx = null;
   window.sndSuccess = function(){
@@ -1512,7 +1513,7 @@ window.__tmpDomBoot = function(){
 
 // ===== ZYVOR EXPORT =====
 window.ZYVOR = {
-  version: '6.9',
+  version: '6.9-fixed',
   base: BASE,
   worker: WORKER,
   call: callAPIv2,
@@ -1553,6 +1554,6 @@ if(document.readyState === 'loading'){
 }
 
 })();
-// zyvor.js v6.9 — END
+// zyvor.js v6.9-fixed — END
 
 // >>> [PART_C_END]
