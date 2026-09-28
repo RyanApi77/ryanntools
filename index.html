@@ -218,12 +218,20 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 .zy-raw pre{background:rgba(0,0,0,.5);border:1px solid var(--ac);border-radius:5px;padding:8px;font-size:.5rem;overflow-x:auto;color:var(--ac2);max-height:300px;overflow-y:auto;margin-top:5px}
 .zy-copy{width:auto;padding:6px 14px;font-size:.55rem;background:transparent;color:var(--ac);border:1px solid var(--ac);border-radius:6px;margin-top:8px;letter-spacing:1px;display:inline-block;margin-right:5px}
 
-/* RESULT URL BOX */
 .result-url-box{padding:12px;border:1.5px solid var(--ac);border-radius:8px;background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(139,92,246,.05));margin-bottom:8px;box-shadow:0 0 20px rgba(34,211,238,.1)}
-.result-url-label{font-size:.5rem;color:var(--ac);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.result-url-text{font-family:var(--fm);font-size:.65rem;color:var(--tx);word-break:break-all;padding:8px 10px;border-radius:6px;background:rgba(0,0,0,.5);border:1px solid var(--bl);margin-bottom:8px;min-height:32px;display:flex;align-items:center;max-height:100px;overflow-y:auto;line-height:1.4}
+.result-url-label{font-size:.5rem;color:var(--ac);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px}
+.result-url-text{font-family:var(--fm);font-size:.65rem;color:var(--tx);word-break:break-all;padding:8px 10px;border-radius:6px;background:rgba(0,0,0,.5);border:1px solid var(--bl);min-height:32px;max-height:100px;overflow-y:auto;line-height:1.4;display:flex;align-items:center}
+.result-url-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.result-url-row .result-url-text{flex:1;margin-bottom:0}
+.copy-icon{width:34px;height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--ac);border-radius:8px;color:var(--ac);cursor:pointer;padding:0;transition:transform .15s,background .15s,color .15s;margin:0}
+.copy-icon:hover{background:var(--acd)}
+.copy-icon:active{transform:scale(.85)}
+.copy-icon.copied{color:var(--ac);border-color:var(--ac);background:var(--acd)}
+.copy-icon.copied .copy-svg{display:none}
+.copy-icon.copied::after{content:"✓";font-size:16px;font-weight:900;color:var(--ac)}
+.result-url-actions{display:flex;justify-content:center;gap:8px}
+.result-url-actions button{width:auto;padding:9px 28px;margin:0}
 
-/* PROGRESS BAR UPSCALE */
 .up-prog{margin-top:10px;padding:12px;border:1.5px solid var(--ac);border-radius:10px;background:linear-gradient(180deg,rgba(10,20,35,.9),rgba(6,12,22,.95));display:none}
 .up-prog.on{display:block}
 .up-prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -234,13 +242,12 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 @keyframes upProgWave{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 .up-prog-track{position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent 0,transparent 9%,rgba(255,255,255,.06) 9%,rgba(255,255,255,.06) 10%);pointer-events:none}
 .up-prog-msg{font-size:.55rem;color:var(--txd);margin-top:8px;letter-spacing:1px;min-height:14px;text-align:center}
-.up-prog-glow{position:absolute;top:-2px;bottom:-2px;width:40px;background:radial-gradient(circle,rgba(103,232,249,.6),transparent 70%);border-radius:50%;pointer-events:none;transition:left .4s ease-out;filter:blur(6px)}
+.up-prog-glow{position:absolute;top:-2px;bottom:-2px;width:40px;background:radial-gradient(circle,rgba(103,232,249,.6),transparent 70%);border-radius:50%;pointer-events:none;transition:left .4s ease-out;filter:blur(6px);left:0}
 
-/* SMART WARN TOAST */
-.zy-smart-warn{background:linear-gradient(180deg,rgba(40,25,10,.98),rgba(25,15,5,.99));border:1.5px solid var(--wr);border-radius:10px;padding:12px 14px;box-shadow:0 8px 24px rgba(251,191,36,.25);pointer-events:auto;animation:zyToastIn .35s ease-out;backdrop-filter:blur(10px)}
-.zy-smart-warn .sw-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:.7rem;color:var(--wr);letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:8px;line-height:1.3}
+.zy-smart-warn{background:linear-gradient(180deg,var(--card),var(--card));border:1.5px solid var(--ac);border-radius:10px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:auto;animation:zyToastIn .35s ease-out;backdrop-filter:blur(10px)}
+.zy-smart-warn .sw-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:.7rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:8px;line-height:1.3}
 .zy-smart-warn .sw-icon{font-size:1.1rem}
-.zy-smart-warn .sw-sub{font-size:.5rem;color:rgba(148,163,184,.75);margin-top:6px;letter-spacing:1px;text-transform:uppercase;line-height:1.4}
+.zy-smart-warn .sw-sub{font-size:.5rem;color:var(--txd);margin-top:6px;letter-spacing:1px;text-transform:lowercase;line-height:1.4}
 
 #bp-scan-badge{display:none;margin-top:6px;padding:8px 10px;border-radius:7px;border:1px solid var(--ac);background:var(--acd);color:var(--ac);font-size:.6rem;font-weight:700;text-align:center}
 
@@ -709,18 +716,25 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 <div class="c"><div class="cl">BYPASS LINK</div>
 <label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">
 <div id="bp-scan-badge"></div>
-<div class="br"><button class="g" id="bp-scan">🔍 SCAN</button><button class="g" id="bp-scan-all">🎯 AUTO-FALLBACK</button></div>
+<button class="g" id="bp-scan" style="margin-top:7px">🔍 SCAN</button>
 <label>Pilih API</label><div id="bp-api-custom" class="zy-select-wrap"></div>
 <div id="bp-params"></div>
 <div class="br"><button id="bp-run">BYPASS</button><button class="g" id="bp-clear">CLEAR</button></div>
 <div id="bp-log" class="console-log hd" style="height:150px"></div>
 <div id="bp-final-wrap" class="hd" style="margin-top:8px">
   <div class="result-url-box">
-    <div class="result-url-label"><span>🔗</span>HASIL BYPASS</div>
-    <div id="bp-final-url" class="result-url-text">—</div>
-    <div class="br">
-      <button class="g" id="bp-open-url">🌐 BUKA URL</button>
-      <button class="g" id="bp-copy-url">📋 COPY URL</button>
+    <div class="result-url-label" id="bp-final-label"><span>✓</span>BERHASIL</div>
+    <div class="result-url-row">
+      <div id="bp-final-url" class="result-url-text">—</div>
+      <button class="copy-icon" id="bp-copy-url" type="button" aria-label="Copy URL">
+        <svg class="copy-svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="result-url-actions">
+      <button class="g" id="bp-open-url">🌐 BUKA</button>
     </div>
   </div>
 </div>
@@ -760,7 +774,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 
 <div class="pg hd" id="pg-up">
-<div class="apihub-header"><div class="apihub-title">UPSCALE VIDEO</div><div class="apihub-sub">HD Video Enhancer · Auto-Fallback 5 API</div><span class="apihub-count">api.zyvor.my.id</span></div>
+<div class="apihub-header"><div class="apihub-title">UPSCALE VIDEO</div><div class="apihub-sub">HD Video Enhancer</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
 <label>Endpoint</label><div id="apihub-up-endpoint" class="zy-select-wrap"></div>
 <div id="apihub-up-params"></div>
@@ -896,6 +910,8 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 <div class="c"><div class="cl">FONT <span id="fv" style="color:var(--ac)">13px</span></div>
 <input type="range" id="fsr" class="fs-range" min="11" max="20" value="13">
+<label>Family</label><div class="zy-select-wrap" id="sel-font"></div>
+<input type="hidden" id="ffam" value="'JetBrains Mono',monospace">
 </div>
 <div class="c"><div class="cl">SOUND</div>
 <div class="snd-pack" id="snd-grid">
