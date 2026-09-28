@@ -1,4 +1,4 @@
-// app.js v10.3 — Sound + Custom Color + Bypass Scanner
+// app.js v10.4 — Universal Decoder + Smart Adjustment + Progress + Bypass Box
 (function(){
 'use strict';
 
@@ -50,7 +50,7 @@ async function deviceApi(path,opts){
   }catch(e){ return {ok:false,error:'network',message:e.message}; }
 }
 
-// ============ SOUND PACK v10.3 ============
+// ============ SOUND PACK v10.4 ============
 var _audioCtx = null;
 var _sndPack = S.get('snd_pack','beep');
 var _sndMaster = S.get('snd_master',true);
@@ -207,7 +207,20 @@ window.initCustomSelect = function(containerId,items,selectedId,onSelect,opts){
   };
 };
 
-// ============ PASSWORD GATE ============
+// ============ COPY WITH ANIM (v10.4) ============
+window.copyWithAnim = function(el, text){
+  if(!el || !text) return;
+  navigator.clipboard.writeText(text).then(function(){
+    el.classList.add('copied');
+    if(typeof window.zyToast==='function') window.zyToast('✓ Tersalin');
+    if(typeof window.sndSuccess==='function') window.sndSuccess();
+    setTimeout(function(){ el.classList.remove('copied'); }, 1200);
+  }).catch(function(){
+    if(typeof window.zyToast==='function') window.zyToast('✗ Gagal copy', 'error');
+  });
+};
+
+// ============ PASSWORD GATE — ZERO TOUCH v10.3 ============
 (function passwordGateInit(){
   var gate=$('passwordGate'); if(!gate) return;
   var card=$('accessCard'), input=$('passwordInput');
@@ -304,7 +317,7 @@ window.initCustomSelect = function(containerId,items,selectedId,onSelect,opts){
   setTimeout(function(){ try{ input.focus(); }catch(e){} },300);
 })();
 
-// ============ ACCESS CODE GATE ============
+// ============ ACCESS CODE GATE — ZERO TOUCH v10.3 ============
 (function accessCodeGateInit(){
   var gate=$('accessCodeGate'); if(!gate) return;
   var input=$('accessCodeInput'), btn=$('accessCodeBtn'), msg=$('accessCodeMsg');
@@ -443,6 +456,24 @@ if($('tg-haptic')){
   $('tg-haptic').onchange=function(){ _haptic=this.checked; S.set('haptic',_haptic); if(_haptic) vib(50); };
 }
 if($('fsr')) $('fsr').oninput=function(){ document.documentElement.style.setProperty('--fs',this.value+'px'); S.set('font',this.value); if($('fv')) $('fv').textContent=this.value+'px'; };
+
+// Font family selector (D.4 restore)
+var FONT_LIST = [
+  {id:"'JetBrains Mono',monospace", name:'JetBrains Mono'},
+  {id:"'Orbitron',sans-serif", name:'Orbitron'},
+  {id:"'Courier New',monospace", name:'Courier New'},
+  {id:"'Fira Code',monospace", name:'Fira Code'},
+  {id:"system-ui,-apple-system,sans-serif", name:'System UI'},
+  {id:"'Roboto',sans-serif", name:'Roboto'},
+  {id:"'Consolas',monospace", name:'Consolas'}
+];
+if($('sel-font')){
+  window.__selFont = window.initCustomSelect('sel-font', FONT_LIST, S.get('font_family', FONT_LIST[0].id), function(id){
+    S.set('font_family', id);
+    document.documentElement.style.setProperty('--fm', id);
+    if($('ffam')) $('ffam').value = id;
+  });
+}
 
 // ============ NAV ============
 var currentPage='home';
@@ -1066,7 +1097,7 @@ window.tplBoot=tplBoot;
   };
 })();
 
-// ============ API HUB WIRE ============
+// ============ API HUB WIRE v10.4 ============
 function wireApiHub(tabId, catName){
   var runBtn=$('apihub-'+tabId+'-run');
   var clearBtn=$('apihub-'+tabId+'-clear');
@@ -1087,6 +1118,7 @@ function wireApiHub(tabId, catName){
     var log=$('apihub-'+tabId+'-log'), res=$('apihub-'+tabId+'-result');
     if(log){ log.innerHTML=''; log.classList.add('hd'); }
     if(res){ res.innerHTML=''; res.classList.add('hd'); }
+    if(catName==='UPSCALE' && typeof window.zyProgressHide==='function'){ try{ window.zyProgressHide(); }catch(e){} }
   });
 }
 wireApiHub('up','UPSCALE');
@@ -1114,7 +1146,7 @@ if($('search-input')) $('search-input').addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); if($('search-go')) $('search-go').click(); }
 });
 
-// ============ BYPASS SCANNER v10.3 ============
+// ============ BYPASS SCANNER v10.4 ============
 var BYPASS_MAP = {
   'sfl.gl': 'safelink',
   'safelinku.com': 'safelink',
@@ -1132,16 +1164,16 @@ var BYPASS_MAP = {
   'cuty.io': 'bypasslinkv2',
   'shrinkforearn.in': 'shrinkme',
   'wellsfashionhub.com': 'wellbypass',
-  'well-healthy.com': 'wellbypass'
+  'well-healthy.com': 'wellbypass',
+  'sub4unlock.com': 'bypasslinkv2',
+  'sub4unlock.io': 'bypasslinkv2'
 };
 
 function detectBypassProvider(url){
   if(!url) return null;
   try{
     var host = url.toLowerCase().replace(/^https?:\/\//,'').split('/')[0].split(':')[0].replace(/^www\./,'');
-    // cek map exact
     if(BYPASS_MAP[host]) return BYPASS_MAP[host];
-    // cek substring
     for(var k in BYPASS_MAP){
       if(host.indexOf(k) !== -1) return BYPASS_MAP[k];
     }
@@ -1168,19 +1200,17 @@ function updateBypassBadge(url){
     badge.innerHTML = '🎯 AUTO-DETECT: <b>' + (providerName || provider) + '</b>';
     badge.style.borderColor = 'var(--ok)';
     badge.style.color = 'var(--ok)';
-    // auto select di custom select
     if(window.__bpSel && typeof window.__bpSel.setValue === 'function'){
-      try{ window.__bpSel.setValue(provider); bypassSelected = provider; window.zyRenderBypassParams(); }catch(e){}
+      try{ window.__bpSel.setValue(provider); if(typeof window.zyBypassSetSelected==='function') window.zyBypassSetSelected(provider); window.zyRenderBypassParams(); }catch(e){}
     }
   } else {
     badge.style.display = 'block';
-    badge.innerHTML = '❓ Provider gak dikenali — pilih manual atau AUTO-FALLBACK';
+    badge.innerHTML = '❓ Provider gak dikenali — auto fallback';
     badge.style.borderColor = 'var(--ac)';
     badge.style.color = 'var(--txd)';
   }
 }
 
-// wire input URL
 if($('bp-url')){
   var bpUrlEl = $('bp-url');
   var bpTimer = null;
@@ -1193,7 +1223,6 @@ if($('bp-url')){
   });
 }
 
-// scan manual
 if($('bp-scan')) $('bp-scan').onclick=async function(){
   var url = ($('bp-url')||{}).value;
   if(!url){ alert('Isi URL dulu'); return; }
@@ -1202,75 +1231,52 @@ if($('bp-scan')) $('bp-scan').onclick=async function(){
   var log = $('bp-log'); var res = $('bp-result');
   if(log){ log.innerHTML = ''; log.classList.remove('hd'); }
   if(res){ res.innerHTML = ''; res.classList.add('hd'); }
+  var fw = $('bp-final-wrap'); if(fw) fw.classList.add('hd');
 
   logTo('bp-log','🔍 SCAN: '+url,'in');
 
-  // step 1: map domain
+  // Step 1: map domain
   var provider = detectBypassProvider(url);
   if(provider){
     var api = BYPASS_LIST.find(function(x){ return x.id===provider; });
     if(api) logTo('bp-log','✓ Step 1: cocok dari map → '+api.name,'ok');
-    if(window.__bpSel) try{ window.__bpSel.setValue(provider); bypassSelected = provider; window.zyRenderBypassParams(); }catch(e){}
+    if(window.__bpSel) try{ window.__bpSel.setValue(provider); if(typeof window.zyBypassSetSelected==='function') window.zyBypassSetSelected(provider); window.zyRenderBypassParams(); }catch(e){}
   } else {
-    logTo('bp-log','⚠ Step 1: gak ada di map, lanjut scan manual...','warn');
+    logTo('bp-log','⚠ Step 1: gak ada di map, coba lewat proxy...','warn');
   }
 
-  // step 2: fetch HEAD/GET ringan ke url biar liat redirect
-  try{
-    logTo('bp-log','→ Step 2: fetch HEAD ke URL target...','in');
-    var ctrl = new AbortController();
-    var tm = setTimeout(function(){ ctrl.abort(); }, 8000);
-    var r = await fetch(url, {method: 'GET', redirect: 'follow', signal: ctrl.signal, headers: {'User-Agent':'Mozilla/5.0'}});
-    clearTimeout(tm);
-    var finalUrl = r.url || url;
-    logTo('bp-log','  final URL: '+finalUrl.slice(0,60),'ok');
-    // coba detect dari final url juga
-    var p2 = detectBypassProvider(finalUrl);
-    if(p2 && !provider){
-      logTo('bp-log','✓ Step 2: cocok dari redirect → '+p2,'ok');
-      provider = p2;
-      if(window.__bpSel) try{ window.__bpSel.setValue(p2); bypassSelected = p2; window.zyRenderBypassParams(); }catch(e){}
+  // Step 2: proxyFetch via worker/CORS (bukan fetch direct)
+  if(!provider && typeof window.zyProxyFinalUrl === 'function'){
+    try{
+      logTo('bp-log','→ Step 2: fetch via proxy untuk lihat redirect...','in');
+      var finalUrl = await window.zyProxyFinalUrl(url, 8000);
+      if(finalUrl){
+        logTo('bp-log','  final: '+finalUrl.slice(0,60),'ok');
+        var p2 = detectBypassProvider(finalUrl);
+        if(p2){
+          logTo('bp-log','✓ Step 2: cocok dari redirect → '+p2,'ok');
+          provider = p2;
+          if(window.__bpSel) try{ window.__bpSel.setValue(p2); if(typeof window.zyBypassSetSelected==='function') window.zyBypassSetSelected(p2); window.zyRenderBypassParams(); }catch(e){}
+        }
+      } else {
+        logTo('bp-log','  proxy fetch gagal — lanjut fallback','warn');
+      }
+    }catch(e){
+      logTo('bp-log','  ✗ proxy error: '+e.message,'er');
     }
-  }catch(e){
-    logTo('bp-log','  fetch gagal (mungkin CORS/offline): '+e.message,'er');
   }
 
   if(provider){
     var api2 = BYPASS_LIST.find(function(x){ return x.id===provider; });
-    logTo('bp-log','🎯 HASIL: '+(api2 ? api2.name : provider),'ok');
+    logTo('bp-log','🎯 HASIL SCAN: '+(api2 ? api2.name : provider),'ok');
+    logTo('bp-log','→ Tekan BYPASS untuk proses.','in');
     sndSuccess();
-    if(window.unlockAch) window.unlockAch('bypass_first');
   } else {
-    logTo('bp-log','⚠ Gak yakin, coba AUTO-FALLBACK aja','warn');
+    logTo('bp-log','⚠ Provider tidak dikenali — auto fallback saat BYPASS','warn');
   }
 };
 
-// auto-fallback (coba semua API)
-if($('bp-scan-all')) $('bp-scan-all').onclick=async function(){
-  var url = ($('bp-url')||{}).value;
-  if(!url){ alert('Isi URL dulu'); return; }
-  url = url.trim();
-  sndClick();
-  var log = $('bp-log'); var res = $('bp-result');
-  if(log){ log.innerHTML = ''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML = ''; res.classList.add('hd'); }
-  logTo('bp-log','🎯 AUTO-FALLBACK: coba semua API...','in');
-  var params = {url: url};
-  var out = await fetchWithFallback(BYPASS_LIST, params, log);
-  if(out){
-    var html = '<div class="zy-head">✓ SUKSES via <b>'+esc(out.api.name)+'</b></div>';
-    var rawTxt = out.result && out.result.__binary ? '[BINARY]' : JSON.stringify(out.result,null,2);
-    html += '<details class="zy-raw" open><summary>RAW JSON</summary><pre>'+esc(rawTxt)+'</pre></details>';
-    html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
-    res.innerHTML = html; res.classList.remove('hd');
-    sndSuccess();
-    if(window.unlockAch) window.unlockAch('bypass_first');
-  } else {
-    res.innerHTML = '<div class="zy-head er">✗ SEMUA API GAGAL</div>'; res.classList.remove('hd');
-    sndError();
-  }
-};
-
+// Run bypass — auto fallback (tombol BYPASS)
 if($('bp-run')) $('bp-run').onclick=function(){
   sndClick();
   if(window.unlockAch) window.unlockAch('bypass_first');
@@ -1279,21 +1285,40 @@ if($('bp-run')) $('bp-run').onclick=function(){
 if($('bp-clear')) $('bp-clear').onclick=function(){
   $('bp-log').innerHTML=''; $('bp-log').classList.add('hd');
   $('bp-result').innerHTML=''; $('bp-result').classList.add('hd');
+  var fw = $('bp-final-wrap'); if(fw) fw.classList.add('hd');
   var badge = $('bp-scan-badge'); if(badge){ badge.style.display = 'none'; }
   var urlIn = $('bp-url'); if(urlIn) urlIn.value = '';
   sndClick();
 };
 
-// ============ DL WIRES ============
+// Copy URL dari box hasil bypass (SVG logo)
+(function wireBpResult(){
+  var copyBtn = $('bp-copy-url');
+  if(copyBtn) copyBtn.addEventListener('click', function(){
+    var urlEl = $('bp-final-url');
+    var url = urlEl ? urlEl.textContent.trim() : '';
+    if(!url || url === '—'){ sndError(); return; }
+    if(typeof window.copyWithAnim === 'function'){
+      window.copyWithAnim(copyBtn, url);
+    } else {
+      navigator.clipboard.writeText(url).then(function(){ sndSuccess(); });
+    }
+  });
+  var openBtn = $('bp-open-url');
+  if(openBtn) openBtn.addEventListener('click', function(){
+    var urlEl = $('bp-final-url');
+    var url = urlEl ? urlEl.textContent.trim() : '';
+    if(!url || url === '—'){ sndError(); return; }
+    window.open(url, '_blank', 'noopener,noreferrer');
+    sndClick();
+  });
+})();
+
+// ============ DL WIRES v10.4 ============
 if($('dl-run')) $('dl-run').onclick=function(){
   sndClick();
   if(window.unlockAch) window.unlockAch('dl_first');
   if(typeof window.zyRunDownloader==='function'){ try{ window.zyRunDownloader(); }catch(e){ alert('DL error: '+e.message); } }
-};
-if($('dl-run-all')) $('dl-run-all').onclick=function(){
-  sndClick();
-  if(window.unlockAch) window.unlockAch('dl_first');
-  if(typeof window.zyRunDownloaderAll==='function'){ try{ window.zyRunDownloaderAll(); }catch(e){ alert('DL error: '+e.message); } }
 };
 if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); if(window.unlockAch) window.unlockAch('preview'); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){} };
 if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window.zyClearDownloader==='function') try{ window.zyClearDownloader(); }catch(e){} };
@@ -1359,6 +1384,7 @@ function boot(){
   try{ setBg(S.get('bg','galaxy')); }catch(e){}
   try{ applyMode(); }catch(e){}
   try{ var f=S.get('font',13); if($('fsr')) $('fsr').value=f; document.documentElement.style.setProperty('--fs',f+'px'); if($('fv')) $('fv').textContent=f+'px'; }catch(e){}
+  try{ var ff=S.get('font_family', FONT_LIST[0].id); document.documentElement.style.setProperty('--fm', ff); if($('ffam')) $('ffam').value=ff; }catch(e){}
   try{ if($('snd-grid')) $$('#snd-grid .snd-opt').forEach(function(x){ x.classList.toggle('a',x.dataset.snd===_sndPack); }); }catch(e){}
   try{ renderHist(); }catch(e){}
   try{ renderAch(); }catch(e){}
