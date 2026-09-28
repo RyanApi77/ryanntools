@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>TOOLS BY RYANNXD · v10.0</title>
+<title>TOOLS BY RYANNXD · v10.3</title>
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,16 +93,24 @@ body[data-theme="t-mono"]{--ac:#e0f2fe;--ac2:#f8fafc;--acd:rgba(224,242,254,.15)
 .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .bg-layer > *{display:none}
 
-/* GALAXY */
-body.bg-galaxy .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
+/* GALAXY — lebih rame */
+body.bg-galaxy .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent),radial-gradient(2px 2px at 15% 75%,#fff,transparent),radial-gradient(1px 1px at 45% 85%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 70% 55%,#fff,transparent),radial-gradient(1px 1px at 90% 15%,#e0f2fe,transparent),radial-gradient(1.5px 1.5px at 5% 50%,#fff,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
+body.bg-galaxy .aurora{display:block;position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(34,211,238,.12),transparent 40%),radial-gradient(circle at 75% 60%,rgba(139,92,246,.10),transparent 45%),radial-gradient(circle at 50% 85%,rgba(236,72,153,.08),transparent 40%);animation:auroraMove 20s ease-in-out infinite}
+@keyframes auroraMove{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
 body.bg-galaxy .shooting-star-1{display:block;position:absolute;top:5%;left:-10%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:ssF 6s linear infinite}
 body.bg-galaxy .shooting-star-2{display:block;position:absolute;top:35%;left:-15%;width:2px;height:2px;border-radius:50%;background:#fff;animation:ssF2 9s linear infinite 3s}
+body.bg-galaxy .shooting-star-3{display:block;position:absolute;top:60%;left:-12%;width:3px;height:3px;border-radius:50%;background:#a5f3fc;box-shadow:0 0 10px #a5f3fc;animation:ssF 11s linear infinite 2s}
+body.bg-galaxy .shooting-star-4{display:block;position:absolute;top:15%;left:-20%;width:2px;height:2px;border-radius:50%;background:#fde047;box-shadow:0 0 8px #fde047;animation:ssF2 13s linear infinite 5s}
 body.bg-galaxy .blackhole{display:block;position:absolute;top:62%;left:78%;width:120px;height:120px;margin-left:-60px}
 body.bg-galaxy .blackhole .bh-core{position:absolute;top:50%;left:50%;width:28px;height:28px;margin-left:-14px;margin-top:-14px;border-radius:50%;background:radial-gradient(circle,#000 40%,#1a0a2e 70%,transparent);box-shadow:0 0 60px rgba(139,92,246,.4);z-index:3}
 body.bg-galaxy .blackhole .bh-disk{position:absolute;inset:0;border-radius:50%;border:3px solid transparent;border-top-color:rgba(139,92,246,.7);animation:bhDisk 4s linear infinite}
 body.bg-galaxy .blackhole .bh-disk2{position:absolute;top:20px;left:20px;right:20px;bottom:20px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(251,191,36,.7);animation:bhDisk 2.5s linear infinite reverse}
-body.bg-galaxy .planet-1{display:block;position:absolute;top:18%;left:8%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fb923c,#7c2d12)}
-body.bg-galaxy .planet-2{display:block;position:absolute;top:72%;left:15%;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985)}
+body.bg-galaxy .planet-1{display:block;position:absolute;top:18%;left:8%;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fb923c,#7c2d12);box-shadow:0 0 30px rgba(251,146,60,.3)}
+body.bg-galaxy .planet-2{display:block;position:absolute;top:72%;left:15%;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985);box-shadow:0 0 24px rgba(125,211,252,.3)}
+body.bg-galaxy .planet-3{display:block;position:absolute;top:40%;right:12%;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#c084fc,#4c1d95);box-shadow:0 0 30px rgba(192,132,252,.35)}
+body.bg-galaxy .planet-4{display:block;position:absolute;bottom:25%;right:20%;width:28px;height:28px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#34d399,#065f46);box-shadow:0 0 24px rgba(52,211,153,.35)}
+body.bg-galaxy .planet-5{display:block;position:absolute;top:8%;left:45%;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#facc15,#854d0e);box-shadow:0 0 28px rgba(250,204,21,.35)}
+body.bg-galaxy .planet-6{display:block;position:absolute;bottom:10%;left:40%;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f472b6,#831843);box-shadow:0 0 22px rgba(244,114,182,.35)}
 
 /* BINARY */
 body.bg-binary{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,10,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(4,28,16,.9),transparent 55%),#000400;background-attachment:fixed}
@@ -113,9 +121,13 @@ body.bg-binary .bin-rain{display:block !important;position:fixed;inset:0;pointer
 body.bg-ufo{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.9),transparent 55%),#050210;background-attachment:fixed}
 body.bg-ufo .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 65% 15%,#fff,transparent),radial-gradient(1px 1px at 25% 80%,#fff,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
 body.bg-ufo .ufo-scene{display:block;position:absolute;inset:0;overflow:hidden}
-body.bg-ufo .ufo-scene .ufo-craft{position:absolute;bottom:30%;left:-200px;width:100px;height:56px;animation:ufoWarp 10s ease-in infinite}
-body.bg-ufo .ufo-scene .ufo-craft:nth-child(2){animation-duration:14s;animation-delay:3s;transform:scale(.7)}
-body.bg-ufo .ufo-scene .ufo-craft:nth-child(3){animation-duration:18s;animation-delay:7s;transform:scale(.5)}
+body.bg-ufo .ufo-scene .ufo-craft{position:absolute;bottom:30%;left:-200px;width:100px;height:56px}
+body.bg-ufo .ufo-scene .ufo-craft:nth-child(1){animation:ufoWarp 5s ease-in infinite}
+body.bg-ufo .ufo-scene .ufo-craft:nth-child(2){animation:ufoWarp 7s ease-in infinite 2s;transform:scale(.7)}
+body.bg-ufo .ufo-scene .ufo-craft:nth-child(3){animation:ufoWarp 9s ease-in infinite 4s;transform:scale(.5)}
+/* asap membekas */
+body.bg-ufo .ufo-scene .ufo-smoke{position:absolute;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,rgba(200,220,255,.55),transparent 70%);pointer-events:none;animation:ufoSmokeFade 3s ease-out forwards;filter:blur(4px)}
+@keyframes ufoSmokeFade{0%{transform:scale(.5);opacity:.9}30%{transform:scale(1.3);opacity:.7}100%{transform:scale(3);opacity:0}}
 @keyframes ufoWarp{0%{transform:translate(0,0) scale(.6);opacity:0}5%{transform:translate(60px,-20px) scale(1);opacity:1}35%{transform:translate(50vw,-10px);opacity:1}70%{transform:translate(90vw,-25vh) scale(.5);opacity:.7}100%{transform:translate(120vw,-45vh) scale(0);opacity:0}}
 
 body.bg-plain{background:var(--bg)}
@@ -166,6 +178,10 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 .r{margin-top:8px;padding:9px;border-radius:7px;border:1px solid var(--ac);background:rgba(0,0,0,.4);font-size:.65rem;color:var(--ac2);word-break:break-all;min-height:32px}
 .hd{display:none!important}
 .ft{text-align:center;font-size:.5rem;color:var(--txd);letter-spacing:2px;text-transform:uppercase;padding:12px 0;opacity:.6}
+.st{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+.s{border:1px solid var(--ac);border-radius:9px;background:var(--card);padding:12px;text-align:center}
+.s .l{font-size:.5rem;color:var(--txd);text-transform:uppercase;margin-bottom:5px;font-weight:700}
+.s .n{font-family:var(--fh);font-weight:900;font-size:1.4rem;color:var(--ac)}
 
 .zy-select-wrap{position:relative;margin-top:4px}
 .zy-select-btn{width:100%;padding:10px 14px;border-radius:10px;border:1.5px solid var(--ac);background:rgba(4,8,15,.7);color:var(--tx);font-family:var(--fm);font-size:.7rem;text-align:left;display:flex;justify-content:space-between;align-items:center;cursor:pointer;margin:0;font-weight:700}
@@ -343,6 +359,8 @@ input[type="file"]{display:none!important}
 .switch input:checked+.slider:before{transform:translateX(22px);background:var(--ac)}
 input[type="range"].vol-range{width:100%;height:4px;border-radius:2px;background:var(--ac);outline:none;-webkit-appearance:none;padding:0}
 input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ac)}
+input[type="range"].fs-range{width:100%;height:4px;border-radius:2px;background:var(--ac);outline:none;-webkit-appearance:none}
+input[type="range"].fs-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac)}
 
 .snd-pack{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
 .snd-opt{padding:8px 4px;border-radius:7px;border:2px solid var(--ac);cursor:pointer;text-align:center;font-size:.55rem;font-weight:700;color:var(--txd);background:rgba(10,20,35,.6);text-transform:uppercase}
@@ -351,8 +369,6 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 .to{aspect-ratio:1;border-radius:7px;border:2px solid var(--ac);cursor:pointer;position:relative}
 .to.a{border-color:var(--ac);transform:scale(1.08)}
 .to .lbl{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.4rem;color:#fff;text-shadow:0 0 4px #000}
-.fs-range{width:100%;height:4px;border-radius:2px;background:var(--ac);outline:none;-webkit-appearance:none}
-.fs-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac)}
 .drop{border:2px dashed var(--ac);border-radius:9px;background:rgba(4,8,15,.4);padding:18px;text-align:center;cursor:pointer}
 .drop .ic{font-size:28px;display:block;margin-bottom:5px}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
@@ -370,13 +386,6 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 .gulp[data-state="done"]{width:56px!important;padding:0!important}
 .gulp[data-state="done"] .gulp_face{opacity:0}
 .gulp[data-state="done"] .gulp_bin{opacity:1;right:50%;margin-right:-13px}
-.gulp-mini{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:32px;padding:0 14px;border:none;border-radius:999px;background:linear-gradient(180deg,var(--ac),var(--bl));color:#04080f;font-family:var(--fm);font-size:.55rem;font-weight:800;cursor:pointer;width:auto;margin-top:6px}
-.gulp-mini .gulp_face{display:flex;align-items:center;gap:6px;z-index:2}
-.gulp-mini .gulp_icon{width:14px;height:14px;stroke:currentColor;stroke-width:2.2;fill:none}
-.gulp-mini .gulp_bin{position:absolute;right:10px;top:50%;width:16px;height:16px;transform:translateY(-50%);opacity:0}
-.gulp-mini[data-state="done"]{width:40px!important;padding:0!important}
-.gulp-mini[data-state="done"] .gulp_face{opacity:0}
-.gulp-mini[data-state="done"] .gulp_bin{opacity:1;right:50%;margin-right:-8px}
 </style>
 </head>
 <body data-theme="t-cyan" class="bg-galaxy">
@@ -389,7 +398,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
   </div>
   <div class="access-card" id="accessCard">
     <div class="card-line"></div>
-    <h1>RYANNTOOLS <span>v10.2</span></h1>
+    <h1>RYANNTOOLS <span>v10.3</span></h1>
     <div class="subtitle">ACCESS VERIFICATION</div>
     <p class="description">Enter your password to continue</p>
     <textarea id="passwordInput" maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" rows="1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px"></textarea>
@@ -415,13 +424,20 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="bg-layer">
   <div class="starfield"></div>
+  <div class="aurora"></div>
   <div class="shooting-star-1"></div>
   <div class="shooting-star-2"></div>
+  <div class="shooting-star-3"></div>
+  <div class="shooting-star-4"></div>
   <div class="blackhole"><div class="bh-disk"></div><div class="bh-disk2"></div><div class="bh-core"></div></div>
   <div class="planet-1"></div>
   <div class="planet-2"></div>
+  <div class="planet-3"></div>
+  <div class="planet-4"></div>
+  <div class="planet-5"></div>
+  <div class="planet-6"></div>
   <div class="bin-rain" id="bin-rain"></div>
-  <div class="ufo-scene">
+  <div class="ufo-scene" id="ufo-scene">
     <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(165,243,252,.95)"/><stop offset="60%" stop-color="rgba(103,232,249,.65)"/></radialGradient><linearGradient id="bodyG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG2)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG2)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
     <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG3" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(216,180,254,.95)"/><stop offset="60%" stop-color="rgba(192,132,252,.65)"/></radialGradient><linearGradient id="bodyG3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8b4fe"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG3)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG3)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
     <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG4" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(253,186,116,.95)"/><stop offset="60%" stop-color="rgba(251,146,60,.65)"/></radialGradient><linearGradient id="bodyG4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdba74"/><stop offset="100%" stop-color="#c2410c"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG4)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG4)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
@@ -434,14 +450,15 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
     <img class="wm-banner" id="wm-banner" src="banner.png" alt="Ryann Tools">
     <div class="wm-body">
       <div class="wm-title">WELCOME TO RYANN <span class="y">TOOLS</span></div>
-      <div class="wm-ver">v10.2</div>
+      <div class="wm-ver">v10.3</div>
       <div class="wm-changes-title">WHAT'S NEW?</div>
       <ul class="wm-changes">
-        <li><b>UFO background</b> — 3 pesawat warp</li>
-        <li><b>SPY, FUN, OSINT, SCRAPE, TPL</b> — balik lagi</li>
-        <li><b>25 achievements</b> — auto-migrate dari v6.6</li>
-        <li><b>Galaxy gate</b> — bintang + planet</li>
-        <li><b>Binary matrix</b> — smooth</li>
+        <li><b>Sound + Volume</b> — balik</li>
+        <li><b>Custom Color</b> — balik</li>
+        <li><b>Toggle</b> — balik</li>
+        <li><b>UFO + asap</b> — 3 pesawat trail</li>
+        <li><b>Galaxy rame</b> — 6 planet</li>
+        <li><b>Bypass scanner</b> — auto-detect</li>
       </ul>
       <button id="wm-start">MULAI</button>
     </div>
@@ -495,7 +512,7 @@ input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;widt
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v10.2</span>
+<span class="ch">v10.3</span>
 <span class="role-badge" id="role-badge">OWNER</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
@@ -598,7 +615,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 <div class="c"><div class="cl">LETTER COUNTER</div>
 <textarea id="lc-input" placeholder="paste teks..."></textarea>
-<div class="st" style="grid-template-columns:1fr 1fr 1fr;display:grid;gap:8px">
+<div class="st" style="grid-template-columns:1fr 1fr 1fr">
 <div class="s"><div class="l">Karakter</div><div class="n" id="lc-char">0</div></div>
 <div class="s"><div class="l">Kata</div><div class="n" id="lc-word">0</div></div>
 <div class="s"><div class="l">Baris</div><div class="n" id="lc-line">0</div></div>
@@ -651,7 +668,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 <textarea id="pc-input" placeholder="ip:port" style="min-height:80px;font-size:.6rem"></textarea>
 <div class="br"><button class="g" id="pc-start">CEK</button><button class="g" id="pc-clear">CLEAR</button></div>
 <div id="pc-log" class="console-log" style="height:150px"></div>
-<div class="st" style="grid-template-columns:1fr 1fr 1fr 1fr;display:grid;gap:8px">
+<div class="st" style="grid-template-columns:1fr 1fr 1fr 1fr">
 <div class="s"><div class="l">Total</div><div class="n" id="pc-stat-total">0</div></div>
 <div class="s"><div class="l">Hidup</div><div class="n" id="pc-stat-alive" style="color:var(--ok)">0</div></div>
 <div class="s"><div class="l">Mati</div><div class="n" id="pc-stat-dead" style="color:var(--er)">0</div></div>
@@ -685,6 +702,9 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 
 <div class="pg hd" id="pg-bp">
 <div class="c"><div class="cl">BYPASS LINK</div>
+<label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">
+<div id="bp-scan-badge" style="display:none;margin-top:6px;padding:8px 10px;border-radius:7px;border:1px solid var(--ac);background:var(--acd);color:var(--ac);font-size:.6rem;font-weight:700;text-align:center"></div>
+<div class="br"><button class="g" id="bp-scan">🔍 SCAN</button><button class="g" id="bp-scan-all">🎯 AUTO-FALLBACK</button></div>
 <label>Pilih API</label><div id="bp-api-custom" class="zy-select-wrap"></div>
 <div id="bp-params"></div>
 <div class="br"><button id="bp-run">BYPASS</button><button class="g" id="bp-clear">CLEAR</button></div>
@@ -827,6 +847,16 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 <div class="to" data-t="t-mono" style="background:linear-gradient(135deg,#04080f,#e0f2fe)"><span class="lbl">MON</span></div>
 </div>
 </div>
+<div class="c"><div class="cl">CUSTOM COLOR</div>
+<p style="font-size:.55rem;color:var(--txd);margin-bottom:8px">Pilih warna dulu, baru klik APPLY.</p>
+<div class="color-row">
+<div class="color-pick"><label>ACCENT</label><input type="color" id="cust-ac" value="#22d3ee"></div>
+<div class="color-pick"><label>BG</label><input type="color" id="cust-bg" value="#04080f"></div>
+<div class="color-pick"><label>BORDER</label><input type="color" id="cust-br" value="#1e4d5c"></div>
+</div>
+<div class="br"><button class="g" id="cust-apply">APPLY</button><button class="g" id="cust-rand">RANDOM</button></div>
+<button class="d" id="cust-reset">RESET</button>
+</div>
 <div class="c"><div class="cl">BACKGROUND</div>
 <div class="snd-pack" id="bg-grid" style="grid-template-columns:repeat(3,1fr)">
 <div class="snd-opt a" data-bg="galaxy">GALAXY</div>
@@ -837,6 +867,27 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 <input type="file" id="bg-file" accept="image/*" class="hd">
 </div>
+<div class="c"><div class="cl">FONT <span id="fv" style="color:var(--ac)">13px</span></div>
+<input type="range" id="fsr" class="fs-range" min="11" max="20" value="13">
+<label>Family</label><div class="zy-select-wrap" id="sel-font"></div>
+<input type="hidden" id="ffam" value="'JetBrains Mono',monospace">
+</div>
+<div class="c"><div class="cl">SOUND</div>
+<div class="snd-pack" id="snd-grid">
+<div class="snd-opt a" data-snd="beep">BEEP</div><div class="snd-opt" data-snd="click">CLICK</div><div class="snd-opt" data-snd="digital">DIGITAL</div><div class="snd-opt" data-snd="soft">SOFT</div><div class="snd-opt" data-snd="honey">HONEY</div><div class="snd-opt" data-snd="cloud">CLOUD</div><div class="snd-opt" data-snd="cherry">CHERRY</div><div class="snd-opt" data-snd="ocean">OCEAN</div><div class="snd-opt" data-snd="coral">CORAL</div><div class="snd-opt" data-snd="mint">MINT</div><div class="snd-opt" data-snd="lavender">LAVENDER</div><div class="snd-opt" data-snd="peach">PEACH</div><div class="snd-opt" data-snd="tap">TAP</div><div class="snd-opt" data-snd="pop">POP</div><div class="snd-opt" data-snd="off">OFF</div>
+</div>
+<button class="g" id="test-snd">TEST</button>
+</div>
+<div class="c"><div class="cl">VOLUME <span id="vol-val" style="color:var(--ac)">70%</span></div>
+<input type="range" id="vol-range" class="vol-range" min="0" max="100" value="70">
+</div>
+<div class="c"><div class="cl">TOGGLE</div>
+<div class="switch-row"><span class="lbl">MASTER SOUND</span><label class="switch"><input type="checkbox" id="tg-sound" checked><span class="slider"></span></label></div>
+<div class="switch-row"><span class="lbl">ACHIEVEMENT NOTIF</span><label class="switch"><input type="checkbox" id="tg-notif" checked><span class="slider"></span></label></div>
+<div class="switch-row"><span class="lbl">POPUP WELCOME</span><label class="switch"><input type="checkbox" id="tg-popup" checked><span class="slider"></span></label></div>
+<div class="switch-row"><span class="lbl">ANIMATION</span><label class="switch"><input type="checkbox" id="tg-anim" checked><span class="slider"></span></label></div>
+<div class="switch-row"><span class="lbl">HAPTIC</span><label class="switch"><input type="checkbox" id="tg-haptic"><span class="slider"></span></label></div>
+</div>
 <div class="c"><div class="cl">MODE</div>
 <div class="switch-row"><span class="lbl">DARK MODE</span><label class="switch"><input type="checkbox" id="tg-dark" checked><span class="slider"></span></label></div>
 </div>
@@ -846,7 +897,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v10.2</div>
+<div class="ft">RYANN • TOOLS · v10.3</div>
 </div>
 
 <div class="nv" id="nav-main">
@@ -915,6 +966,35 @@ https://thingproxy.freeboard.io/fetch/</textarea>
     requestAnimationFrame(draw);
   }
   if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', startRain); } else { startRain(); }
+})();
+
+// UFO smoke trail — spawn asap di posisi UFO tiap 100ms
+(function ufoSmokeTrail(){
+  function start(){
+    var scene = document.getElementById('ufo-scene');
+    if(!scene) return;
+    var lastSpawn = {};
+    setInterval(function(){
+      if(!document.body.classList.contains('bg-ufo')) return;
+      var crafts = scene.querySelectorAll('.ufo-craft');
+      crafts.forEach(function(ufo, idx){
+        var rect = ufo.getBoundingClientRect();
+        if(rect.left < 0 || rect.left > window.innerWidth) return;
+        if(rect.top < 0 || rect.top > window.innerHeight) return;
+        // spawn tiap ~120ms per UFO
+        var now = Date.now();
+        if(lastSpawn[idx] && now - lastSpawn[idx] < 120) return;
+        lastSpawn[idx] = now;
+        var smoke = document.createElement('div');
+        smoke.className = 'ufo-smoke';
+        smoke.style.left = (rect.left + rect.width/2 - 8) + 'px';
+        smoke.style.top = (rect.top + rect.height/2 - 8) + 'px';
+        scene.appendChild(smoke);
+        setTimeout(function(){ if(smoke.parentNode) smoke.parentNode.removeChild(smoke); }, 3000);
+      });
+    }, 80);
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', start); } else { start(); }
 })();
 </script>
 
