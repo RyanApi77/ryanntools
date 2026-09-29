@@ -1,4 +1,4 @@
-// zyvor.js v10.5 FIXED — full (part 1 + 2 digabung)
+// zyvor.js v10.6 — P2U fix + Tempmail fix + Tetris support
 (function(){
 'use strict';
 
@@ -241,11 +241,11 @@ async function callAPIv2(path, params, method){
   return json;
 }
 
-// ============ MULTI-PROVIDER UPLOAD ============
+// ============ MULTI-PROVIDER UPLOAD v10.6 — 7 PROVIDER ============
 async function uploadCatbox(file){
   try{
     var fd = new FormData(); fd.append('reqtype', 'fileupload'); fd.append('fileToUpload', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 90000);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
     var r = await fetch('https://catbox.moe/user/api.php', { method:'POST', body:fd, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
@@ -257,8 +257,8 @@ async function uploadCatbox(file){
 async function upload0x0(file){
   try{
     var fd = new FormData(); fd.append('file', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 90000);
-    var r = await fetch('https://0x0.st', { method:'POST', body:fd, headers:{'User-Agent':'RyannTools/10.5'}, signal:ctrl.signal });
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
+    var r = await fetch('https://0x0.st', { method:'POST', body:fd, headers:{'User-Agent':'RyannTools/10.6'}, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
     var txt = (await r.text()).trim();
@@ -269,7 +269,7 @@ async function upload0x0(file){
 async function uploadLitterbox(file){
   try{
     var fd = new FormData(); fd.append('reqtype', 'fileupload'); fd.append('time', '72h'); fd.append('fileToUpload', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 90000);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
     var r = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', { method:'POST', body:fd, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
@@ -281,7 +281,7 @@ async function uploadLitterbox(file){
 async function uploadUguu(file){
   try{
     var fd = new FormData(); fd.append('files[]', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
     var r = await fetch('https://uguu.se/upload.php', { method:'POST', body:fd, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
@@ -293,7 +293,7 @@ async function uploadUguu(file){
 async function uploadTmpfiles(file){
   try{
     var fd = new FormData(); fd.append('file', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
     var r = await fetch('https://tmpfiles.org/api/v1/upload', { method:'POST', body:fd, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
@@ -302,16 +302,48 @@ async function uploadTmpfiles(file){
     throw new Error('Bad response');
   }catch(e){ return { ok:false, error: e.message, provider:'tmpfiles.org' }; }
 }
-var UPLOAD_PROVIDERS = [uploadCatbox, upload0x0, uploadLitterbox, uploadUguu, uploadTmpfiles];
+async function uploadFileIo(file){
+  try{
+    var fd = new FormData(); fd.append('file', file);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
+    var r = await fetch('https://file.io', { method:'POST', body:fd, signal:ctrl.signal });
+    clearTimeout(timer);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var j = await r.json();
+    if(j && j.link) return { ok:true, url:j.link, provider:'file.io' };
+    throw new Error('Bad response');
+  }catch(e){ return { ok:false, error: e.message, provider:'file.io' }; }
+}
+async function uploadTransferSh(file){
+  try{
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
+    var r = await fetch('https://transfer.sh/' + encodeURIComponent(file.name), {
+      method: 'PUT',
+      body: file,
+      headers: { 'Content-Type': 'application/octet-stream' },
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var txt = (await r.text()).trim();
+    if(/^https?:\/\//.test(txt)) return { ok:true, url:txt, provider:'transfer.sh' };
+    throw new Error('Bad response');
+  }catch(e){ return { ok:false, error: e.message, provider:'transfer.sh' }; }
+}
+
+var UPLOAD_PROVIDERS = [uploadCatbox, upload0x0, uploadLitterbox, uploadUguu, uploadTmpfiles, uploadFileIo, uploadTransferSh];
+window.__UPLOAD_PROVIDERS = UPLOAD_PROVIDERS;
 
 async function uploadToCatbox(file, onProgress, logEl){
   if(!file) return { ok:false, error:'No file' };
   if(file.size / (1024*1024) > 200) return { ok:false, error:'File > 200MB' };
+
   for(var i=0;i<UPLOAD_PROVIDERS.length;i++){
     var provider = UPLOAD_PROVIDERS[i];
+    var providerName = (provider.name || 'provider').replace('upload','');
     if(logEl){
       var l = document.createElement('div'); l.className = 'in';
-      l.textContent = '⏳ [' + (i+1) + '/' + UPLOAD_PROVIDERS.length + '] Upload...';
+      l.textContent = '⏳ [' + (i+1) + '/' + UPLOAD_PROVIDERS.length + '] Upload ke ' + providerName + '...';
       logEl.appendChild(l); logEl.scrollTop = logEl.scrollHeight;
     }
     var res = await provider(file);
@@ -325,7 +357,7 @@ async function uploadToCatbox(file, onProgress, logEl){
     } else {
       if(logEl){
         var l3 = document.createElement('div'); l3.className = 'warn';
-        l3.textContent = '  ✗ ' + (res.provider||'?') + ' — ' + (res.error||'failed');
+        l3.textContent = '  ✗ ' + (res.provider||providerName) + ' — ' + (res.error||'failed');
         logEl.appendChild(l3); logEl.scrollTop = logEl.scrollHeight;
       }
     }
@@ -333,6 +365,16 @@ async function uploadToCatbox(file, onProgress, logEl){
   return { ok:false, error:'SEMUA PROVIDER UPLOAD GAGAL', silent:true };
 }
 window.zyUploadMulti = uploadToCatbox;
+window.zyUploadP2U = async function(file, infoEl){
+  if(!file) return { ok:false, error:'No file' };
+  if(file.size / (1024*1024) > 200) return { ok:false, error:'File > 200MB' };
+  for(var i=0;i<UPLOAD_PROVIDERS.length;i++){
+    var provider = UPLOAD_PROVIDERS[i];
+    var res = await provider(file);
+    if(res.ok) return res;
+  }
+  return { ok:false, error:'Semua provider gagal' };
+};
 
 // ============ COLLECT MEDIA ============
 function collectMedia(obj, out, baseKey){
@@ -929,6 +971,8 @@ window.zyBypassGetSelected = function(){ return bypassSelected; };
 window.zyInitBypass = function(){
   var sel = $id('bp-api-custom');
   if(!sel || typeof window.initCustomSelect !== 'function') return;
+  if(sel.__inited) return;
+  sel.__inited = true;
   var items = [{id:'FALLBACK', name:'FALLBACK', desc:'Coba semua API sampai berhasil'}].concat(BYPASS_LIST.map(function(b){ return {id:b.id, name:b.name}; }));
   window.__bpSel = window.initCustomSelect('bp-api-custom', items, bypassSelected, function(id){ bypassSelected = id; window.zyRenderBypassParams(); });
   window.zyRenderBypassParams();
@@ -993,6 +1037,8 @@ var dlCat = 'ALL'; var dlApi = 'tikwm';
 window.zyInitDownloader = function(){
   var catSel = $id('dl-cat-custom'), apiSel = $id('dl-api-custom');
   if(!catSel || !apiSel || typeof window.initCustomSelect !== 'function') return;
+  if(catSel.__inited) return;
+  catSel.__inited = true;
   var cats = Array.from(new Set(DOWNLOADER_LIST.map(function(d){ return d.cat; })));
   var catItems = [{id:'ALL', name:'ALL — semua kategori'}].concat(cats.map(function(c){ return {id:c, name:c}; }));
   window.__dlCatSel = window.initCustomSelect('dl-cat-custom', catItems, dlCat, function(id){
@@ -1340,7 +1386,7 @@ window.zyCollectParams = function(params, idPrefix, category){
   return out;
 };
 
-// ============ EXTRACT MAKER IMAGES ============
+// ============ EXTRACT MAKER IMAGES + RENDER API ============
 function extractMakerImages(data){
   if(data && data.__binary && data.url){ return [data.url]; }
   var out = []; var seen = {};
@@ -1427,17 +1473,8 @@ window.zyRenderApiResult = function(container, data, name, catName){
   container.innerHTML = html; container.classList.remove('hd');
 };
 
-// ============ P2U ============
+// ============ P2U INIT v10.6 ============
 var p2uFiles = [];
-window.zyUploadP2U = async function(file, infoEl){
-  if(!file) return { ok:false, error:'No file' };
-  for(var i=0;i<UPLOAD_PROVIDERS.length;i++){
-    var provider = UPLOAD_PROVIDERS[i];
-    var res = await provider(file);
-    if(res.ok) return res;
-  }
-  return { ok:false, error:'Semua provider gagal' };
-};
 window.zyP2UInit = function(){
   var drop = $id('p2u-drop'); var input = $id('p2u-file');
   var list = $id('p2u-list'); var transform = $id('p2u-transform'); var clear = $id('p2u-clear'); var result = $id('p2u-result');
@@ -1491,7 +1528,7 @@ window.zyP2UInit = function(){
         if(log){ var l2 = document.createElement('div'); l2.className = 'ok'; l2.textContent = '  ✓ ' + res.provider + ' → ' + res.url; log.appendChild(l2); log.scrollTop = log.scrollHeight; }
       } else {
         results.push({ name:f.name, url:null, provider:null, error:res.error });
-        if(log){ var l3 = document.createElement('div'); l3.className = 'er'; l3.textContent = '  ✗ GAGAL'; log.appendChild(l3); log.scrollTop = log.scrollHeight; }
+        if(log){ var l3 = document.createElement('div'); l3.className = 'er'; l3.textContent = '  ✗ ' + (res.error || 'GAGAL'); log.appendChild(l3); log.scrollTop = log.scrollHeight; }
       }
     }
     if(result){
@@ -1539,7 +1576,7 @@ window.zyP2UInit = function(){
   };
 };
 
-// ============ VERCEL ============
+// ============ VERCEL INIT ============
 var vercelFiles = [];
 window.zyVercelInit = function(){
   var addBtn = $id('vc-add-file'); var uploadBtn = $id('vc-upload'); var clearBtn = $id('vc-clear');
@@ -1639,7 +1676,7 @@ window.zyVercelInit = function(){
   };
 };
 
-// ============ GITHUB ============
+// ============ GITHUB INIT ============
 var GITHUB_API = 'https://api.github.com';
 var ghToken = null, ghUser = null, ghRepos = [], ghSelectedRepo = null, ghFiles = [];
 async function ghRequest(method, path, body){
@@ -1649,7 +1686,7 @@ async function ghRequest(method, path, body){
       'Accept': 'application/vnd.github+json',
       'Authorization': 'Bearer ' + ghToken,
       'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'RyannTools-GitHub/10.5'
+      'User-Agent': 'RyannTools-GitHub/10.6'
     }
   };
   if(body){ opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
@@ -1863,9 +1900,352 @@ window.zyGithubInit = function(){
   };
 };
 
+// ============ TEMPMAIL v10.6 — FIX DOMAIN LOAD ============
+var tmpToken=null, tmpEmail=null, tmpPassword=null, tmpMsgs=[], tmpProvider='mail.tm';
+var TMP_PROVIDERS = {
+  'mail.tm': { name:'mail.tm', base:'https://api.mail.tm' },
+  'mail.gw': { name:'mail.gw', base:'https://api.mail.gw' }
+};
+function tmpBase(){ return TMP_PROVIDERS[tmpProvider] ? TMP_PROVIDERS[tmpProvider].base : TMP_PROVIDERS['mail.tm'].base; }
+function tmpGetSaved(){ try{ return JSON.parse(localStorage.getItem('rx_tmp_accounts') || '[]'); }catch(e){ return []; } }
+function tmpSetSaved(arr){ try{ localStorage.setItem('rx_tmp_accounts', JSON.stringify(arr)); }catch(e){} }
+function tmpSaveCurrent(){
+  if(!tmpEmail || !tmpToken){ alert('Belum ada akun aktif'); return false; }
+  var saved = tmpGetSaved();
+  var idx = -1;
+  for(var i=0;i<saved.length;i++){ if(saved[i].email === tmpEmail){ idx = i; break; } }
+  var rec = { email: tmpEmail, password: tmpPassword, token: tmpToken, provider: tmpProvider, savedAt: Date.now() };
+  if(idx >= 0) saved[idx] = rec; else saved.unshift(rec);
+  if(saved.length > 20) saved = saved.slice(0, 20);
+  tmpSetSaved(saved);
+  tmpRenderSaved();
+  if(window.zyToast) window.zyToast('💾 Akun disave');
+  return true;
+}
+function tmpLoadAccount(email){
+  var saved = tmpGetSaved();
+  var rec = null;
+  for(var i=0;i<saved.length;i++){ if(saved[i].email === email){ rec = saved[i]; break; } }
+  if(!rec){ alert('Akun gak ketemu'); return; }
+  tmpEmail = rec.email; tmpPassword = rec.password; tmpToken = rec.token; tmpProvider = rec.provider || 'mail.tm';
+  if($id('tmp-email')) $id('tmp-email').textContent = tmpEmail;
+  if(window.zyToast) window.zyToast('📂 Loaded: ' + tmpEmail);
+  logTo('tmp-log', '✓ Akun di-restore: ' + tmpEmail, 'ok');
+  tmpRenderSaved();
+  setTimeout(function(){ if($id('tmp-refresh')) $id('tmp-refresh').click(); }, 300);
+}
+function tmpDeleteSaved(email){
+  if(!confirm('Hapus akun ' + email + '?')) return;
+  var saved = tmpGetSaved();
+  var out = [];
+  for(var i=0;i<saved.length;i++){ if(saved[i].email !== email) out.push(saved[i]); }
+  tmpSetSaved(out); tmpRenderSaved();
+  if(window.zyToast) window.zyToast('🗑 Dihapus');
+}
+function tmpRenderSaved(){
+  var wrap = $id('tmp-saved-list'); if(!wrap) return;
+  var saved = tmpGetSaved();
+  if(!saved.length){ wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  var html = '<div style="font-size:.5rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:6px">AKUN TERSIMPAN (' + saved.length + ')</div>';
+  saved.forEach(function(r){
+    var dt = new Date(r.savedAt).toLocaleString('id-ID');
+    var isActive = (r.email === tmpEmail);
+    var emailEsc = esc(r.email).replace(/'/g, "\\'");
+    html += '<div class="msg-item" style="cursor:default;' + (isActive ? 'border-color:var(--ac);background:var(--acd)' : '') + '">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px">';
+    html += '<b style="word-break:break-all;font-size:.55rem">' + esc(r.email) + '</b>';
+    html += '<span style="font-size:.45rem;color:var(--txd);flex-shrink:0">' + esc(r.provider || 'mail.tm') + '</span>';
+    html += '</div>';
+    html += '<div style="font-size:.5rem;color:var(--txd);margin-bottom:6px">' + dt + (isActive ? ' · AKTIF' : '') + '</div>';
+    html += '<div style="display:flex;gap:5px">';
+    html += '<button class="g" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpLoadSaved(\'' + emailEsc + '\')">📂 LOAD</button>';
+    html += '<button class="g" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpCopySaved(\'' + emailEsc + '\')">📋 COPY</button>';
+    html += '<button class="d" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpDelSaved(\'' + emailEsc + '\')">🗑</button>';
+    html += '</div></div>';
+  });
+  wrap.innerHTML = html;
+}
+window.__tmpLoadSaved = tmpLoadAccount;
+window.__tmpDelSaved = tmpDeleteSaved;
+window.__tmpDeleteSaved = tmpDeleteSaved;
+window.__tmpCopySaved = function(email){
+  var saved = tmpGetSaved();
+  var rec = null;
+  for(var i=0;i<saved.length;i++){ if(saved[i].email === email){ rec = saved[i]; break; } }
+  if(!rec) return;
+  navigator.clipboard.writeText(rec.email).then(function(){
+    if(window.zyToast) window.zyToast('Email tersalin');
+    if(window.unlockAch) window.unlockAch('copy_email');
+  });
+};
+async function tmpFetchV2(url, opts){
+  opts = opts || {};
+  var method = opts.method || 'GET';
+  var headers = opts.headers || {};
+  var body = opts.body || null;
+  var externalSignal = opts.signal;
+  async function tryReturn(r){
+    if(!r) return null;
+    try{
+      var txt = await r.clone().text();
+      var trimmed = txt.trim();
+      if(trimmed.indexOf('<') === 0) return null;
+      var j = JSON.parse(txt);
+      if(j && typeof j === 'object') return r;
+      return null;
+    }catch(e){ return null; }
+  }
+  async function tryFetch(fetchUrl, timeoutMs){
+    if(externalSignal && externalSignal.aborted) throw new Error('aborted_by_user');
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs);
+    var onExtAbort = function(){ try{ ctrl.abort(); }catch(e){} };
+    if(externalSignal) externalSignal.addEventListener('abort', onExtAbort);
+    try{
+      var r = await fetch(fetchUrl, {method: method, headers: headers, body: body, signal: ctrl.signal});
+      clearTimeout(timer);
+      if(externalSignal) externalSignal.removeEventListener('abort', onExtAbort);
+      return r;
+    }catch(e){
+      clearTimeout(timer);
+      if(externalSignal) externalSignal.removeEventListener('abort', onExtAbort);
+      if(externalSignal && externalSignal.aborted) throw new Error('aborted_by_user');
+      throw e;
+    }
+  }
+  try{ var rd = await tryFetch(url, 15000); var vd = await tryReturn(rd); if(vd) return vd; }catch(e){ if(e.message === 'aborted_by_user') throw e; }
+  try{ var wurl = WORKER + '/?url=' + encodeURIComponent(url); var r1 = await tryFetch(wurl, 15000); var v1 = await tryReturn(r1); if(v1) return v1; }catch(e){ if(e.message === 'aborted_by_user') throw e; }
+  for(var ci=0;ci<CORS.length;ci++){
+    try{
+      var p = CORS[ci];
+      var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
+      var r3 = await tryFetch(full, 15000);
+      var v3 = await tryReturn(r3);
+      if(v3) return v3;
+    }catch(e){ if(e.message === 'aborted_by_user') throw e; }
+  }
+  throw new Error('Semua layer gagal');
+}
+var _tmpRetryCount = 0;
+var _tmpCache = { domains: [], time: 0 };
+var TMP_CACHE_MS = 10 * 60 * 1000;
+var _tmpLoading = false;
+async function tmpLoad(){
+  if(_tmpLoading) return;
+  _tmpLoading = true;
+  var log = document.getElementById('tmp-log');
+  if(log && _tmpRetryCount === 0) log.innerHTML = '';
+  if(_tmpCache.domains.length && (Date.now() - _tmpCache.time) < TMP_CACHE_MS){
+    logTo('tmp-log','⚡ Cache (' + _tmpCache.domains.length + ' domain)','ok');
+    _applyDomainItems(_tmpCache.domains);
+    _tmpLoading = false;
+    return;
+  }
+  logTo('tmp-log','🔍 Memuat provider...','in');
+  logTo('tmp-log','⏳ Fetch domain paralel...','in');
+  var providers = Object.keys(TMP_PROVIDERS);
+  var promises = providers.map(function(provName){
+    var provBase = TMP_PROVIDERS[provName].base;
+    return Promise.race([
+      tmpFetchV2(provBase + '/domains')
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          var arr = j['hydra:member'] || [];
+          logTo('tmp-log','  ✓ ' + provName + ' — ' + arr.length + ' domain','ok');
+          return arr.map(function(d){ return { domain: d.domain, provider: provName }; });
+        })
+        .catch(function(e){
+          logTo('tmp-log','  ✗ ' + provName + ' — ' + e.message,'er');
+          return [];
+        }),
+      new Promise(function(res){ setTimeout(function(){ logTo('tmp-log','  ⏱ ' + provName + ' timeout','warn'); res([]); }, 15000); })
+    ]);
+  });
+  var results = await Promise.all(promises);
+  var allDomains = [];
+  results.forEach(function(arr){ arr.forEach(function(d){ allDomains.push(d); }); });
+  if(allDomains.length){
+    _tmpCache.domains = allDomains;
+    _tmpCache.time = Date.now();
+    logTo('tmp-log','✓ Total ' + allDomains.length + ' domain siap dipakai','ok');
+    _applyDomainItems(allDomains);
+    _tmpRetryCount = 0;
+  } else {
+    if(_tmpRetryCount < 3){
+      _tmpRetryCount++;
+      logTo('tmp-log','⚠ Retry ' + _tmpRetryCount + '/3...','warn');
+      _tmpLoading = false;
+      setTimeout(function(){ tmpLoad(); }, 2000);
+      return;
+    } else {
+      logTo('tmp-log','⚠ Gagal semua. Klik RELOAD.','warn');
+      _tmpRetryCount = 0;
+    }
+  }
+  _tmpLoading = false;
+}
+function _applyDomainItems(allDomains){
+  if(!window.__selTmpDom) return;
+  var items = [{id:'', name:'— CHOOSE (' + allDomains.length + ') —'}];
+  allDomains.forEach(function(d){
+    items.push({ id: d.provider + '|' + d.domain, name: d.domain, desc: d.provider });
+  });
+  window.__selTmpDom.setItems(items);
+}
+window.tmpLoadDomains = function(){ _tmpRetryCount = 0; _tmpCache.time = 0; tmpRenderSaved(); return tmpLoad(); };
+if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ window.tmpLoadDomains(); };
+function tmpInitProviderSelector(){
+  if(typeof window.initCustomSelect !== 'function') return;
+  var provEl = document.getElementById('tmp-provider');
+  if(!provEl) return;
+  if(provEl.__inited) return;
+  provEl.__inited = true;
+  var items = Object.keys(TMP_PROVIDERS).map(function(k){ return { id:k, name: TMP_PROVIDERS[k].name }; });
+  window.__selTmpProvider = window.initCustomSelect('tmp-provider', items, tmpProvider, function(id){
+    tmpProvider = id;
+    if(window.__selTmpDom) window.__selTmpDom.setItems([{id:'', name:'— CHOOSE —'}]);
+    window.tmpLoadDomains();
+  });
+}
+window.tmpInitProviderSelector = tmpInitProviderSelector;
+window.__tmpAbort = null;
+if($id('tmp-stop')) $id('tmp-stop').onclick=function(){
+  if(window.__tmpAbort){ try{ window.__tmpAbort.abort(); }catch(e){} window.__tmpAbort = null; }
+  var sb = $id('tmp-stop'); if(sb) sb.style.display = 'none';
+  var gb = $id('tmp-gen'); if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
+  logTo('tmp-log','⛔ Dihentikan user','warn');
+};
+var _lastGenTime = 0;
+if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
+  if(Date.now() - _lastGenTime < 3000){ alert('Tunggu 3 detik'); return; }
+  _lastGenTime = Date.now();
+  var log = document.getElementById('tmp-log');
+  if(log) log.innerHTML = '';
+  var nm = $id('tmp-name').value.trim() || ('user' + Math.floor(Math.random()*99999));
+  var domRaw = (window.__selTmpDom ? window.__selTmpDom.getValue() : '');
+  if(!domRaw){ alert('Pilih domain dulu'); return; }
+  var parts = domRaw.split('|');
+  var provKey = parts[0] || tmpProvider;
+  var dom = parts[1] || domRaw;
+  var base = TMP_PROVIDERS[provKey] ? TMP_PROVIDERS[provKey].base : tmpBase();
+  tmpProvider = provKey;
+  var em = nm + '@' + dom;
+  var pw = 'RyannTmp!' + Math.floor(Math.random()*99999);
+  var gb = $id('tmp-gen'); if(gb){ gb.disabled = true; gb.textContent = '⏳...'; }
+  var sb = $id('tmp-stop'); if(sb) sb.style.display = 'block';
+  window.__tmpAbort = new AbortController();
+  logTo('tmp-log','⏳ Membuat ' + em + ' via ' + provKey + '...','in');
+  try{
+    var r = await tmpFetchV2(base + '/accounts', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({address:em, password:pw}),
+      signal: window.__tmpAbort.signal
+    });
+    var j = null; try{ j = await r.json(); }catch(e){}
+    if(r.status >= 400){
+      var errMsg = (j && (j['hydra:description'] || j.message || j.error || j.detail)) || ('HTTP ' + r.status);
+      if(errMsg.toLowerCase().indexOf('already') !== -1 || r.status === 422){
+        logTo('tmp-log','⚠ AKUN SUDAH ADA','warn');
+        logTo('tmp-log','→ Coba login pakai akun itu...','in');
+        var rLogin = await tmpFetchV2(base + '/token', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({address:em, password:pw}),
+          signal: window.__tmpAbort.signal
+        });
+        var jLogin = null; try{ jLogin = await rLogin.json(); }catch(e){}
+        if(rLogin.status === 200 && jLogin && jLogin.token){
+          tmpToken = jLogin.token; tmpEmail = em; tmpPassword = pw;
+          $id('tmp-email').textContent = em;
+          logTo('tmp-log','✓ Login ke akun lama OK','ok');
+          tmpSaveCurrent();
+          if(window.sndSuccess) window.sndSuccess();
+          if(window.unlockAch) window.unlockAch('tmp_first');
+          return;
+        } else {
+          var lm = (jLogin && (jLogin['hydra:description'] || jLogin.message)) || 'password beda';
+          logTo('tmp-log','✗ Login gagal: ' + lm,'er');
+          logTo('tmp-log','💡 Ganti nama lain (mis: ' + nm + Math.floor(Math.random()*9999) + ')','warn');
+          return;
+        }
+      }
+      if(r.status === 429){
+        logTo('tmp-log','✗ Rate limit — coba domain / provider lain','er');
+        return;
+      }
+      logTo('tmp-log','✗ ' + errMsg,'er');
+      return;
+    }
+    logTo('tmp-log','✓ Account OK: ' + em,'ok');
+    var r2 = await tmpFetchV2(base + '/token', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({address:em, password:pw}),
+      signal: window.__tmpAbort.signal
+    });
+    var j2 = null; try{ j2 = await r2.json(); }catch(e){}
+    if(r2.status === 200 && j2 && j2.token){
+      tmpToken = j2.token; tmpEmail = em; tmpPassword = pw;
+      $id('tmp-email').textContent = em;
+      logTo('tmp-log','✓ Login OK [' + provKey + ']','ok');
+      tmpSaveCurrent();
+      if(window.sndSuccess) window.sndSuccess();
+      if(window.unlockAch) window.unlockAch('tmp_first');
+    } else {
+      var tm = (j2 && (j2['hydra:description'] || j2.message)) || ('HTTP ' + r2.status);
+      logTo('tmp-log','✗ Login: ' + tm,'er');
+    }
+  }catch(e){
+    if(e.name === 'AbortError' || (e.message && e.message.indexOf('aborted') !== -1)){ logTo('tmp-log','⛔ Dibatalkan','warn'); }
+    else { logTo('tmp-log','✗ Network error: ' + e.message,'er'); }
+  }finally{
+    window.__tmpAbort = null;
+    if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
+    if(sb) sb.style.display = 'none';
+  }
+};
+if($id('tmp-save')) $id('tmp-save').onclick=function(){ if(window.sndClick) window.sndClick(); tmpSaveCurrent(); };
+if($id('tmp-load')) $id('tmp-load').onclick=function(){
+  if(window.sndClick) window.sndClick();
+  var saved = tmpGetSaved();
+  if(!saved.length){ alert('Belum ada akun tersimpan'); return; }
+  tmpRenderSaved();
+  var wrap = $id('tmp-saved-list');
+  if(wrap) wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
+};
+setTimeout(function(){ tmpRenderSaved(); }, 500);
+if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail){ navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); if(window.unlockAch) window.unlockAch('copy_email'); }); } };
+if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
+  if(!tmpToken){ alert('Generate dulu'); return; }
+  var base = tmpBase();
+  try{
+    var r = await tmpFetchV2(base + '/messages', {headers:{'Authorization':'Bearer '+tmpToken}});
+    var j = await r.json();
+    tmpMsgs = j['hydra:member'] || [];
+    var el = $id('tmp-list');
+    el.innerHTML = tmpMsgs.map(function(m,i){ return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'</div>'; }).join('');
+    el.querySelectorAll('.msg-item').forEach(function(it){
+      it.onclick=function(){
+        var idx = parseInt(it.dataset.i); var m = tmpMsgs[idx];
+        $id('tmp-msg-view').innerHTML='<b>From:</b> '+m.from.address+'<br><b>Subj:</b> '+m.subject+'<br><br>'+(m.intro||'');
+        $id('tmp-msg-view').classList.remove('hd');
+      };
+    });
+    if(window.sndSuccess) window.sndSuccess();
+    if(window.unlockAch) window.unlockAch('inbox_first');
+  }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
+};
+if($id('tmp-inbox-dl')) $id('tmp-inbox-dl').onclick=function(){
+  if(!tmpMsgs.length) return;
+  var t = tmpMsgs.map(function(m){ return m.from.address+' | '+m.subject; }).join('\n');
+  var b = new Blob([t],{type:'text/plain'});
+  var u = URL.createObjectURL(b);
+  var a = document.createElement('a'); a.href=u; a.download='inbox.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+};
+
 // ============ EXPORT ============
 window.ZYVOR = {
-  version: '10.5',
+  version: '10.6',
   base: BASE,
   worker: WORKER,
   call: callAPIv2,
