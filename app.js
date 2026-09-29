@@ -1,5 +1,4 @@
-// app.js v10.5 — P2U + Vercel + GitHub + Bypass fix + Multi-upload
-// Part 1: Core, Gate (zero-touch), Theme, Sound, Nav, SPY, FUN, OSINT, SCRAPE, TPL, DEV
+// app.js v10.5 FIXED — P2U + Vercel + GitHub wired
 (function(){
 'use strict';
 
@@ -82,7 +81,6 @@ function sndPlay(kind){
     case 'peach': if(k==='click')_beep(580,.1,'sine',.038); else if(k==='success'){_beep(500,.12,'sine',.045);setTimeout(function(){_beep(660,.15,'sine',.045)},95);} else if(k==='error')_beep(300,.18,'sine',.038); else _beep(450,.07,'sine',.024); break;
     case 'tap': if(k==='click')_noise(.02,.08); else if(k==='nav')_noise(.015,.05); else if(k==='success'){_noise(.02,.07);setTimeout(function(){_noise(.02,.07)},70);} else if(k==='error')_noise(.03,.09); break;
     case 'pop': if(k==='click'){_beep(700,.03,'sine',.06);_beep(1200,.02,'sine',.04);} else if(k==='nav')_beep(600,.03,'sine',.04); else if(k==='success'){_beep(650,.04,'sine',.06);_beep(1100,.03,'sine',.05);setTimeout(function(){_beep(1400,.03,'sine',.04)},80);} else if(k==='error'){_beep(300,.05,'sine',.05);_beep(180,.08,'sine',.04);} break;
-    // 8-bit retro (v10.5)
     case '8bit': if(k==='click'){_beep(440,.04,'square',.05);_beep(880,.02,'square',.03);} else if(k==='nav')_beep(330,.05,'square',.04); else if(k==='success'){_beep(523,.06,'square',.05);setTimeout(function(){_beep(659,.06,'square',.05);},60);setTimeout(function(){_beep(784,.1,'square',.05);},120);} else if(k==='error'){_beep(200,.08,'square',.06);setTimeout(function(){_beep(150,.12,'square',.06);},80);} break;
   }
 }
@@ -99,7 +97,7 @@ function logTo(id,msg,cls){
 }
 window.logTo=logTo; window.sndSuccess=sndSuccess; window.sndClick=sndClick; window.sndError=sndError;
 
-// ============ ACHIEVEMENTS ============
+// ============ ACHIEVEMENTS (26, no duplicate) ============
 var ACH_LIST = [
   {id:'first_gen',name:'The Beginning',desc:'Pertama kali generate'},
   {id:'ten_gen',name:'Taking Off',desc:'10x generate'},
@@ -126,8 +124,7 @@ var ACH_LIST = [
   {id:'dork_first',name:'Hot Topic',desc:'Generate Google Dork'},
   {id:'ip_first',name:'Time to Strike!',desc:'Pertama IP lookup'},
   {id:'p2u_first',name:'Link Master',desc:'Pertama pakai P2U'},
-  {id:'github_first',name:'Repo Raider',desc:'Pertama upload GitHub'},
-  {id:'all',name:'The End.',desc:'Semua achievement kebuka'}
+  {id:'github_first',name:'Repo Raider',desc:'Pertama upload GitHub'}
 ];
 var ACH_KEY='rx_ach_unlocked';
 function getAch(){ try{ return JSON.parse(localStorage.getItem(ACH_KEY)||'{}'); }catch(e){ return {}; } }
@@ -137,6 +134,7 @@ function renderAch(){
   var wrap=document.getElementById('ach-wrap'); if(!wrap) return;
   var ach=getAch();
   var count=Object.keys(ach).length;
+  if(ach['all']) count = count - 1; // exclude 'all' dari counter
   var counter=document.getElementById('achCounter');
   if(counter) counter.innerHTML=count+' <span>/ '+ACH_LIST.length+'</span>';
   var html='';
@@ -153,7 +151,8 @@ window.unlockAch=function(id){
     var a=null; for(var i=0;i<ACH_LIST.length;i++){ if(ACH_LIST[i].id===id){ a=ACH_LIST[i]; break; } }
     if(a && typeof window.zyToast==='function') window.zyToast('🏆 '+a.name);
     renderAch();
-    if(!ach['all'] && Object.keys(ach).length>=(ACH_LIST.length-1)){
+    var realCount = Object.keys(ach).filter(function(k){ return k !== 'all'; }).length;
+    if(!ach['all'] && realCount >= ACH_LIST.length){
       ach['all']=Date.now(); setAch(ach);
       if(typeof window.zyToast==='function') window.zyToast('🏆 The End.');
       renderAch();
@@ -224,7 +223,7 @@ window.copyWithAnim = function(el, text){
   });
 };
 
-// ============ PASSWORD GATE — ZERO TOUCH v10.3 ============
+// ============ PASSWORD GATE — ZERO TOUCH ============
 (function passwordGateInit(){
   var gate=$('passwordGate'); if(!gate) return;
   var card=$('accessCard'), input=$('passwordInput');
@@ -390,7 +389,6 @@ function applyMode(){ if(mode==='light') document.body.classList.add('light'); e
 if($('mode-tgl')) $('mode-tgl').onclick=function(){ mode=(mode==='dark')?'light':'dark'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark' && window.unlockAch) window.unlockAch('dark'); };
 if($('tg-dark')) $('tg-dark').onchange=function(){ mode=this.checked?'dark':'light'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark' && window.unlockAch) window.unlockAch('dark'); };
 
-// BG includes new retro + starwars (v10.5)
 function setBg(b){
   S.set('bg', b);
   document.body.classList.remove('bg-galaxy','bg-binary','bg-ufo','bg-plain','bg-custom','bg-retro','bg-starwars');
@@ -418,7 +416,7 @@ if($('bg-file')) $('bg-file').onchange=function(e){
   r.readAsDataURL(f);
 };
 
-// ============ SOUND PACK UI ============
+// ============ SOUND UI ============
 $$('#snd-grid .snd-opt').forEach(function(o){
   o.addEventListener('click',function(){
     _sndPack=o.dataset.snd; S.set('snd_pack',_sndPack);
@@ -447,7 +445,6 @@ if($('tg-anim')){ $('tg-anim').checked=_anim; $('tg-anim').onchange=function(){ 
 if($('tg-haptic')){ $('tg-haptic').checked=_haptic; $('tg-haptic').onchange=function(){ _haptic=this.checked; S.set('haptic',_haptic); if(_haptic) vib(50); }; }
 if($('fsr')) $('fsr').oninput=function(){ document.documentElement.style.setProperty('--fs',this.value+'px'); S.set('font',this.value); if($('fv')) $('fv').textContent=this.value+'px'; };
 
-// Font family
 var FONT_LIST = [
   {id:"'JetBrains Mono',monospace", name:'JetBrains Mono'},
   {id:"'Orbitron',sans-serif", name:'Orbitron'},
@@ -487,9 +484,9 @@ function switchPage(name){
   if(name==='maker' && typeof window.zyInitApiHub==='function'){ try{ window.zyInitApiHub('apihub-mk','MAKER'); }catch(e){} }
   if(name==='srchapi' && typeof window.zyInitApiHub==='function'){ try{ window.zyInitApiHub('apihub-sr','SEARCH'); }catch(e){} }
   if(name==='tpl'){ try{ tplBoot(); }catch(e){} }
-  if(name==='p2u' && typeof window.zyP2UInit==='function'){ try{ window.zyP2UInit(); }catch(e){} }
-  if(name==='vc' && typeof window.zyVercelInit==='function'){ try{ window.zyVercelInit(); }catch(e){} }
-  if(name==='gh' && typeof window.zyGithubInit==='function'){ try{ window.zyGithubInit(); }catch(e){} }
+  if(name==='p2u' && typeof window.__initP2U==='function'){ try{ window.__initP2U(); }catch(e){} }
+  if(name==='vc' && typeof window.__initVercel==='function'){ try{ window.__initVercel(); }catch(e){} }
+  if(name==='gh' && typeof window.__initGithub==='function'){ try{ window.__initGithub(); }catch(e){} }
   try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
 }
 $$('.nb').forEach(function(b){
@@ -790,7 +787,7 @@ var SPY_STATE={code:'',blob:null,template:''};
   };
 })();
 
-// ============ SCRAPE (Vercel DIHAPUS dari sini — pindah ke menu Vercel) ============
+// ============ SCRAPE ============
 (function scrapeInit(){
   if($('ds-paste')) $('ds-paste').onclick=function(){
     navigator.clipboard.readText().then(function(t){ $('ds-url').value=t.trim(); sndSuccess(); }).catch(function(){});
@@ -1045,12 +1042,7 @@ window.tplBoot=tplBoot;
   };
 })();
 
-// ============ TAG: PART 1 END ============
-window.__app_v105_part1_loaded = true;
-
-// [PART 2 LANJUT DI SINI — JANGAN HAPUS TAG INI]
-
-// ============ API HUB WIRE v10.5 ============
+// ============ API HUB WIRE ============
 function wireApiHub(tabId, catName){
   var runBtn=$('apihub-'+tabId+'-run');
   var clearBtn=$('apihub-'+tabId+'-clear');
@@ -1099,50 +1091,28 @@ if($('search-input')) $('search-input').addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); if($('search-go')) $('search-go').click(); }
 });
 
-// ============ BYPASS SCANNER v10.5 ============
+// ============ BYPASS SCANNER ============
 var BYPASS_MAP = {
-  'sfl.gl': 'safelink',
-  'safelinku.com': 'safelink',
-  'ouo.io': 'ouo-bypass',
-  'ouo.press': 'ouo-bypass',
-  'shrinkme.io': 'shrinkme',
-  'shrinke.me': 'shrinkme',
-  'modjall.com': 'modjall',
-  'move2link.com': 'move2link',
-  'mboost.me': 'bypasslinkv2',
-  'yoshort.id': 'bypasslinkv3',
-  'shortearn.eu': 'bypasslinkv2',
-  'fc.lc': 'bypasslinkv2',
-  'tei.ai': 'bypasslinkv2',
-  'cuty.io': 'bypasslinkv2',
-  'shrinkforearn.in': 'shrinkme',
-  'wellsfashionhub.com': 'wellbypass',
-  'well-healthy.com': 'wellbypass',
-  'sub4unlock.com': 'bypasslinkv2',
-  'sub4unlock.io': 'bypasslinkv2',
-  'sub4unlock.pro': 'bypasslinkv2'
+  'sfl.gl': 'safelink','safelinku.com': 'safelink','ouo.io': 'ouo-bypass','ouo.press': 'ouo-bypass',
+  'shrinkme.io': 'shrinkme','shrinke.me': 'shrinkme','modjall.com': 'modjall','move2link.com': 'move2link',
+  'mboost.me': 'bypasslinkv2','yoshort.id': 'bypasslinkv3','shortearn.eu': 'bypasslinkv2','fc.lc': 'bypasslinkv2',
+  'tei.ai': 'bypasslinkv2','cuty.io': 'bypasslinkv2','shrinkforearn.in': 'shrinkme',
+  'wellsfashionhub.com': 'wellbypass','well-healthy.com': 'wellbypass',
+  'sub4unlock.com': 'bypasslinkv2','sub4unlock.io': 'bypasslinkv2','sub4unlock.pro': 'bypasslinkv2'
 };
-
 function detectBypassProvider(url){
   if(!url) return null;
   try{
     var host = url.toLowerCase().replace(/^https?:\/\//,'').split('/')[0].split(':')[0].replace(/^www\./,'');
     if(BYPASS_MAP[host]) return BYPASS_MAP[host];
-    for(var k in BYPASS_MAP){
-      if(host.indexOf(k) !== -1) return BYPASS_MAP[k];
-    }
+    for(var k in BYPASS_MAP){ if(host.indexOf(k) !== -1) return BYPASS_MAP[k]; }
     return null;
   }catch(e){ return null; }
 }
-
 function updateBypassBadge(url){
   var badge = $('bp-scan-badge');
   if(!badge) return;
-  if(!url || url.length < 8){
-    badge.style.display = 'none';
-    badge.textContent = '';
-    return;
-  }
+  if(!url || url.length < 8){ badge.style.display = 'none'; badge.textContent = ''; return; }
   var provider = detectBypassProvider(url);
   var providerName = null;
   if(provider && window.ZYVOR && window.ZYVOR.bypassList){
@@ -1164,19 +1134,12 @@ function updateBypassBadge(url){
     badge.style.color = 'var(--txd)';
   }
 }
-
 if($('bp-url')){
   var bpUrlEl = $('bp-url');
   var bpTimer = null;
-  bpUrlEl.addEventListener('input', function(){
-    clearTimeout(bpTimer);
-    bpTimer = setTimeout(function(){ updateBypassBadge(bpUrlEl.value.trim()); }, 400);
-  });
-  bpUrlEl.addEventListener('paste', function(){
-    setTimeout(function(){ updateBypassBadge(bpUrlEl.value.trim()); }, 50);
-  });
+  bpUrlEl.addEventListener('input', function(){ clearTimeout(bpTimer); bpTimer = setTimeout(function(){ updateBypassBadge(bpUrlEl.value.trim()); }, 400); });
+  bpUrlEl.addEventListener('paste', function(){ setTimeout(function(){ updateBypassBadge(bpUrlEl.value.trim()); }, 50); });
 }
-
 if($('bp-scan')) $('bp-scan').onclick=async function(){
   var url = ($('bp-url')||{}).value;
   if(!url){ alert('Isi URL dulu'); return; }
@@ -1186,9 +1149,7 @@ if($('bp-scan')) $('bp-scan').onclick=async function(){
   if(log){ log.innerHTML = ''; log.classList.remove('hd'); }
   if(res){ res.innerHTML = ''; res.classList.add('hd'); }
   var fw = $('bp-final-wrap'); if(fw) fw.classList.add('hd');
-
   logTo('bp-log','🔍 SCAN: '+url,'in');
-
   var provider = detectBypassProvider(url);
   if(provider){
     var list = window.ZYVOR && window.ZYVOR.bypassList ? window.ZYVOR.bypassList() : [];
@@ -1198,7 +1159,6 @@ if($('bp-scan')) $('bp-scan').onclick=async function(){
   } else {
     logTo('bp-log','⚠ Step 1: gak ada di map, coba lewat proxy...','warn');
   }
-
   if(!provider && typeof window.zyProxyFinalUrl === 'function'){
     try{
       logTo('bp-log','→ Step 2: fetch via proxy untuk lihat redirect...','in');
@@ -1211,14 +1171,9 @@ if($('bp-scan')) $('bp-scan').onclick=async function(){
           provider = p2;
           if(window.__bpSel) try{ window.__bpSel.setValue(p2); if(typeof window.zyBypassSetSelected==='function') window.zyBypassSetSelected(p2); window.zyRenderBypassParams(); }catch(e){}
         }
-      } else {
-        logTo('bp-log','  proxy fetch gagal — lanjut fallback','warn');
-      }
-    }catch(e){
-      logTo('bp-log','  ✗ proxy error: '+e.message,'er');
-    }
+      } else { logTo('bp-log','  proxy fetch gagal — lanjut fallback','warn'); }
+    }catch(e){ logTo('bp-log','  ✗ proxy error: '+e.message,'er'); }
   }
-
   if(provider){
     logTo('bp-log','🎯 HASIL SCAN: '+provider,'ok');
     logTo('bp-log','→ Tekan BYPASS untuk proses.','in');
@@ -1227,7 +1182,6 @@ if($('bp-scan')) $('bp-scan').onclick=async function(){
     logTo('bp-log','⚠ Provider tidak dikenali — auto fallback saat BYPASS','warn');
   }
 };
-
 if($('bp-run')) $('bp-run').onclick=function(){
   sndClick();
   if(window.unlockAch) window.unlockAch('bypass_first');
@@ -1241,7 +1195,6 @@ if($('bp-clear')) $('bp-clear').onclick=function(){
   var urlIn = $('bp-url'); if(urlIn) urlIn.value = '';
   sndClick();
 };
-
 (function wireBpResult(){
   var copyBtn = $('bp-copy-url');
   if(copyBtn) copyBtn.addEventListener('click', function(){
@@ -1270,20 +1223,47 @@ if($('dl-run')) $('dl-run').onclick=function(){
 if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); if(window.unlockAch) window.unlockAch('preview'); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){} };
 if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window.zyClearDownloader==='function') try{ window.zyClearDownloader(); }catch(e){} };
 
-// ============ P2U WIRE ============
-if($('p2u-transform')) $('p2u-transform').addEventListener('click', function(){
-  if(window.unlockAch) window.unlockAch('p2u_first');
-});
+// ============ P2U WIRE — FIXED ============
+(function wireP2U(){
+  if(!$('pg-p2u')) return;
+  var inited = false;
+  window.__initP2U = function(){
+    if(inited) return;
+    if(typeof window.zyP2UInit === 'function'){ window.zyP2UInit(); inited = true; }
+    else setTimeout(function(){ if(!inited){ window.__initP2U(); } }, 200);
+  };
+  if($('p2u-transform')) $('p2u-transform').addEventListener('click', function(){
+    if(window.unlockAch) window.unlockAch('p2u_first');
+  });
+})();
 
-// ============ VERCEL WIRE ============
-if($('vc-upload')) $('vc-upload').addEventListener('click', function(){
-  if(window.unlockAch) window.unlockAch('deploy_first');
-});
+// ============ VERCEL WIRE — FIXED ============
+(function wireVercel(){
+  if(!$('pg-vc')) return;
+  var inited = false;
+  window.__initVercel = function(){
+    if(inited) return;
+    if(typeof window.zyVercelInit === 'function'){ window.zyVercelInit(); inited = true; }
+    else setTimeout(function(){ if(!inited){ window.__initVercel(); } }, 200);
+  };
+  if($('vc-upload')) $('vc-upload').addEventListener('click', function(){
+    if(window.unlockAch) window.unlockAch('deploy_first');
+  });
+})();
 
-// ============ GITHUB WIRE ============
-if($('gh-upload')) $('gh-upload').addEventListener('click', function(){
-  if(window.unlockAch) window.unlockAch('github_first');
-});
+// ============ GITHUB WIRE — FIXED ============
+(function wireGithub(){
+  if(!$('pg-gh')) return;
+  var inited = false;
+  window.__initGithub = function(){
+    if(inited) return;
+    if(typeof window.zyGithubInit === 'function'){ window.zyGithubInit(); inited = true; }
+    else setTimeout(function(){ if(!inited){ window.__initGithub(); } }, 200);
+  };
+  if($('gh-upload')) $('gh-upload').addEventListener('click', function(){
+    if(window.unlockAch) window.unlockAch('github_first');
+  });
+})();
 
 // ============ HISTORY ============
 function renderHist(){
