@@ -1,4 +1,4 @@
-// zyvor.js v10.7 — UPSCALE overhaul + upload fix + P2U fix
+// zyvor.js v10.7.1 — Fix 404 detect + P2U + UPSCALE 3 endpoint
 (function(){
 'use strict';
 
@@ -23,6 +23,15 @@ function timeoutFor(path){
 function $id(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function classify(url){ var u = String(url).toLowerCase(); if(/\.(mp4|mov|webm|mkv)(\?|$)/.test(u)) return 'video'; if(/\.(mp3|m4a|flac|wav|aac|opus)(\?|$)/.test(u)) return 'audio'; if(/\.(jpg|jpeg|png|webp|gif|bmp)(\?|$)/.test(u)) return 'image'; if(/^blob:/.test(u) || /^data:image/.test(u)) return 'image'; return 'other'; }
+
+// ============ v10.7.1 — DETECT HTML 404 ============
+function isHtmlResponse(text){
+  if(!text || typeof text !== 'string') return false;
+  var t = text.trim().toLowerCase();
+  if(t.indexOf('<!doctype') === 0) return true;
+  if(t.indexOf('<html') === 0) return true;
+  return false;
+}
 
 // ============ MAGIC BYTES ============
 function detectMagic(bytes){
@@ -205,7 +214,6 @@ async function proxyFetch(url, opts, timeoutMs, raw){
   throw lastErr || new Error('All proxy layers failed');
 }
 
-// ============ PROXY FINAL URL ============
 window.zyProxyFinalUrl = async function(url, timeoutMs){
   timeoutMs = timeoutMs || 8000;
   try{
@@ -214,7 +222,7 @@ window.zyProxyFinalUrl = async function(url, timeoutMs){
   }catch(e){ return null; }
 };
 
-// ============ CALL API v2 ============
+// ============ CALL API v2 — v10.7.1 detect 404 ============
 async function callAPIv2(path, params, method){
   method = method || 'GET';
   var qs = '';
@@ -236,15 +244,16 @@ async function callAPIv2(path, params, method){
   }
   var txt = '';
   try{ txt = new TextDecoder('utf-8').decode(buf); }catch(e){ txt = ''; }
+  // v10.7.1: detect HTML 404
+  if(isHtmlResponse(txt)){
+    return { __error404: true, endpoint: path, message: 'API Zyvor balikin HTML 404' };
+  }
   var json;
   try{ json = JSON.parse(txt); }catch(e){ json = { raw: txt }; }
   return json;
 }
 
-// ============ UPLOAD PROVIDERS v10.7 — reorder + fix ============
-// Urutan: tmpfiles #1 (proven works), Catbox, 0x0, Litterbox, Uguu, filebin
-// HAPUS: transfer.sh (tutup), file.io (butuh key)
-
+// ============ UPLOAD PROVIDERS ============
 async function uploadTmpfiles(file){
   try{
     var fd = new FormData(); fd.append('file', file);
@@ -276,7 +285,7 @@ async function upload0x0(file){
   try{
     var fd = new FormData(); fd.append('file', file);
     var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
-    var r = await fetch('https://0x0.st', { method:'POST', body:fd, headers:{'User-Agent':'RyannTools/10.7'}, signal:ctrl.signal });
+    var r = await fetch('https://0x0.st', { method:'POST', body:fd, headers:{'User-Agent':'RyannTools/10.7.1'}, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
     var txt = (await r.text()).trim();
@@ -325,7 +334,6 @@ async function uploadFilebin(file){
   }catch(e){ return { ok:false, error: e.message || 'failed', provider:'filebin.net' }; }
 }
 
-// Provider list — tmpfiles.org #1 (proven works di device user)
 var UPLOAD_PROVIDERS = [uploadTmpfiles, uploadCatbox, upload0x0, uploadLitterbox, uploadUguu, uploadFilebin];
 window.__UPLOAD_PROVIDERS = UPLOAD_PROVIDERS;
 
@@ -333,12 +341,21 @@ async function uploadToCatbox(file, onProgress, logEl){
   if(!file) return { ok:false, error:'No file', provider:null };
   if(file.size / (1024*1024) > 200) return { ok:false, error:'File > 200MB', provider:null };
 
-  for(var i=0;i<UPLOAD_PROVIDERS.length;i++){
-    var provider = UPLOAD_PROVIDERS[i];
+  var providers = UPLOAD_PROVIDERS;
+  if(!providers || !providers.length){
+    providers = window.__UPLOAD_PROVIDERS || [];
+  }
+  if(!providers || !providers.length){
+    if(logEl){ var lx = document.createElement('div'); lx.className='er'; lx.textContent = '  ✗ Provider kosong (bug internal)'; logEl.appendChild(lx); }
+    return { ok:false, error:'Provider kosong', silent:true, provider:null };
+  }
+
+  for(var i=0;i<providers.length;i++){
+    var provider = providers[i];
     var providerName = (provider && provider.name) ? provider.name.replace('upload','') : ('provider-' + (i+1));
     if(logEl){
       var l = document.createElement('div'); l.className = 'in';
-      l.textContent = '⏳ [' + (i+1) + '/' + UPLOAD_PROVIDERS.length + '] Upload ke ' + providerName + '...';
+      l.textContent = '⏳ [' + (i+1) + '/' + providers.length + '] Upload ke ' + providerName + '...';
       logEl.appendChild(l); logEl.scrollTop = logEl.scrollHeight;
     }
     var res = await provider(file);
@@ -364,10 +381,17 @@ window.zyUploadMulti = uploadToCatbox;
 window.zyUploadP2U = async function(file, infoEl){
   if(!file) return { ok:false, error:'No file' };
   if(file.size / (1024*1024) > 200) return { ok:false, error:'File > 200MB' };
-  for(var i=0;i<UPLOAD_PROVIDERS.length;i++){
-    var provider = UPLOAD_PROVIDERS[i];
-    var res = await provider(file);
-    if(res && res.ok) return res;
+  var providers = UPLOAD_PROVIDERS;
+  if(!providers || !providers.length){ providers = window.__UPLOAD_PROVIDERS || []; }
+  if(!providers || !providers.length){
+    console.error('[P2U] providers kosong');
+    return { ok:false, error:'Provider kosong (bug internal)' };
+  }
+  for(var i=0;i<providers.length;i++){
+    try{
+      var res = await providers[i](file);
+      if(res && res.ok) return res;
+    }catch(e){ continue; }
   }
   return { ok:false, error:'Semua provider gagal' };
 };
@@ -396,7 +420,6 @@ function collectMedia(obj, out, baseKey){
   return out;
 }
 
-// ============ EXTRACT ITEMS ============
 function extractResultItems(data){
   var items = [];
   if(!data) return items;
@@ -461,7 +484,6 @@ window.zyToastSmartWarn = function(title, sub){
 window.zyCp = function(u){ navigator.clipboard.writeText(u).then(function(){ window.zyToast('URL tersalin'); }); };
 window.zyCopyJson = function(btn){ var pre = btn.parentElement.querySelector('.zy-raw pre'); if(pre) navigator.clipboard.writeText(pre.textContent).then(function(){ window.zyToast('Tersalin'); }); };
 
-// ============ DOWNLOAD ============
 window.zyDownload = async function(url, filename){
   try{
     window.zyToast('⏳ Downloading...');
@@ -476,7 +498,6 @@ window.zyDownload = async function(url, filename){
   }catch(e){ window.zyToast('✗ Gagal: ' + e.message, 'error'); }
 };
 
-// ============ PREVIEW ============
 window.zyOpenPreview = function(idx){
   var m = window.__apiHubMedia && window.__apiHubMedia[idx];
   if(!m) return;
@@ -544,15 +565,8 @@ window.zyCheckFileSizeSmart = function(file, category){
   return false;
 };
 
-// ============ PROGRESS v10.7 — 3 FASE + force complete ============
-var _progState = {
-  active:false,
-  startTime:0,
-  estimatedMs:180000,
-  phase:'idle',
-  cancelled:false,
-  hidden:true
-};
+// ============ PROGRESS v10.7.1 ============
+var _progState = { active:false, startTime:0, estimatedMs:180000, phase:'idle', cancelled:false, hidden:true };
 
 function zyProgressShow(stage, msg){
   var wrap = $id('up-progress-bar'); if(!wrap) return;
@@ -580,7 +594,7 @@ function zyProgressForceDone(){
 }
 window.zyProgressForceDone = zyProgressForceDone;
 window.zyProgressHide = function(force){
-  if(!force && _progState.active) return; // jangan hide kalau masih aktif
+  if(!force && _progState.active) return;
   var wrap = $id('up-progress-bar');
   if(wrap){ wrap.classList.remove('on'); wrap.classList.remove('done'); }
   _progState.active = false;
@@ -589,7 +603,6 @@ window.zyProgressHide = function(force){
 window.zyProgressShow = zyProgressShow;
 window.zyProgressUpdate = zyProgressUpdate;
 
-// ============ FETCH WITH PROGRESS (real byte tracking kalau ada content-length) ============
 async function fetchWithProgress(url, opts, timeoutMs){
   opts = opts || {}; timeoutMs = timeoutMs || 1800000;
   var ctrl = new AbortController();
@@ -610,10 +623,7 @@ async function fetchWithProgress(url, opts, timeoutMs){
   for(var li=0;li<layers.length;li++){
     if(_progState.cancelled) throw new Error('cancelled');
     var L = layers[li];
-    if(li > 0){
-      // reset progress setiap pindah layer
-      zyProgressUpdate(2, 'MENGIRIM', 'Coba layer ' + L.name + '...');
-    }
+    if(li > 0){ zyProgressUpdate(2, 'MENGIRIM', 'Coba layer ' + L.name + '...'); }
     try{
       var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs);
       var r = await fetch(L.url, Object.assign({}, opts, {signal: ctrl.signal}));
@@ -622,10 +632,8 @@ async function fetchWithProgress(url, opts, timeoutMs){
 
       var total = parseInt(r.headers.get('content-length') || '0', 10);
       var ct = (r.headers.get('content-type') || '').toLowerCase();
-      // detect kalau ini binary video/image
       var isBinary = /^video\/|^image\/|^audio\//.test(ct);
 
-      // v10.7: kalau ga ada stream / content-length kecil → langsung arrayBuffer + paksa 95% (fase receiving)
       if(!r.body || !r.body.getReader || total === 0 || total < 102400){
         zyProgressUpdate(95, 'MENERIMA', 'Menerima hasil...');
         var buf0 = await r.arrayBuffer();
@@ -633,7 +641,6 @@ async function fetchWithProgress(url, opts, timeoutMs){
         return { buffer: buf0, contentType: ct, total: buf0.byteLength, received: buf0.byteLength, isBinary: isBinary };
       }
 
-      // Ada content-length → real byte tracking
       var reader = r.body.getReader();
       var chunks = []; var received = 0; var lastPct = 90;
       _progState.received = 0;
@@ -670,7 +677,6 @@ async function fetchWithProgress(url, opts, timeoutMs){
   throw lastErr || new Error('All layers failed');
 }
 
-// ============ CALL API WITH PROGRESS (UPSCALE / heavy) ============
 async function callAPIWithProgress(path, params, method, category){
   method = method || 'GET';
   var qs = '';
@@ -696,7 +702,6 @@ async function callAPIWithProgress(path, params, method, category){
   zyProgressShow('MENGIRIM', 'Mengirim permintaan ke server...');
   zyProgressUpdate(2, 'MENGIRIM', 'Mengirim permintaan...');
 
-  // ticker prediktif — Fase 1 (2% → 50%) + Fase 2 (50% → 90%)
   var ticker = setInterval(function(){
     if(_progState.cancelled || _progState.hidden) return;
     if(_progState.phase === 'receiving') return;
@@ -708,11 +713,10 @@ async function callAPIWithProgress(path, params, method, category){
       stage = 'MENGIRIM';
       msg = 'Mengirim permintaan...';
     } else {
-      // prediktif naik dari 10 ke 90 selama estMs
       pred = 10 + Math.min(80, (elapsed / estMs) * 80);
       stage = 'MEMPROSES';
       var secs = Math.round(elapsed / 1000);
-      msg = 'Server memproses ' + category.toLowerCase() + '... (' + secs + 's)';
+      msg = 'Server memproses ' + (category || '').toLowerCase() + '... (' + secs + 's)';
     }
     zyProgressUpdate(pred, stage, msg);
   }, 500);
@@ -731,7 +735,6 @@ async function callAPIWithProgress(path, params, method, category){
     if(!mime && ct.indexOf('video/') === 0) mime = ct.split(';')[0];
     if(!mime && ct.indexOf('audio/') === 0) mime = ct.split(';')[0];
 
-    // v10.7: kalau binary video/image → force progress complete
     if(mime && (mime.indexOf('video/') === 0 || mime.indexOf('image/') === 0 || mime.indexOf('audio/') === 0)){
       zyProgressForceDone();
       var blob = new Blob([buf], { type: mime });
@@ -740,10 +743,16 @@ async function callAPIWithProgress(path, params, method, category){
 
     var txt = '';
     try{ txt = new TextDecoder('utf-8').decode(buf); }catch(e){ txt = ''; }
+
+    // v10.7.1: detect HTML 404
+    if(isHtmlResponse(txt)){
+      window.zyProgressHide(true);
+      throw new Error('Endpoint ini balikin HTML 404');
+    }
+
     var json;
     try{ json = JSON.parse(txt); }catch(e){ json = { raw: txt }; }
 
-    // v10.7: kalau JSON punya field URL video → force complete (karena proses selesai)
     if(json && typeof json === 'object'){
       var foundUrl = null;
       var keys = ['url','result','video','output','download','link','hd','videoUrl','video_url'];
@@ -780,23 +789,21 @@ var BYPASS_LIST = [
   { id:'wellbypass', name:'Wellbypass', path:'/api/bypass/wellbypass', method:'POST', params:['url','turnstileToken'] }
 ];
 
-// ============ EXPLAIN FAILURE ============
 function explainFailure(res, err){
   var msg = '';
   if(err) msg = err.message || '';
   if(res && res.error) msg = res.error;
   if(res && res.message) msg = res.message;
   var lm = (msg || '').toLowerCase();
-  if(lm.indexOf('busy') !== -1 || lm.indexOf('limit') !== -1 || lm.indexOf('rate') !== -1 || lm.indexOf('too many') !== -1) return 'API sedang sibuk — coba lagi atau ganti API';
-  if(lm.indexOf('not support') !== -1 || lm.indexOf('unsupported') !== -1 || lm.indexOf('invalid url') !== -1 || lm.indexOf('domain') !== -1) return 'API tidak mendukung URL ini — wajib ganti API';
-  if(lm.indexOf('timeout') !== -1 || lm.indexOf('abort') !== -1) return 'Server API tidak merespon — koneksi lambat';
-  if(lm.indexOf('500') !== -1 || lm.indexOf('502') !== -1 || lm.indexOf('503') !== -1 || lm.indexOf('server error') !== -1) return 'Server API down — tunggu beberapa menit';
-  if(lm.indexOf('network') !== -1 || lm.indexOf('failed to fetch') !== -1) return 'Network error — cek koneksi internet';
-  if(!msg){ return 'API tidak cocok — ganti API lain'; }
+  if(lm.indexOf('404') !== -1 || lm.indexOf('not found') !== -1) return 'Endpoint 404 — API Zyvor down';
+  if(lm.indexOf('busy') !== -1 || lm.indexOf('limit') !== -1 || lm.indexOf('rate') !== -1 || lm.indexOf('too many') !== -1) return 'API sedang sibuk — coba lagi';
+  if(lm.indexOf('not support') !== -1 || lm.indexOf('unsupported') !== -1 || lm.indexOf('invalid url') !== -1 || lm.indexOf('domain') !== -1) return 'API tidak mendukung URL ini';
+  if(lm.indexOf('timeout') !== -1 || lm.indexOf('abort') !== -1) return 'Server API tidak merespon';
+  if(lm.indexOf('500') !== -1 || lm.indexOf('502') !== -1 || lm.indexOf('503') !== -1 || lm.indexOf('server error') !== -1) return 'Server API down';
+  if(lm.indexOf('network') !== -1 || lm.indexOf('failed to fetch') !== -1) return 'Network error';
+  if(!msg){ return 'API tidak cocok'; }
   return msg.length > 60 ? msg.substring(0, 60) + '...' : msg;
 }
-
-// ============ FALLBACK WITH LOG ============
 async function fetchWithFallback(list, params, logEl){
   for(var i=0;i<list.length;i++){
     var api = list[i];
@@ -806,11 +813,11 @@ async function fetchWithFallback(list, params, logEl){
     try{
       var res = await callAPIv2(api.path, callParams, api.method);
       var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url) || res.__binary);
-      if(success){
+      if(success && !res.__error404){
         if(logEl){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='  ✓ '+api.name; logEl.appendChild(l2); logEl.scrollTop=logEl.scrollHeight; }
         return { api:api, result:res };
       }
-      var reason = explainFailure(res);
+      var reason = (res && res.__error404) ? 'Endpoint 404' : explainFailure(res);
       if(logEl){ var l3 = document.createElement('div'); l3.className='er'; l3.textContent='  ✗ '+reason; logEl.appendChild(l3); logEl.scrollTop=logEl.scrollHeight; }
     }catch(e){
       var reason2 = explainFailure(null, e);
@@ -820,7 +827,6 @@ async function fetchWithFallback(list, params, logEl){
   return null;
 }
 
-// ============ EXTRACT BYPASS URL ============
 function extractBypassUrl(j){
   if(!j) return null;
   if(typeof j === 'string' && /^https?:\/\//.test(j)) return j;
@@ -845,7 +851,6 @@ function extractBypassUrl(j){
 }
 window.zyExtractBypassUrl = extractBypassUrl;
 
-// ============ BYPASS INIT + RUN ============
 var bypassSelected = 'FALLBACK';
 window.zyBypassSetSelected = function(id){ bypassSelected = id; };
 window.zyBypassGetSelected = function(){ return bypassSelected; };
@@ -913,7 +918,7 @@ window.zyRunBypass = async function(){
   }
 };
 
-// ============ TEMPMAIL v10.7 — fix domain load ============
+// ============ TEMPMAIL ============
 var tmpToken=null, tmpEmail=null, tmpPassword=null, tmpMsgs=[], tmpProvider='mail.tm';
 var TMP_PROVIDERS = {
   'mail.tm': { name:'mail.tm', base:'https://api.mail.tm' },
@@ -1190,14 +1195,11 @@ if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
         } else {
           var lm = (jLogin && (jLogin['hydra:description'] || jLogin.message)) || 'password beda';
           logTo('tmp-log','✗ Login gagal: ' + lm,'er');
-          logTo('tmp-log','💡 Ganti nama lain (mis: ' + nm + Math.floor(Math.random()*9999) + ')','warn');
+          logTo('tmp-log','💡 Ganti nama lain','warn');
           return;
         }
       }
-      if(r.status === 429){
-        logTo('tmp-log','✗ Rate limit — coba domain / provider lain','er');
-        return;
-      }
+      if(r.status === 429){ logTo('tmp-log','✗ Rate limit — coba domain lain','er'); return; }
       logTo('tmp-log','✗ ' + errMsg,'er');
       return;
     }
@@ -1304,14 +1306,12 @@ var DOWNLOADER_LIST = [
   { id:'snapany', name:'SnapAny', path:'/api/downloader/snapany', method:'GET', params:['url'], cat:'All-in-One' }
 ];
 
-// ============ API HUB LIST ============
+// ============ API HUB LIST v10.7.1 — UPSCALE 3 ENDPOINT ============
 var API_HUB_LIST = [
-  // UPSCALE — 5 endpoint (auto-fallback chain)
-  {id:'up_ai', name:'Video Upscale AI', path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
-  {id:'up_v1', name:'Video Upscale v1', path:'/api/hdvidio/upscale', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
-  {id:'up_tohd', name:'HD Video Processor', path:'/api/hdvidio/tohd', method:'GET', params:['video','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
-  {id:'up_wink', name:'Wink HD Video Enhancer', path:'/api/hdvidio/wink-hd-video', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
-  {id:'up_v2', name:'Video HD Enhancer', path:'/api/hdvidio/enhance', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
+  // UPSCALE — 3 endpoint valid (verified dari /configuration)
+  {id:'up_ai',   name:'Video Upscale AI',         path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
+  {id:'up_tohd', name:'HD Video Processor',       path:'/api/hdvidio/tohd',             method:'GET', params:['video','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
+  {id:'up_wink', name:'Wink HD Video Enhancer',   path:'/api/hdvidio/wink-hd-video',    method:'GET', params:['url'], cat:'UPSCALE'},
 
   // IMG AI
   {id:'ai_poll', name:'Pollinations AI', path:'/api/imageai/pollinations', method:'GET', params:['prompt'], cat:'IMG AI'},
@@ -1455,7 +1455,6 @@ async function fetchTikWM(url){
   return { status:true, __type:detectTikTokType(d), title:d.title, author:d.author, cover:d.cover, duration:d.duration, stats:{ play:d.play_count, like:d.digg_count, comment:d.comment_count, share:d.share_count }, video_nowm:d.play, video_nowm_hd:d.hdplay, video_wm:d.wmplay, music:d.music, raw:d };
 }
 
-// ============ SMART TIKTOK FALLBACK ============
 async function fetchTikTokSmart(url, logEl){
   var isSlideUrl = urlLooksLikeSlideshow(url);
   if(logEl){ var l = document.createElement('div'); l.className='in'; l.textContent='🔍 '+(isSlideUrl?'SLIDESHOW':'VIDEO'); logEl.appendChild(l); logEl.scrollTop=logEl.scrollHeight; }
@@ -1470,14 +1469,14 @@ async function fetchTikTokSmart(url, logEl){
     if(logEl){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='['+(i+1)+'/'+order.length+'] '+api.name; logEl.appendChild(l2); logEl.scrollTop=logEl.scrollHeight; }
     try{
       var res = api.path === 'TIKWM' ? await fetchTikWM(url) : await callAPIv2(api.path, {url:url}, api.method);
-      var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url));
+      var success = res && !res.__error404 && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url));
       if(success){
         var type = detectTikTokType(res);
         if(logEl){ var l3 = document.createElement('div'); l3.className='ok'; l3.textContent='  ✓ '+type.toUpperCase(); logEl.appendChild(l3); logEl.scrollTop=logEl.scrollHeight; }
         results.push({ api:api, result:res, type:type });
         if(type === 'slideshow' || type === 'video') break;
       } else {
-        if(logEl){ var l4 = document.createElement('div'); l4.className='er'; l4.textContent='  ✗ '+explainFailure(res); logEl.appendChild(l4); logEl.scrollTop=logEl.scrollHeight; }
+        if(logEl){ var l4 = document.createElement('div'); l4.className='er'; l4.textContent='  ✗ '+((res && res.__error404) ? 'Endpoint 404' : explainFailure(res)); logEl.appendChild(l4); logEl.scrollTop=logEl.scrollHeight; }
       }
     }catch(e){
       if(logEl){ var l5 = document.createElement('div'); l5.className='er'; l5.textContent='  ✗ '+explainFailure(null, e); logEl.appendChild(l5); logEl.scrollTop=logEl.scrollHeight; }
@@ -1615,7 +1614,7 @@ window.zyRenderDlResult = function(container, smart, sourceUrl){
       });
       videoHtml += '</div>';
     } else {
-      videoHtml += '<div class="zy-head er">⚠ Tidak ada media terdeteksi</div>';
+      videoHtml += '<div class="zy-head er">⚠ Tidak ada media</div>';
       var rawTxt = JSON.stringify(smart.result, null, 2);
       videoHtml += '<details class="zy-raw"><summary>RAW</summary><pre>'+esc(rawTxt)+'</pre></details>';
     }
@@ -1650,6 +1649,7 @@ window.zyRunSearch = async function(){
     if(api.fixed){ Object.keys(api.fixed).forEach(function(k){ p[k] = api.fixed[k]; }); }
     try{
       var r = await callAPIv2(api.path, p, 'GET');
+      if(r && r.__error404) throw new Error('Endpoint 404');
       var items = extractResultItems(r);
       if(log){ var l = document.createElement('div'); l.className='ok'; l.textContent='✓ '+api.name+' — '+items.length+' hasil'; log.appendChild(l); log.scrollTop=log.scrollHeight; }
       return { api:api, items:items, raw:r };
@@ -1720,7 +1720,6 @@ window.zyRenderDynamicInputs = function(container, params, idPrefix, category){
             info.style.display = 'block';
             info.style.color = 'var(--ac2)';
             info.textContent = '⏳ Upload ' + f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)...';
-            // v10.7: pakai uploadToCatbox (7 provider dengan fallback + log)
             var res = await uploadToCatbox(f, null, null);
             if(res && res.ok){
               urlIn.value = res.url;
@@ -1779,7 +1778,7 @@ window.zyCollectParams = function(params, idPrefix, category){
   return out;
 };
 
-// ============ API HUB INIT + RUN v10.7 — UPSCALE OVERHAUL ============
+// ============ API HUB INIT + RUN ============
 var apiHubState = {};
 
 window.zyInitApiHub = function(tabId, catName){
@@ -1797,7 +1796,6 @@ window.zyInitApiHub = function(tabId, catName){
   window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
 };
 
-// v10.7: UPSCALE auto-fallback 5 endpoint + auto-render video player
 window.zyRunApiHub = async function(tabId, catName){
   var st = apiHubState[tabId];
   if(!st || !st.endpoint){ alert('Pilih endpoint'); return; }
@@ -1807,10 +1805,9 @@ window.zyRunApiHub = async function(tabId, catName){
   if(log){ log.innerHTML=''; log.classList.remove('hd'); }
   if(res){ res.innerHTML=''; res.classList.add('hd'); }
 
-  // Khusus UPSCALE: auto-fallback 5 endpoint
+  // UPSCALE: auto-fallback 3 endpoint
   if(catName === 'UPSCALE'){
     var upscaleEndpoints = API_HUB_LIST.filter(function(x){ return x.cat === 'UPSCALE'; });
-    // Endpoint terpilih dulu, sisanya nanti
     var orderedEndpoints = [st.endpoint].concat(upscaleEndpoints.filter(function(x){ return x.id !== st.endpoint.id; }));
 
     if(log){ var li = document.createElement('div'); li.className='in'; li.textContent='🎬 UPSCALE auto-fallback ('+orderedEndpoints.length+' endpoint)'; log.appendChild(li); }
@@ -1819,18 +1816,20 @@ window.zyRunApiHub = async function(tabId, catName){
       var ep = orderedEndpoints[ei];
       if(log){ var l1 = document.createElement('div'); l1.className='in'; l1.textContent='['+(ei+1)+'/'+orderedEndpoints.length+'] '+ep.name; log.appendChild(l1); log.scrollTop = log.scrollHeight; }
 
-      // Ambil params untuk endpoint ini (kalau endpoint berbeda, re-collect params)
-      var epParams = params;
-      if(ep.id !== st.endpoint.id){
-        // Untuk endpoint fallback, coba pakai params yang sama — kalau ga ada, isi default
-        epParams = {};
-        Object.keys(params).forEach(function(k){ epParams[k] = params[k]; });
-      }
+      var epParams = {};
+      Object.keys(params).forEach(function(k){ epParams[k] = params[k]; });
 
       try{
         var r = await callAPIWithProgress(ep.path, epParams, ep.method || 'GET', catName);
+
+        // v10.7.1: skip kalau 404
+        if(r && r.__error404){
+          if(log){ var lerr = document.createElement('div'); lerr.className='er'; lerr.textContent='  ✗ endpoint 404 (di-skip)'; log.appendChild(lerr); log.scrollTop = log.scrollHeight; }
+          window.zyProgressHide(true);
+          continue;
+        }
+
         if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='  ✓ SUKSES via '+ep.name; log.appendChild(l2); log.scrollTop = log.scrollHeight; }
-        // hasil ketemu
         if(r && !r.__binary && typeof window.zyMaterializeResult === 'function'){
           try{ var mat = await window.zyMaterializeResult(r); if(mat && mat.__binary){ r = mat; } }catch(e){}
         }
@@ -1841,18 +1840,16 @@ window.zyRunApiHub = async function(tabId, catName){
       }catch(e){
         var reason = explainFailure(null, e);
         if(log){ var l3 = document.createElement('div'); l3.className='er'; l3.textContent='  ✗ '+reason; log.appendChild(l3); log.scrollTop = log.scrollHeight; }
-        // reset progress sebelum coba endpoint berikutnya
         window.zyProgressHide(true);
       }
     }
-    // semua endpoint gagal
     if(log){ var lf = document.createElement('div'); lf.className='er'; lf.textContent='✗ SEMUA ENDPOINT UPSCALE GAGAL'; log.appendChild(lf); }
     res.innerHTML = '<div class="zy-head er">✗ Semua endpoint UPSCALE gagal — coba lagi nanti atau cek koneksi</div>';
     res.classList.remove('hd');
     return;
   }
 
-  // Endpoint non-UPSCALE: single call tanpa fallback
+  // Non-UPSCALE: single call
   var loadingMsg = '⏳ Tunggu...';
   if(catName === 'IMG AI'){ var p0 = params.prompt || params.teks || params.query || params.text || ''; loadingMsg = '🎨 Membuat ' + (p0 ? String(p0).substring(0,50) : 'objek') + '...'; }
   else if(catName === 'IMG HD') loadingMsg = '🖼 Enhancing image...';
@@ -1862,7 +1859,8 @@ window.zyRunApiHub = async function(tabId, catName){
 
   try{
     var r = await callAPIv2(st.endpoint.path, params, st.endpoint.method || 'GET');
-    if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='✓ Selesai'; log.appendChild(l2); }
+    if(r && r.__error404){ throw new Error('Endpoint 404 — API Zyvor down'); }
+    if(log){ var l2b = document.createElement('div'); l2b.className='ok'; l2b.textContent='✓ Selesai'; log.appendChild(l2b); }
     if(r && !r.__binary && typeof window.zyMaterializeResult === 'function'){
       try{ var mat = await window.zyMaterializeResult(r); if(mat && mat.__binary){ r = mat; } }catch(e){}
     }
@@ -1882,7 +1880,7 @@ window.zyRunApiHub = async function(tabId, catName){
       localStorage.setItem('rx_history', JSON.stringify(h));
     }catch(e){}
   }catch(e){
-    if(log){ var l3 = document.createElement('div'); l3.className='er'; l3.textContent='✗ '+explainFailure(null, e); log.appendChild(l3); }
+    if(log){ var l3b = document.createElement('div'); l3b.className='er'; l3b.textContent='✗ '+explainFailure(null, e); log.appendChild(l3b); }
     if(res){ res.innerHTML='<div class="zy-head er">✗ '+esc(e.message)+'</div>'; res.classList.remove('hd'); }
   }
 };
@@ -1904,9 +1902,9 @@ function extractMakerImages(data){
   return out;
 }
 
-// ============ RENDER API RESULT v10.7 — auto video player ============
+// ============ RENDER API RESULT — auto video player ============
 window.zyRenderApiResult = function(container, data, name, catName){
-  if(catName === 'MAKER' || (data && data.__binary)){
+  if(catName === 'MAKER' || (data && data.__binary && data.mime && data.mime.indexOf('image/') === 0)){
     var mkImgs = extractMakerImages(data);
     if(mkImgs.length){
       var html = '<div class="zy-head">✓ '+esc(name)+'</div>';
@@ -1940,7 +1938,6 @@ window.zyRenderApiResult = function(container, data, name, catName){
   var audios = unique.filter(function(x){ return classify(x.url)==='audio'; });
   window.__apiHubMedia = unique;
 
-  // v10.7: kalau ada VIDEO (UPSCALE) → tampilkan player prominent
   if(videos.length && catName === 'UPSCALE'){
     html += '<div class="zy-media-wrap" style="border-color:var(--ok)"><div class="zy-media-title" style="color:var(--ok)">🎬 VIDEO HD HASIL UPSCALE ('+videos.length+')</div>';
     videos.forEach(function(v, i){
@@ -1993,12 +1990,13 @@ window.zyRenderApiResult = function(container, data, name, catName){
   container.innerHTML = html; container.classList.remove('hd');
 };
 
-// ============ P2U INIT v10.7 — fix scope + log detail ============
+// ============ P2U INIT — v10.7.1 + debug log ============
 var p2uFiles = [];
 
 window.zyP2UInit = function(){
   var drop = $id('p2u-drop'); var input = $id('p2u-file');
   var list = $id('p2u-list'); var transform = $id('p2u-transform'); var clear = $id('p2u-clear'); var result = $id('p2u-result');
+  console.log('[P2U] init — providers:', (UPLOAD_PROVIDERS || []).length, '| drop:', !!drop, '| input:', !!input);
   if(!drop || !input) return;
   if(drop.__inited) return;
   drop.__inited = true;
@@ -2047,7 +2045,6 @@ window.zyP2UInit = function(){
     for(var i=0;i<p2uFiles.length;i++){
       var f = p2uFiles[i];
       if(log){ var l = document.createElement('div'); l.className = 'in'; l.textContent = '[' + (i+1) + '/' + p2uFiles.length + '] ' + f.name + ' (' + (f.size/1024).toFixed(1) + ' KB)'; log.appendChild(l); log.scrollTop = log.scrollHeight; }
-      // v10.7: PAKAI uploadToCatbox yang sama dengan Image AI — dengan log per-provider
       var res = await uploadToCatbox(f, null, log);
       if(res && res.ok){
         results.push({ name:f.name, url:res.url, provider:res.provider });
@@ -2213,7 +2210,7 @@ async function ghRequest(method, path, body){
       'Accept': 'application/vnd.github+json',
       'Authorization': 'Bearer ' + ghToken,
       'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'RyannTools-GitHub/10.7'
+      'User-Agent': 'RyannTools-GitHub/10.7.1'
     }
   };
   if(body){ opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
@@ -2429,7 +2426,7 @@ window.zyGithubInit = function(){
 
 // ============ EXPORT ============
 window.ZYVOR = {
-  version: '10.7',
+  version: '10.7.1',
   base: BASE,
   worker: WORKER,
   call: callAPIv2,
