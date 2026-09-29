@@ -1,4 +1,5 @@
-// app.js v10.4 — Universal Decoder + Smart Adjustment + Progress + Bypass Box
+// app.js v10.5 — P2U + Vercel + GitHub + Bypass fix + Multi-upload
+// Part 1: Core, Gate (zero-touch), Theme, Sound, Nav, SPY, FUN, OSINT, SCRAPE, TPL, DEV
 (function(){
 'use strict';
 
@@ -50,7 +51,7 @@ async function deviceApi(path,opts){
   }catch(e){ return {ok:false,error:'network',message:e.message}; }
 }
 
-// ============ SOUND PACK v10.4 ============
+// ============ SOUND ============
 var _audioCtx = null;
 var _sndPack = S.get('snd_pack','beep');
 var _sndMaster = S.get('snd_master',true);
@@ -81,6 +82,8 @@ function sndPlay(kind){
     case 'peach': if(k==='click')_beep(580,.1,'sine',.038); else if(k==='success'){_beep(500,.12,'sine',.045);setTimeout(function(){_beep(660,.15,'sine',.045)},95);} else if(k==='error')_beep(300,.18,'sine',.038); else _beep(450,.07,'sine',.024); break;
     case 'tap': if(k==='click')_noise(.02,.08); else if(k==='nav')_noise(.015,.05); else if(k==='success'){_noise(.02,.07);setTimeout(function(){_noise(.02,.07)},70);} else if(k==='error')_noise(.03,.09); break;
     case 'pop': if(k==='click'){_beep(700,.03,'sine',.06);_beep(1200,.02,'sine',.04);} else if(k==='nav')_beep(600,.03,'sine',.04); else if(k==='success'){_beep(650,.04,'sine',.06);_beep(1100,.03,'sine',.05);setTimeout(function(){_beep(1400,.03,'sine',.04)},80);} else if(k==='error'){_beep(300,.05,'sine',.05);_beep(180,.08,'sine',.04);} break;
+    // 8-bit retro (v10.5)
+    case '8bit': if(k==='click'){_beep(440,.04,'square',.05);_beep(880,.02,'square',.03);} else if(k==='nav')_beep(330,.05,'square',.04); else if(k==='success'){_beep(523,.06,'square',.05);setTimeout(function(){_beep(659,.06,'square',.05);},60);setTimeout(function(){_beep(784,.1,'square',.05);},120);} else if(k==='error'){_beep(200,.08,'square',.06);setTimeout(function(){_beep(150,.12,'square',.06);},80);} break;
   }
 }
 function sndSuccess(){ sndPlay('success'); }
@@ -96,7 +99,7 @@ function logTo(id,msg,cls){
 }
 window.logTo=logTo; window.sndSuccess=sndSuccess; window.sndClick=sndClick; window.sndError=sndError;
 
-// ============ ACHIEVEMENTS (25) ============
+// ============ ACHIEVEMENTS ============
 var ACH_LIST = [
   {id:'first_gen',name:'The Beginning',desc:'Pertama kali generate'},
   {id:'ten_gen',name:'Taking Off',desc:'10x generate'},
@@ -122,6 +125,8 @@ var ACH_LIST = [
   {id:'deploy_first',name:'Return to Sender',desc:'Pertama deploy Vercel'},
   {id:'dork_first',name:'Hot Topic',desc:'Generate Google Dork'},
   {id:'ip_first',name:'Time to Strike!',desc:'Pertama IP lookup'},
+  {id:'p2u_first',name:'Link Master',desc:'Pertama pakai P2U'},
+  {id:'github_first',name:'Repo Raider',desc:'Pertama upload GitHub'},
   {id:'all',name:'The End.',desc:'Semua achievement kebuka'}
 ];
 var ACH_KEY='rx_ach_unlocked';
@@ -146,7 +151,6 @@ window.unlockAch=function(id){
     var ach=getAch(); if(ach[id]) return;
     ach[id]=Date.now(); setAch(ach);
     var a=null; for(var i=0;i<ACH_LIST.length;i++){ if(ACH_LIST[i].id===id){ a=ACH_LIST[i]; break; } }
-    console.log('[ACH] unlock:',id,'| found:',!!a);
     if(a && typeof window.zyToast==='function') window.zyToast('🏆 '+a.name);
     renderAch();
     if(!ach['all'] && Object.keys(ach).length>=(ACH_LIST.length-1)){
@@ -154,7 +158,7 @@ window.unlockAch=function(id){
       if(typeof window.zyToast==='function') window.zyToast('🏆 The End.');
       renderAch();
     }
-  }catch(e){ console.error('[ACH] error:',e); }
+  }catch(e){}
 };
 window.__genCount=parseInt(localStorage.getItem('rx_gen_count')||'0',10);
 window.__addGen=function(){
@@ -207,7 +211,7 @@ window.initCustomSelect = function(containerId,items,selectedId,onSelect,opts){
   };
 };
 
-// ============ COPY WITH ANIM (v10.4) ============
+// ============ COPY WITH ANIM ============
 window.copyWithAnim = function(el, text){
   if(!el || !text) return;
   navigator.clipboard.writeText(text).then(function(){
@@ -317,7 +321,7 @@ window.copyWithAnim = function(el, text){
   setTimeout(function(){ try{ input.focus(); }catch(e){} },300);
 })();
 
-// ============ ACCESS CODE GATE — ZERO TOUCH v10.3 ============
+// ============ ACCESS CODE GATE — ZERO TOUCH ============
 (function accessCodeGateInit(){
   var gate=$('accessCodeGate'); if(!gate) return;
   var input=$('accessCodeInput'), btn=$('accessCodeBtn'), msg=$('accessCodeMsg');
@@ -386,9 +390,10 @@ function applyMode(){ if(mode==='light') document.body.classList.add('light'); e
 if($('mode-tgl')) $('mode-tgl').onclick=function(){ mode=(mode==='dark')?'light':'dark'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark' && window.unlockAch) window.unlockAch('dark'); };
 if($('tg-dark')) $('tg-dark').onchange=function(){ mode=this.checked?'dark':'light'; S.set('mode',mode); applyMode(); sndClick(); if(mode==='dark' && window.unlockAch) window.unlockAch('dark'); };
 
+// BG includes new retro + starwars (v10.5)
 function setBg(b){
   S.set('bg', b);
-  document.body.classList.remove('bg-galaxy','bg-binary','bg-ufo','bg-plain','bg-custom');
+  document.body.classList.remove('bg-galaxy','bg-binary','bg-ufo','bg-plain','bg-custom','bg-retro','bg-starwars');
   document.body.classList.add('bg-'+b);
   if(b==='custom'){ var img=S.get('bg_custom',''); document.body.style.backgroundImage=img?'url('+img+')':'none'; }
   else document.body.style.backgroundImage='';
@@ -435,29 +440,14 @@ if(volRange){
   volRange.addEventListener('input',function(){ _volume=parseInt(this.value); S.set('volume',_volume); if($('vol-val')) $('vol-val').textContent=_volume+'%'; });
   volRange.addEventListener('change',function(){ sndSuccess(); });
 }
-if($('tg-sound')){
-  $('tg-sound').checked=_sndMaster;
-  $('tg-sound').onchange=function(){ _sndMaster=this.checked; S.set('snd_master',_sndMaster); if(_sndMaster) sndSuccess(); };
-}
-if($('tg-notif')){
-  $('tg-notif').checked=S.get('notif_on',true);
-  $('tg-notif').onchange=function(){ S.set('notif_on',this.checked); };
-}
-if($('tg-popup')){
-  $('tg-popup').checked=S.get('popup_on',true);
-  $('tg-popup').onchange=function(){ S.set('popup_on',this.checked); };
-}
-if($('tg-anim')){
-  $('tg-anim').checked=_anim;
-  $('tg-anim').onchange=function(){ _anim=this.checked; S.set('anim',_anim); if(_anim) document.body.classList.remove('no-anim'); else document.body.classList.add('no-anim'); };
-}
-if($('tg-haptic')){
-  $('tg-haptic').checked=_haptic;
-  $('tg-haptic').onchange=function(){ _haptic=this.checked; S.set('haptic',_haptic); if(_haptic) vib(50); };
-}
+if($('tg-sound')){ $('tg-sound').checked=_sndMaster; $('tg-sound').onchange=function(){ _sndMaster=this.checked; S.set('snd_master',_sndMaster); if(_sndMaster) sndSuccess(); }; }
+if($('tg-notif')){ $('tg-notif').checked=S.get('notif_on',true); $('tg-notif').onchange=function(){ S.set('notif_on',this.checked); }; }
+if($('tg-popup')){ $('tg-popup').checked=S.get('popup_on',true); $('tg-popup').onchange=function(){ S.set('popup_on',this.checked); }; }
+if($('tg-anim')){ $('tg-anim').checked=_anim; $('tg-anim').onchange=function(){ _anim=this.checked; S.set('anim',_anim); if(_anim) document.body.classList.remove('no-anim'); else document.body.classList.add('no-anim'); }; }
+if($('tg-haptic')){ $('tg-haptic').checked=_haptic; $('tg-haptic').onchange=function(){ _haptic=this.checked; S.set('haptic',_haptic); if(_haptic) vib(50); }; }
 if($('fsr')) $('fsr').oninput=function(){ document.documentElement.style.setProperty('--fs',this.value+'px'); S.set('font',this.value); if($('fv')) $('fv').textContent=this.value+'px'; };
 
-// Font family selector (D.4 restore)
+// Font family
 var FONT_LIST = [
   {id:"'JetBrains Mono',monospace", name:'JetBrains Mono'},
   {id:"'Orbitron',sans-serif", name:'Orbitron'},
@@ -465,7 +455,9 @@ var FONT_LIST = [
   {id:"'Fira Code',monospace", name:'Fira Code'},
   {id:"system-ui,-apple-system,sans-serif", name:'System UI'},
   {id:"'Roboto',sans-serif", name:'Roboto'},
-  {id:"'Consolas',monospace", name:'Consolas'}
+  {id:"'Consolas',monospace", name:'Consolas'},
+  {id:"'VT323',monospace", name:'VT323 (8-bit)'},
+  {id:"'Press Start 2P',monospace", name:'Press Start 2P'}
 ];
 if($('sel-font')){
   window.__selFont = window.initCustomSelect('sel-font', FONT_LIST, S.get('font_family', FONT_LIST[0].id), function(id){
@@ -495,6 +487,9 @@ function switchPage(name){
   if(name==='maker' && typeof window.zyInitApiHub==='function'){ try{ window.zyInitApiHub('apihub-mk','MAKER'); }catch(e){} }
   if(name==='srchapi' && typeof window.zyInitApiHub==='function'){ try{ window.zyInitApiHub('apihub-sr','SEARCH'); }catch(e){} }
   if(name==='tpl'){ try{ tplBoot(); }catch(e){} }
+  if(name==='p2u' && typeof window.zyP2UInit==='function'){ try{ window.zyP2UInit(); }catch(e){} }
+  if(name==='vc' && typeof window.zyVercelInit==='function'){ try{ window.zyVercelInit(); }catch(e){} }
+  if(name==='gh' && typeof window.zyGithubInit==='function'){ try{ window.zyGithubInit(); }catch(e){} }
   try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){}
 }
 $$('.nb').forEach(function(b){
@@ -795,7 +790,7 @@ var SPY_STATE={code:'',blob:null,template:''};
   };
 })();
 
-// ============ SCRAPE — extra ============
+// ============ SCRAPE (Vercel DIHAPUS dari sini — pindah ke menu Vercel) ============
 (function scrapeInit(){
   if($('ds-paste')) $('ds-paste').onclick=function(){
     navigator.clipboard.readText().then(function(t){ $('ds-url').value=t.trim(); sndSuccess(); }).catch(function(){});
@@ -896,53 +891,6 @@ var SPY_STATE={code:'',blob:null,template:''};
     $('pc-input').value=''; $('pc-log').innerHTML='';
     $('pc-stat-total').textContent=0; $('pc-stat-alive').textContent=0; $('pc-stat-dead').textContent=0; $('pc-stat-skip').textContent=0;
     sndClick();
-  };
-  var vFiles=[];
-  if($('scr-vdrop')) $('scr-vdrop').onclick=function(){ $('scr-vfile').click(); };
-  if($('scr-vfile')) $('scr-vfile').onchange=function(e){
-    Array.from(e.target.files).forEach(function(f){ if(!vFiles.some(function(x){ return x.name===f.name; })) vFiles.push(f); });
-    renderVList(); e.target.value='';
-  };
-  function renderVList(){
-    var el=$('scr-vlist'); if(!el) return;
-    el.innerHTML=vFiles.map(function(f,i){ return '<div class="fitem"><span class="nm">'+f.name+'</span><span class="rm" data-i="'+i+'">✕</span></div>'; }).join('');
-    el.querySelectorAll('.rm').forEach(function(r){ r.onclick=function(){ vFiles.splice(parseInt(r.dataset.i),1); renderVList(); }; });
-  }
-  if($('scr-vclear')) $('scr-vclear').onclick=function(){ $('scr-vlog').innerHTML=''; $('scr-vresult').classList.add('hd'); vFiles=[]; renderVList(); sndClick(); };
-  if($('scr-vdeploy')) $('scr-vdeploy').onclick=async function(){
-    var tok=$('scr-vtoken').value.trim(); var name=$('scr-vname').value.trim();
-    var total=parseInt($('scr-vtotal').value)||20; if(total>20)total=20;
-    if(!tok){ alert('Token kosong'); return; } if(!name){ alert('Nama kosong'); return; } if(!vFiles.length){ alert('File kosong'); return; }
-    var log=$('scr-vlog'); log.innerHTML=''; logTo('scr-vlog','Cek token...','in');
-    try{
-      var r1=await fetch('https://api.vercel.com/v2/user',{headers:{'Authorization':'Bearer '+tok}});
-      if(!r1.ok){ logTo('scr-vlog','❌ Token invalid','er'); return; }
-      logTo('scr-vlog','✅ Token OK','ok');
-    }catch(e){ logTo('scr-vlog','❌ '+e.message,'er'); return; }
-    var files=[];
-    for(var i=0;i<vFiles.length;i++){
-      var f=vFiles[i];
-      var b64=await new Promise(function(res){ var r=new FileReader(); r.onload=function(){ res(r.result.split(',')[1]); }; r.readAsDataURL(f); });
-      files.push({file:f.name, data:b64, encoding:'base64'});
-    }
-    var base=name.toLowerCase().replace(/[^a-z0-9-]/g,'-');
-    for(var p=0;p<total;p++){
-      var suffix=Math.random().toString(36).substring(2,7);
-      var projName=base+'-'+suffix;
-      logTo('scr-vlog','['+(p+1)+'/'+total+'] '+projName,'in');
-      try{
-        var r=await fetch('https://api.vercel.com/v13/deployments',{
-          method:'POST', headers:{'Authorization':'Bearer '+tok, 'Content-Type':'application/json'},
-          body:JSON.stringify({name:projName, files:files, projectSettings:{framework:null}})
-        });
-        var j=await r.json();
-        if(r.ok){ logTo('scr-vlog','  ✓ https://'+j.url,'ok'); }
-        else { logTo('scr-vlog','  ✗ '+(j.error && j.error.message || 'error'),'er'); break; }
-      }catch(e){ logTo('scr-vlog','  ✗ '+e.message,'er'); break; }
-      if(p<total-1) await new Promise(function(res){ setTimeout(res, 2000+Math.random()*3000); });
-    }
-    logTo('scr-vlog','SELESAI','in'); sndSuccess();
-    if(window.unlockAch) window.unlockAch('deploy_first');
   };
 })();
 
@@ -1097,7 +1045,12 @@ window.tplBoot=tplBoot;
   };
 })();
 
-// ============ API HUB WIRE v10.4 ============
+// ============ TAG: PART 1 END ============
+window.__app_v105_part1_loaded = true;
+
+// [PART 2 LANJUT DI SINI — JANGAN HAPUS TAG INI]
+
+// ============ API HUB WIRE v10.5 ============
 function wireApiHub(tabId, catName){
   var runBtn=$('apihub-'+tabId+'-run');
   var clearBtn=$('apihub-'+tabId+'-clear');
@@ -1146,7 +1099,7 @@ if($('search-input')) $('search-input').addEventListener('keydown',function(e){
   if(e.key==='Enter'){ e.preventDefault(); if($('search-go')) $('search-go').click(); }
 });
 
-// ============ BYPASS SCANNER v10.4 ============
+// ============ BYPASS SCANNER v10.5 ============
 var BYPASS_MAP = {
   'sfl.gl': 'safelink',
   'safelinku.com': 'safelink',
@@ -1166,7 +1119,8 @@ var BYPASS_MAP = {
   'wellsfashionhub.com': 'wellbypass',
   'well-healthy.com': 'wellbypass',
   'sub4unlock.com': 'bypasslinkv2',
-  'sub4unlock.io': 'bypasslinkv2'
+  'sub4unlock.io': 'bypasslinkv2',
+  'sub4unlock.pro': 'bypasslinkv2'
 };
 
 function detectBypassProvider(url){
@@ -1191,8 +1145,8 @@ function updateBypassBadge(url){
   }
   var provider = detectBypassProvider(url);
   var providerName = null;
-  if(provider && typeof BYPASS_LIST !== 'undefined'){
-    var api = BYPASS_LIST.find(function(x){ return x.id === provider; });
+  if(provider && window.ZYVOR && window.ZYVOR.bypassList){
+    var api = window.ZYVOR.bypassList().find(function(x){ return x.id === provider; });
     if(api) providerName = api.name;
   }
   if(provider){
@@ -1235,17 +1189,16 @@ if($('bp-scan')) $('bp-scan').onclick=async function(){
 
   logTo('bp-log','🔍 SCAN: '+url,'in');
 
-  // Step 1: map domain
   var provider = detectBypassProvider(url);
   if(provider){
-    var api = BYPASS_LIST.find(function(x){ return x.id===provider; });
+    var list = window.ZYVOR && window.ZYVOR.bypassList ? window.ZYVOR.bypassList() : [];
+    var api = list.find(function(x){ return x.id===provider; });
     if(api) logTo('bp-log','✓ Step 1: cocok dari map → '+api.name,'ok');
     if(window.__bpSel) try{ window.__bpSel.setValue(provider); if(typeof window.zyBypassSetSelected==='function') window.zyBypassSetSelected(provider); window.zyRenderBypassParams(); }catch(e){}
   } else {
     logTo('bp-log','⚠ Step 1: gak ada di map, coba lewat proxy...','warn');
   }
 
-  // Step 2: proxyFetch via worker/CORS (bukan fetch direct)
   if(!provider && typeof window.zyProxyFinalUrl === 'function'){
     try{
       logTo('bp-log','→ Step 2: fetch via proxy untuk lihat redirect...','in');
@@ -1267,8 +1220,7 @@ if($('bp-scan')) $('bp-scan').onclick=async function(){
   }
 
   if(provider){
-    var api2 = BYPASS_LIST.find(function(x){ return x.id===provider; });
-    logTo('bp-log','🎯 HASIL SCAN: '+(api2 ? api2.name : provider),'ok');
+    logTo('bp-log','🎯 HASIL SCAN: '+provider,'ok');
     logTo('bp-log','→ Tekan BYPASS untuk proses.','in');
     sndSuccess();
   } else {
@@ -1276,7 +1228,6 @@ if($('bp-scan')) $('bp-scan').onclick=async function(){
   }
 };
 
-// Run bypass — auto fallback (tombol BYPASS)
 if($('bp-run')) $('bp-run').onclick=function(){
   sndClick();
   if(window.unlockAch) window.unlockAch('bypass_first');
@@ -1291,18 +1242,14 @@ if($('bp-clear')) $('bp-clear').onclick=function(){
   sndClick();
 };
 
-// Copy URL dari box hasil bypass (SVG logo)
 (function wireBpResult(){
   var copyBtn = $('bp-copy-url');
   if(copyBtn) copyBtn.addEventListener('click', function(){
     var urlEl = $('bp-final-url');
     var url = urlEl ? urlEl.textContent.trim() : '';
     if(!url || url === '—'){ sndError(); return; }
-    if(typeof window.copyWithAnim === 'function'){
-      window.copyWithAnim(copyBtn, url);
-    } else {
-      navigator.clipboard.writeText(url).then(function(){ sndSuccess(); });
-    }
+    if(typeof window.copyWithAnim === 'function'){ window.copyWithAnim(copyBtn, url); }
+    else { navigator.clipboard.writeText(url).then(function(){ sndSuccess(); }); }
   });
   var openBtn = $('bp-open-url');
   if(openBtn) openBtn.addEventListener('click', function(){
@@ -1314,7 +1261,7 @@ if($('bp-clear')) $('bp-clear').onclick=function(){
   });
 })();
 
-// ============ DL WIRES v10.4 ============
+// ============ DL WIRES ============
 if($('dl-run')) $('dl-run').onclick=function(){
   sndClick();
   if(window.unlockAch) window.unlockAch('dl_first');
@@ -1322,6 +1269,21 @@ if($('dl-run')) $('dl-run').onclick=function(){
 };
 if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); if(window.unlockAch) window.unlockAch('preview'); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){} };
 if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window.zyClearDownloader==='function') try{ window.zyClearDownloader(); }catch(e){} };
+
+// ============ P2U WIRE ============
+if($('p2u-transform')) $('p2u-transform').addEventListener('click', function(){
+  if(window.unlockAch) window.unlockAch('p2u_first');
+});
+
+// ============ VERCEL WIRE ============
+if($('vc-upload')) $('vc-upload').addEventListener('click', function(){
+  if(window.unlockAch) window.unlockAch('deploy_first');
+});
+
+// ============ GITHUB WIRE ============
+if($('gh-upload')) $('gh-upload').addEventListener('click', function(){
+  if(window.unlockAch) window.unlockAch('github_first');
+});
 
 // ============ HISTORY ============
 function renderHist(){
