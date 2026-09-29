@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>TOOLS BY RYANNXD · v10.5</title>
+<title>TOOLS BY RYANNXD · v10.6</title>
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -120,7 +120,7 @@ body.bg-binary{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,1
 body.bg-binary .bin-rain{display:block !important;position:fixed;inset:0;pointer-events:none;overflow:hidden;opacity:.9;z-index:0}
 .bin-rain canvas{display:block;width:100%;height:100%}
 
-/* ========== UFO v10.5 — FIXED ========== */
+/* ========== UFO ========== */
 body.bg-ufo{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.9),transparent 55%),#050210;background-attachment:fixed}
 body.bg-ufo .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1.5px 1.5px at 22% 45%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 65% 15%,#fff,transparent),radial-gradient(1px 1px at 25% 80%,#fff,transparent),radial-gradient(2px 2px at 78% 68%,#e0f2fe,transparent),radial-gradient(1px 1px at 92% 32%,#fff,transparent),radial-gradient(1.5px 1.5px at 55% 90%,#cbd5e1,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
 body.bg-ufo .aurora{display:block;position:absolute;inset:0;background:radial-gradient(circle at 15% 40%,rgba(139,92,246,.10),transparent 45%),radial-gradient(circle at 85% 65%,rgba(34,211,238,.08),transparent 45%);animation:auroraMove 25s ease-in-out infinite}
@@ -147,28 +147,16 @@ body.bg-ufo .ufo-scene .ufo-smoke{position:absolute;width:16px;height:16px;borde
 @keyframes ufoToBottomLeft{0%{transform:translate(0,0) rotate(180deg) scale(.7);opacity:0}8%{transform:translate(-60px,20px) rotate(190deg) scale(1);opacity:1}50%{transform:translate(-50vw,22vh) rotate(200deg) scale(1);opacity:1}92%{transform:translate(-90vw,28vh) rotate(205deg) scale(.9);opacity:.8}100%{transform:translate(-110vw,36vh) rotate(215deg) scale(0);opacity:0}}
 @keyframes ufoToBottomRight{0%{transform:translate(0,0) rotate(15deg) scale(.7);opacity:0}8%{transform:translate(60px,15px) rotate(20deg) scale(1);opacity:1}50%{transform:translate(50vw,22vh) rotate(25deg) scale(1);opacity:1}92%{transform:translate(90vw,28vh) rotate(30deg) scale(.9);opacity:.8}100%{transform:translate(110vw,36vh) rotate(35deg) scale(0);opacity:0}}
 
-/* ========== RETRO ARCADE 8-BIT — FIXED ========== */
+/* ========== RETRO TETRIS 8-BIT — v10.6 ========== */
 body.bg-retro{background:#050810;background-attachment:fixed}
 body.bg-retro .retro-grid{display:block;position:absolute;inset:0;background-image:linear-gradient(rgba(74,222,128,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.10) 1px,transparent 1px);background-size:24px 24px;opacity:1;animation:retroGridScroll 8s linear infinite}
 @keyframes retroGridScroll{0%{background-position:0 0}100%{background-position:0 24px}}
 body.bg-retro .retro-glow{display:block;position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(74,222,128,.08),transparent 65%);pointer-events:none}
-body.bg-retro .retro-star{display:block;position:absolute;width:4px;height:4px;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:retroStarBlink 1s steps(2) infinite}
-body.bg-retro .retro-star:nth-child(1){top:15%;left:10%;animation-delay:0s}
-body.bg-retro .retro-star:nth-child(2){top:25%;left:75%;animation-delay:.2s}
-body.bg-retro .retro-star:nth-child(3){top:55%;left:20%;animation-delay:.5s}
-body.bg-retro .retro-star:nth-child(4){top:70%;left:85%;animation-delay:.7s}
-body.bg-retro .retro-star:nth-child(5){top:35%;left:45%;animation-delay:.3s}
-body.bg-retro .retro-star:nth-child(6){top:80%;left:35%;animation-delay:.9s}
-@keyframes retroStarBlink{0%,100%{opacity:.4}50%{opacity:1}}
-body.bg-retro .retro-invader{display:block;position:absolute;width:36px;height:36px}
-body.bg-retro .retro-invader svg{width:100%;height:100%;fill:#4ade80;filter:drop-shadow(0 0 4px #4ade80)}
-body.bg-retro .retro-invader:nth-child(7){top:20%;animation:invaderWalk1 15s linear infinite}
-body.bg-retro .retro-invader:nth-child(8){top:60%;animation:invaderWalk2 18s linear infinite}
-body.bg-retro .retro-invader:nth-child(9){top:40%;animation:invaderWalk3 14s linear infinite}
-@keyframes invaderWalk1{0%{left:-50px;transform:translateY(0)}25%{transform:translateY(-15px)}50%{transform:translateY(0)}75%{transform:translateY(15px)}100%{left:110%;transform:translateY(0)}}
-@keyframes invaderWalk2{0%{left:110%;transform:scaleX(-1) translateY(0)}25%{transform:scaleX(-1) translateY(10px)}50%{transform:scaleX(-1) translateY(0)}75%{transform:scaleX(-1) translateY(-10px)}100%{left:-50px;transform:scaleX(-1) translateY(0)}}
-@keyframes invaderWalk3{0%{left:20%;transform:translateY(0)}25%{transform:translateY(-20px)}50%{transform:translateY(0)}75%{transform:translateY(20px)}100%{left:20%;transform:translateY(0)}}
+body.bg-retro .retro-tetris{display:block !important;position:absolute;inset:0;width:100%;height:100%;z-index:1}
 body.bg-retro .retro-scanline{display:block;position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0,rgba(0,0,0,.20) 1px,transparent 1px,transparent 3px);pointer-events:none;opacity:.7;z-index:100}
+body.bg-retro .retro-excellent{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-family:'Press Start 2P','Orbitron',monospace;font-size:clamp(1.5rem,5vw,3rem);color:#facc15;text-shadow:0 0 20px #facc15,0 0 40px #f59e0b,0 0 60px #dc2626;letter-spacing:.3em;pointer-events:none;z-index:99;opacity:0;font-weight:900;white-space:nowrap}
+body.bg-retro .retro-excellent.show{animation:excellentPop 1.8s ease-out forwards}
+@keyframes excellentPop{0%{transform:translate(-50%,-50%) scale(0) rotate(-15deg);opacity:0}15%{transform:translate(-50%,-50%) scale(1.3) rotate(0deg);opacity:1}30%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1}70%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1.5) rotate(5deg);opacity:0}}
 
 /* ========== STAR WARS ========== */
 body.bg-starwars{background:radial-gradient(ellipse at 60% 30%,rgba(20,10,40,.85),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(40,15,15,.7),transparent 55%),#020104;background-attachment:fixed}
@@ -360,7 +348,7 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 .gh-repo-info{font-size:.55rem;color:var(--txd);padding:8px 10px;background:rgba(0,0,0,.35);border-radius:6px;margin-top:6px;border:1px solid var(--bl);word-break:break-all}
 .gh-user-badge{font-size:.55rem;color:var(--ac);border:1px solid var(--ac);padding:4px 8px;border-radius:6px;background:var(--acd);font-weight:700;letter-spacing:1px;display:inline-block;margin-top:4px}
 
-/* ========== GULP BUTTON (SPY) — FIXED ========== */
+/* ========== GULP BUTTON (SPY) ========== */
 .gulp{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:0 22px;border:none;border-radius:999px;background:linear-gradient(180deg,var(--ac),var(--bl));color:#04080f;font-family:var(--fm);font-size:.8rem;font-weight:800;cursor:pointer;overflow:hidden;margin-top:7px;transition:width .55s}
 .gulp .gulp_face{display:flex;align-items:center;gap:9px;height:100%;white-space:nowrap;z-index:2;transition:opacity .3s,transform .3s}
 .gulp .gulp_icon{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none}
@@ -537,7 +525,7 @@ input[type="file"]{display:none!important}
   </div>
   <div class="access-card" id="accessCard">
     <div class="card-line"></div>
-    <h1>RYANNTOOLS <span>v10.5</span></h1>
+    <h1>RYANNTOOLS <span>v10.6</span></h1>
     <div class="subtitle">ACCESS VERIFICATION</div>
     <p class="description">Enter your password to continue</p>
     <textarea id="passwordInput" maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" rows="1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px"></textarea>
@@ -576,21 +564,18 @@ input[type="file"]{display:none!important}
   <!-- BINARY -->
   <div class="bin-rain" id="bin-rain"></div>
 
-  <!-- UFO v10.5 -->
+  <!-- UFO -->
   <div class="ufo-scene" id="ufo-scene">
     <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeU1" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(165,243,252,.95)"/><stop offset="60%" stop-color="rgba(103,232,249,.65)"/></radialGradient><linearGradient id="bodyU1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyU1)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeU1)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
     <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeU2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(216,180,254,.95)"/><stop offset="60%" stop-color="rgba(192,132,252,.65)"/></radialGradient><linearGradient id="bodyU2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8b4fe"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyU2)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeU2)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
     <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeU3" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(253,186,116,.95)"/><stop offset="60%" stop-color="rgba(251,146,60,.65)"/></radialGradient><linearGradient id="bodyU3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdba74"/><stop offset="100%" stop-color="#c2410c"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyU3)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeU3)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
   </div>
 
-  <!-- RETRO ARCADE 8-BIT (FIXED) -->
+  <!-- RETRO TETRIS 8-BIT v10.6 -->
   <div class="retro-grid"></div>
   <div class="retro-glow"></div>
-  <div class="retro-star"></div><div class="retro-star"></div><div class="retro-star"></div>
-  <div class="retro-star"></div><div class="retro-star"></div><div class="retro-star"></div>
-  <div class="retro-invader"><svg viewBox="0 0 16 16"><path d="M4 2h2v2H4zm6 0h2v2h-2zM2 4h12v2H2zm0 2h2v2H2zm10 0h2v2h-2zM4 6h2v2H4zm6 0h2v2h-2zM6 8h4v2H6zM4 10h2v2H4zm6 0h2v2h-2zM2 12h2v2H2zm10 0h2v2h-2zM6 12h4v2H6z"/></svg></div>
-  <div class="retro-invader"><svg viewBox="0 0 16 16"><path d="M4 2h2v2H4zm6 0h2v2h-2zM2 4h12v2H2zm0 2h2v2H2zm10 0h2v2h-2zM4 6h2v2H4zm6 0h2v2h-2zM6 8h4v2H6zM4 10h2v2H4zm6 0h2v2h-2zM2 12h2v2H2zm10 0h2v2h-2zM6 12h4v2H6z"/></svg></div>
-  <div class="retro-invader"><svg viewBox="0 0 16 16"><path d="M4 2h2v2H4zm6 0h2v2h-2zM2 4h12v2H2zm0 2h2v2H2zm10 0h2v2h-2zM4 6h2v2H4zm6 0h2v2h-2zM6 8h4v2H6zM4 10h2v2H4zm6 0h2v2h-2zM2 12h2v2H2zm10 0h2v2h-2zM6 12h4v2H6z"/></svg></div>
+  <canvas class="retro-tetris" id="retro-tetris"></canvas>
+  <div class="retro-excellent" id="retro-excellent">EXCELLENT!</div>
   <div class="retro-scanline"></div>
 
   <!-- STAR WARS -->
@@ -612,17 +597,15 @@ input[type="file"]{display:none!important}
     <img class="wm-banner" id="wm-banner" src="banner.png" alt="Ryann Tools">
     <div class="wm-body">
       <div class="wm-title">WELCOME TO RYANN <span class="y">TOOLS</span></div>
-      <div class="wm-ver">v10.5</div>
+      <div class="wm-ver">v10.6</div>
       <div class="wm-changes-title">WHAT'S NEW?</div>
       <ul class="wm-changes">
-        <li><b>Bypass fix</b> — deteksi URL hasil otomatis</li>
-        <li><b>Tempmail fix</b> — retry + timeout</li>
-        <li><b>P2U</b> — Photo to URL multi upload</li>
-        <li><b>Vercel menu</b> — add manual + checkbox</li>
-        <li><b>GitHub menu</b> — upload/download/copy</li>
-        <li><b>BG Retro</b> — 8-bit arcade pixel</li>
-        <li><b>BG Star Wars</b> — peperangan luar angkasa</li>
-        <li><b>UFO update</b> — multi-arah + planet</li>
+        <li><b>P2U fix</b> — upload multi-provider jalan</li>
+        <li><b>Tempmail fix</b> — domain auto load + log</li>
+        <li><b>Retro Tetris</b> — falling block + EXCELLENT</li>
+        <li><b>Bypass fix</b> — deteksi URL hasil</li>
+        <li><b>Vercel + GitHub</b> — add manual + checkbox</li>
+        <li><b>Star Wars</b> — peperangan luar angkasa</li>
       </ul>
       <button id="wm-start">MULAI</button>
     </div>
@@ -678,7 +661,7 @@ input[type="file"]{display:none!important}
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v10.5</span>
+<span class="ch">v10.6</span>
 <span class="role-badge" id="role-badge">OWNER</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
@@ -805,7 +788,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 <div class="c"><div class="cl">DEVICE INFO</div><button class="g" id="dvinfo">CEK DEVICE</button><div class="r" id="dvres">—</div></div>
 </div>
 
-<!-- ============ PAGE: SCRAPE (Vercel DIHAPUS) ============ -->
+<!-- ============ PAGE: SCRAPE ============ -->
 <div class="pg hd" id="pg-scr">
 <div class="c"><div class="cl">DEEP WEB SCRAPER</div>
 <label>URL Target</label><input id="ds-url" placeholder="https://example.com">
@@ -1159,7 +1142,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 <div class="snd-opt a" data-bg="galaxy">GALAXY</div>
 <div class="snd-opt" data-bg="binary">BINARY</div>
 <div class="snd-opt" data-bg="ufo">UFO</div>
-<div class="snd-opt" data-bg="retro">RETRO 8BIT</div>
+<div class="snd-opt" data-bg="retro">RETRO TETRIS</div>
 <div class="snd-opt" data-bg="starwars">STAR WARS</div>
 <div class="snd-opt" data-bg="plain">PLAIN</div>
 <div class="snd-opt" data-bg="custom">CUSTOM</div>
@@ -1196,10 +1179,10 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v10.5</div>
+<div class="ft">RYANN • TOOLS · v10.6</div>
 </div>
 
-<!-- ============ NAVBAR (20 TAB) ============ -->
+<!-- ============ NAVBAR ============ -->
 <div class="nv" id="nav-main">
   <div class="nb a" data-p="home"><span class="i"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span>HOME</div>
   <div class="nb" data-p="spy"><span class="i"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><circle cx="8.5" cy="10.5" r="1.2"/><circle cx="15.5" cy="10.5" r="1.2"/><path d="M12 16c-2 0-3.5-1-4-2.5"/></svg></span>SPY</div>
@@ -1223,7 +1206,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
   <div class="nb" data-p="set"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>SET</div>
 </div>
 
-<!-- ============ INLINE SCRIPT ============ -->
+<!-- ============ INLINE SCRIPT (Binary + UFO smoke + Retro Tetris) ============ -->
 <script>
 (function initBinaryRain(){
   function startRain(){
@@ -1295,6 +1278,226 @@ https://thingproxy.freeboard.io/fetch/</textarea>
     },80);
   }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',start); } else { start(); }
+})();
+
+// ============ RETRO TETRIS v10.6 ============
+(function initRetroTetris(){
+  function start(){
+    var canvas = document.getElementById('retro-tetris');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var blockSize = 24;
+    var cols = 0, rows = 0;
+    var COLORS = ['#22d3ee','#e879f9','#facc15','#4ade80','#fb923c','#a78bfa','#f87171'];
+    var SHAPES = [
+      [[1,1,1,1]],
+      [[1,1],[1,1]],
+      [[0,1,0],[1,1,1]],
+      [[0,1,1],[1,1,0]],
+      [[1,1,0],[0,1,1]],
+      [[1,0,0],[1,1,1]],
+      [[0,0,1],[1,1,1]]
+    ];
+    var columns = [];
+    function resize(){
+      var w = window.innerWidth, h = window.innerHeight;
+      canvas.width = w * dpr; canvas.height = h * dpr;
+      canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.max(2, Math.floor(w / (blockSize * 4)));
+      rows = Math.floor(h / blockSize);
+      columns = [];
+      var colWidth = w / cols;
+      for(var i=0;i<cols;i++){
+        var shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+        columns.push({
+          blocks: [],
+          x: i * colWidth + (colWidth - shape[0].length * blockSize) / 2,
+          speed: 1.5 + Math.random() * 1.5,
+          shape: shape,
+          color: COLORS[Math.floor(Math.random() * COLORS.length)],
+          y: -shape.length * blockSize - Math.random() * 200,
+          clearing: false,
+          flashTimer: 0
+        });
+      }
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function triggerExcellent(){
+      var el = document.getElementById('retro-excellent');
+      if(!el) return;
+      el.classList.remove('show');
+      void el.offsetWidth;
+      el.classList.add('show');
+      setTimeout(function(){ el.classList.remove('show'); }, 1800);
+    }
+
+    var lastTime = 0;
+    function draw(now){
+      var dt = Math.min(50, now - lastTime);
+      lastTime = now;
+      var w = canvas.width / dpr, h = canvas.height / dpr;
+
+      ctx.fillStyle = 'rgba(5,8,16,0.30)';
+      ctx.fillRect(0, 0, w, h);
+
+      for(var i=0;i<columns.length;i++){
+        var col = columns[i];
+
+        if(col.clearing){
+          col.flashTimer += dt;
+          var progress = col.flashTimer / 700;
+          if(progress >= 1){
+            col.clearing = false;
+            col.blocks = [];
+            var newShape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+            col.shape = newShape;
+            col.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            col.speed = 1.5 + Math.random() * 1.5;
+            col.y = -newShape.length * blockSize - Math.random() * 100;
+            col.flashTimer = 0;
+            continue;
+          }
+          ctx.save();
+          ctx.globalAlpha = 1 - progress;
+          for(var bi=0;bi<col.blocks.length;bi++){
+            var blk = col.blocks[bi];
+            for(var r=0;r<blk.cells.length;r++){
+              for(var c=0;c<blk.cells[r].length;c++){
+                if(!blk.cells[r][c]) continue;
+                var jitterX = (Math.random()*2-1) * 20 * progress;
+                var jitterY = (Math.random()*2-1) * 20 * progress;
+                var bx = col.x + c * blockSize + jitterX;
+                var by = blk.y + r * blockSize + jitterY;
+                var size = blockSize * (1 - progress * 0.4);
+                ctx.fillStyle = progress > 0.5 ? '#fff' : col.color;
+                ctx.fillRect(bx, by, size, size);
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(bx, by, size, size);
+              }
+            }
+          }
+          for(var p=0;p<12;p++){
+            var angle = (Math.PI * 2 / 12) * p + progress * 6;
+            var dist = progress * 100;
+            ctx.fillStyle = '#fff';
+            ctx.globalAlpha = (1 - progress) * 0.9;
+            ctx.fillRect(col.x + 30 + Math.cos(angle)*dist, col.y + 30 + Math.sin(angle)*dist, 5, 5);
+          }
+          ctx.restore();
+          continue;
+        }
+
+        col.y += col.speed * (dt / 16);
+
+        for(var b=0;b<col.blocks.length;b++) col.blocks[b].y += col.speed * (dt / 16);
+
+        var shapeH = col.shape.length * blockSize;
+        var landed = false;
+
+        if(col.y + shapeH > h){
+          col.y = h - shapeH;
+          landed = true;
+        }
+
+        if(!landed){
+          for(var bi=0;bi<col.blocks.length;bi++){
+            var blk2 = col.blocks[bi];
+            for(var r=0;r<col.shape.length;r++){
+              for(var c=0;c<col.shape[r].length;c++){
+                if(!col.shape[r][c]) continue;
+                var cx = c * blockSize;
+                var checkY = col.y + r * blockSize + blockSize;
+                for(var er=0;er<blk2.cells.length;er++){
+                  for(var ec=0;ec<blk2.cells[er].length;ec++){
+                    if(!blk2.cells[er][ec]) continue;
+                    var ex = ec * blockSize;
+                    if(cx === ex){
+                      var by2 = blk2.y + er * blockSize;
+                      if(checkY >= by2 && col.y + r * blockSize < by2 + blockSize){
+                        landed = true; break;
+                      }
+                    }
+                  }
+                  if(landed) break;
+                }
+                if(landed) break;
+              }
+              if(landed) break;
+            }
+            if(landed) break;
+          }
+        }
+
+        if(landed){
+          var snapY = Math.round(col.y / blockSize) * blockSize;
+          col.blocks.push({ y: snapY, cells: col.shape, color: col.color });
+
+          var maxHeight = h;
+          for(var bi=0;bi<col.blocks.length;bi++){
+            if(col.blocks[bi].y < maxHeight) maxHeight = col.blocks[bi].y;
+          }
+          if(maxHeight < 100){
+            col.clearing = true;
+            col.flashTimer = 0;
+            triggerExcellent();
+            continue;
+          }
+
+          var newShape2 = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+          col.shape = newShape2;
+          col.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+          col.y = -newShape2.length * blockSize - Math.random() * 80;
+          col.speed = 1.5 + Math.random() * 1.5;
+        }
+
+        for(var bi=0;bi<col.blocks.length;bi++){
+          var blk3 = col.blocks[bi];
+          for(var r=0;r<blk3.cells.length;r++){
+            for(var c=0;c<blk3.cells[r].length;c++){
+              if(!blk3.cells[r][c]) continue;
+              var bx3 = col.x + c * blockSize;
+              var by3 = blk3.y + r * blockSize;
+              if(by3 > h || by3 + blockSize < 0) continue;
+              ctx.fillStyle = blk3.color;
+              ctx.fillRect(bx3, by3, blockSize - 1, blockSize - 1);
+              ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+              ctx.lineWidth = 1;
+              ctx.strokeRect(bx3 + 0.5, by3 + 0.5, blockSize - 2, blockSize - 2);
+              ctx.fillStyle = 'rgba(255,255,255,0.15)';
+              ctx.fillRect(bx3, by3, blockSize - 1, 3);
+            }
+          }
+        }
+
+        if(col.y + shapeH > 0){
+          for(var r=0;r<col.shape.length;r++){
+            for(var c=0;c<col.shape[r].length;c++){
+              if(!col.shape[r][c]) continue;
+              var bx4 = col.x + c * blockSize;
+              var by4 = col.y + r * blockSize;
+              if(by4 + blockSize < 0) continue;
+              ctx.fillStyle = col.color;
+              ctx.fillRect(bx4, by4, blockSize - 1, blockSize - 1);
+              ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+              ctx.lineWidth = 1;
+              ctx.strokeRect(bx4 + 0.5, by4 + 0.5, blockSize - 2, blockSize - 2);
+              ctx.fillStyle = 'rgba(255,255,255,0.2)';
+              ctx.fillRect(bx4, by4, blockSize - 1, 3);
+            }
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  }
+  if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', start); } else { start(); }
 })();
 </script>
 
