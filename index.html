@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>TOOLS BY RYANNXD · v10.6</title>
+<title>TOOLS BY RYANNXD · v10.7</title>
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -147,14 +147,14 @@ body.bg-ufo .ufo-scene .ufo-smoke{position:absolute;width:16px;height:16px;borde
 @keyframes ufoToBottomLeft{0%{transform:translate(0,0) rotate(180deg) scale(.7);opacity:0}8%{transform:translate(-60px,20px) rotate(190deg) scale(1);opacity:1}50%{transform:translate(-50vw,22vh) rotate(200deg) scale(1);opacity:1}92%{transform:translate(-90vw,28vh) rotate(205deg) scale(.9);opacity:.8}100%{transform:translate(-110vw,36vh) rotate(215deg) scale(0);opacity:0}}
 @keyframes ufoToBottomRight{0%{transform:translate(0,0) rotate(15deg) scale(.7);opacity:0}8%{transform:translate(60px,15px) rotate(20deg) scale(1);opacity:1}50%{transform:translate(50vw,22vh) rotate(25deg) scale(1);opacity:1}92%{transform:translate(90vw,28vh) rotate(30deg) scale(.9);opacity:.8}100%{transform:translate(110vw,36vh) rotate(35deg) scale(0);opacity:0}}
 
-/* ========== RETRO TETRIS 8-BIT — v10.6 ========== */
+/* ========== RETRO TETRIS 8-BIT SEJATI — v10.7 ========== */
 body.bg-retro{background:#050810;background-attachment:fixed}
 body.bg-retro .retro-grid{display:block;position:absolute;inset:0;background-image:linear-gradient(rgba(74,222,128,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.10) 1px,transparent 1px);background-size:24px 24px;opacity:1;animation:retroGridScroll 8s linear infinite}
 @keyframes retroGridScroll{0%{background-position:0 0}100%{background-position:0 24px}}
 body.bg-retro .retro-glow{display:block;position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(74,222,128,.08),transparent 65%);pointer-events:none}
-body.bg-retro .retro-tetris{display:block !important;position:absolute;inset:0;width:100%;height:100%;z-index:1}
-body.bg-retro .retro-scanline{display:block;position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.20) 0,rgba(0,0,0,.20) 1px,transparent 1px,transparent 3px);pointer-events:none;opacity:.7;z-index:100}
-body.bg-retro .retro-excellent{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-family:'Press Start 2P','Orbitron',monospace;font-size:clamp(1.5rem,5vw,3rem);color:#facc15;text-shadow:0 0 20px #facc15,0 0 40px #f59e0b,0 0 60px #dc2626;letter-spacing:.3em;pointer-events:none;z-index:99;opacity:0;font-weight:900;white-space:nowrap}
+body.bg-retro .retro-tetris{display:block !important;position:absolute;inset:0;width:100%;height:100%;z-index:1;image-rendering:pixelated;image-rendering:-moz-crisp-edges;image-rendering:crisp-edges}
+body.bg-retro .retro-scanline{display:block;position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0,rgba(0,0,0,.25) 1px,transparent 1px,transparent 3px);pointer-events:none;opacity:.75;z-index:100}
+body.bg-retro .retro-excellent{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-family:'Press Start 2P','Orbitron',monospace;font-size:clamp(1.2rem,4vw,2.4rem);color:#facc15;text-shadow:0 0 20px #facc15,0 0 40px #f59e0b,0 0 60px #dc2626,3px 3px 0 #000;letter-spacing:.15em;pointer-events:none;z-index:99;opacity:0;font-weight:900;white-space:nowrap}
 body.bg-retro .retro-excellent.show{animation:excellentPop 1.8s ease-out forwards}
 @keyframes excellentPop{0%{transform:translate(-50%,-50%) scale(0) rotate(-15deg);opacity:0}15%{transform:translate(-50%,-50%) scale(1.3) rotate(0deg);opacity:1}30%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1}70%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1.5) rotate(5deg);opacity:0}}
 
@@ -293,11 +293,15 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 /* ========== PROGRESS ========== */
 .up-prog{margin-top:10px;padding:12px;border:1.5px solid var(--ac);border-radius:10px;background:linear-gradient(180deg,rgba(10,20,35,.9),rgba(6,12,22,.95));display:none}
 .up-prog.on{display:block}
+.up-prog.done{border-color:var(--ok)}
 .up-prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .up-prog-stage{font-family:var(--fh);font-weight:900;font-size:.65rem;letter-spacing:2px;color:var(--ac);text-transform:uppercase;text-shadow:0 0 12px var(--ac)}
+.up-prog.done .up-prog-stage{color:var(--ok);text-shadow:0 0 12px var(--ok)}
 .up-prog-pct{font-family:var(--fh);font-weight:900;font-size:1.2rem;letter-spacing:1px;color:var(--ac2);text-shadow:0 0 15px var(--ac2)}
+.up-prog.done .up-prog-pct{color:var(--ok);text-shadow:0 0 15px var(--ok)}
 .up-prog-bar{position:relative;height:10px;background:rgba(0,0,0,.6);border:1px solid var(--bl);border-radius:999px;overflow:hidden}
 .up-prog-fill{position:absolute;top:0;left:0;bottom:0;width:0%;background:linear-gradient(90deg,var(--ac),var(--ac2),var(--ac));background-size:200% 100%;border-radius:999px;transition:width .4s ease-out;box-shadow:0 0 12px var(--ac),inset 0 0 8px rgba(255,255,255,.3);animation:upProgWave 1.8s linear infinite}
+.up-prog.done .up-prog-fill{background:linear-gradient(90deg,var(--ok),#86efac,var(--ok));box-shadow:0 0 12px var(--ok)}
 @keyframes upProgWave{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 .up-prog-track{position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent 0,transparent 9%,rgba(255,255,255,.06) 9%,rgba(255,255,255,.06) 10%);pointer-events:none}
 .up-prog-msg{font-size:.55rem;color:var(--txd);margin-top:8px;letter-spacing:1px;min-height:14px;text-align:center}
@@ -395,8 +399,9 @@ input[type="range"].fs-range::-webkit-slider-thumb{-webkit-appearance:none;width
 .to .lbl{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.4rem;color:#fff;text-shadow:0 0 4px #000}
 .progress-wrap{margin-top:8px;display:none}
 .progress-wrap.on{display:block}
+.progress-wrap.done .progress-fill{background:linear-gradient(90deg,var(--ok),#86efac)}
 .progress-bar{width:100%;height:20px;background:rgba(0,0,0,.5);border:1px solid var(--ac);border-radius:5px;overflow:hidden;position:relative}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));width:0%}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--ac),var(--ac2));width:0%;transition:width .4s ease-out}
 .progress-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:#fff}
 .progress-label{font-size:.55rem;color:var(--ac);text-align:center;margin-bottom:5px;font-weight:700;text-transform:uppercase}
 .filelist{margin-top:8px;font-size:.6rem}
@@ -525,7 +530,7 @@ input[type="file"]{display:none!important}
   </div>
   <div class="access-card" id="accessCard">
     <div class="card-line"></div>
-    <h1>RYANNTOOLS <span>v10.6</span></h1>
+    <h1>RYANNTOOLS <span>v10.7</span></h1>
     <div class="subtitle">ACCESS VERIFICATION</div>
     <p class="description">Enter your password to continue</p>
     <textarea id="passwordInput" maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" rows="1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px"></textarea>
@@ -554,10 +559,7 @@ input[type="file"]{display:none!important}
   <!-- GALAXY -->
   <div class="starfield"></div>
   <div class="aurora"></div>
-  <div class="shooting-star-1"></div>
-  <div class="shooting-star-2"></div>
-  <div class="shooting-star-3"></div>
-  <div class="shooting-star-4"></div>
+  <div class="shooting-star-1"></div><div class="shooting-star-2"></div><div class="shooting-star-3"></div><div class="shooting-star-4"></div>
   <div class="blackhole"><div class="bh-disk"></div><div class="bh-disk2"></div><div class="bh-core"></div></div>
   <div class="planet-1"></div><div class="planet-2"></div><div class="planet-3"></div><div class="planet-4"></div><div class="planet-5"></div><div class="planet-6"></div>
 
@@ -571,7 +573,7 @@ input[type="file"]{display:none!important}
     <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeU3" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(253,186,116,.95)"/><stop offset="60%" stop-color="rgba(251,146,60,.65)"/></radialGradient><linearGradient id="bodyU3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdba74"/><stop offset="100%" stop-color="#c2410c"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyU3)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeU3)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
   </div>
 
-  <!-- RETRO TETRIS 8-BIT v10.6 -->
+  <!-- RETRO TETRIS 8-BIT v10.7 -->
   <div class="retro-grid"></div>
   <div class="retro-glow"></div>
   <canvas class="retro-tetris" id="retro-tetris"></canvas>
@@ -597,15 +599,15 @@ input[type="file"]{display:none!important}
     <img class="wm-banner" id="wm-banner" src="banner.png" alt="Ryann Tools">
     <div class="wm-body">
       <div class="wm-title">WELCOME TO RYANN <span class="y">TOOLS</span></div>
-      <div class="wm-ver">v10.6</div>
+      <div class="wm-ver">v10.7</div>
       <div class="wm-changes-title">WHAT'S NEW?</div>
       <ul class="wm-changes">
-        <li><b>P2U fix</b> — upload multi-provider jalan</li>
-        <li><b>Tempmail fix</b> — domain auto load + log</li>
-        <li><b>Retro Tetris</b> — falling block + EXCELLENT</li>
-        <li><b>Bypass fix</b> — deteksi URL hasil</li>
-        <li><b>Vercel + GitHub</b> — add manual + checkbox</li>
-        <li><b>Star Wars</b> — peperangan luar angkasa</li>
+        <li><b>UPSCALE overhaul</b> — auto-render video HD + fallback</li>
+        <li><b>Progress fix</b> — 3 fase + force complete</li>
+        <li><b>SCRAPE progress</b> — paksa 100% selesai</li>
+        <li><b>Upload 6 provider</b> — tmpfiles #1</li>
+        <li><b>P2U fix</b> — log per-provider</li>
+        <li><b>Retro 8-bit</b> — sub-pixel + outline hitam</li>
       </ul>
       <button id="wm-start">MULAI</button>
     </div>
@@ -656,12 +658,11 @@ input[type="file"]{display:none!important}
 
 <div id="ach-toast-wrap"></div>
 
-<!-- ============ MAIN WRAPPER ============ -->
 <div class="w">
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v10.6</span>
+<span class="ch">v10.7</span>
 <span class="role-badge" id="role-badge">OWNER</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
@@ -906,7 +907,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 
 <!-- ============ PAGE: UPSCALE ============ -->
 <div class="pg hd" id="pg-up">
-<div class="apihub-header"><div class="apihub-title">UPSCALE VIDEO</div><div class="apihub-sub">HD Video Enhancer</div><span class="apihub-count">api.zyvor.my.id</span></div>
+<div class="apihub-header"><div class="apihub-title">UPSCALE VIDEO</div><div class="apihub-sub">HD Video Enhancer · Auto-Fallback 5 API</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
 <label>Endpoint</label><div id="apihub-up-endpoint" class="zy-select-wrap"></div>
 <div id="apihub-up-params"></div>
@@ -1179,7 +1180,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v10.6</div>
+<div class="ft">RYANN • TOOLS · v10.7</div>
 </div>
 
 <!-- ============ NAVBAR ============ -->
@@ -1206,7 +1207,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
   <div class="nb" data-p="set"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>SET</div>
 </div>
 
-<!-- ============ INLINE SCRIPT (Binary + UFO smoke + Retro Tetris) ============ -->
+<!-- ============ INLINE SCRIPT — Binary + UFO smoke + Retro Tetris 8-bit ============ -->
 <script>
 (function initBinaryRain(){
   function startRain(){
@@ -1280,44 +1281,56 @@ https://thingproxy.freeboard.io/fetch/</textarea>
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',start); } else { start(); }
 })();
 
-// ============ RETRO TETRIS v10.6 ============
+// ============ RETRO TETRIS 8-BIT v10.7 (sub-pixel + outline hitam) ============
 (function initRetroTetris(){
   function start(){
     var canvas = document.getElementById('retro-tetris');
     if(!canvas) return;
     var ctx = canvas.getContext('2d');
     var dpr = window.devicePixelRatio || 1;
-    var blockSize = 24;
-    var cols = 0, rows = 0;
-    var COLORS = ['#22d3ee','#e879f9','#facc15','#4ade80','#fb923c','#a78bfa','#f87171'];
+
+    // v10.7: 1 sel Tetris = SUB × SUB sub-pixel (biar kayak pixel art)
+    var SUB = 2;
+    var SUB_SIZE = 6;                 // ukuran 1 sub-pixel
+    var CELL_SIZE = SUB_SIZE * SUB;   // 1 sel Tetris = 2×2 sub-pixel = 12px
+    var BLACK = '#000';
+
+    // 7 warna 8-bit klasik
+    var COLORS = ['#ff0000','#ff9900','#ffff00','#00ff00','#00ffff','#0000ff','#9900ff'];
+
+    // 7 bentuk Tetris standard
     var SHAPES = [
-      [[1,1,1,1]],
-      [[1,1],[1,1]],
-      [[0,1,0],[1,1,1]],
-      [[0,1,1],[1,1,0]],
-      [[1,1,0],[0,1,1]],
-      [[1,0,0],[1,1,1]],
-      [[0,0,1],[1,1,1]]
+      [[1,1,1,1]],           // I
+      [[1,1],[1,1]],         // O
+      [[0,1,0],[1,1,1]],     // T
+      [[0,1,1],[1,1,0]],     // S
+      [[1,1,0],[0,1,1]],     // Z
+      [[1,0,0],[1,1,1]],     // J
+      [[0,0,1],[1,1,1]]      // L
     ];
+
     var columns = [];
+
     function resize(){
       var w = window.innerWidth, h = window.innerHeight;
       canvas.width = w * dpr; canvas.height = h * dpr;
       canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      cols = Math.max(2, Math.floor(w / (blockSize * 4)));
-      rows = Math.floor(h / blockSize);
-      columns = [];
+      ctx.imageSmoothingEnabled = false;
+
+      var cols = Math.max(2, Math.floor(w / (CELL_SIZE * 4)));
       var colWidth = w / cols;
+      columns = [];
       for(var i=0;i<cols;i++){
         var shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+        var shapeW = shape[0].length * CELL_SIZE;
         columns.push({
           blocks: [],
-          x: i * colWidth + (colWidth - shape[0].length * blockSize) / 2,
-          speed: 1.5 + Math.random() * 1.5,
+          x: i * colWidth + (colWidth - shapeW) / 2,
+          speed: 1.4 + Math.random() * 1.4,
           shape: shape,
           color: COLORS[Math.floor(Math.random() * COLORS.length)],
-          y: -shape.length * blockSize - Math.random() * 200,
+          y: -shape.length * CELL_SIZE - Math.random() * 200,
           clearing: false,
           flashTimer: 0
         });
@@ -1325,6 +1338,37 @@ https://thingproxy.freeboard.io/fetch/</textarea>
     }
     resize();
     window.addEventListener('resize', resize);
+
+    // Gambar 1 sel Tetris = SUB × SUB sub-pixel dengan outline hitam tebal
+    function drawCell(cx, cy, color, alpha){
+      ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+      // outline hitam tebal di sekeliling sel
+      ctx.fillStyle = BLACK;
+      ctx.fillRect(cx, cy, CELL_SIZE, CELL_SIZE);
+      // 4 sub-pixel 2×2
+      for(var sy=0; sy<SUB; sy++){
+        for(var sx=0; sx<SUB; sx++){
+          var px = cx + sx * SUB_SIZE;
+          var py = cy + sy * SUB_SIZE;
+          // warna sub-pixel: warna utama, sub-pixel kanan-bawah lebih gelap
+          var shade = color;
+          if(sy === SUB-1 && sx === SUB-1) shade = darken(color, 0.4);
+          else if(sy === SUB-1 || sx === SUB-1) shade = darken(color, 0.2);
+          ctx.fillStyle = shade;
+          ctx.fillRect(px, py, SUB_SIZE - 1, SUB_SIZE - 1);
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+    function darken(hex, amount){
+      var r = parseInt(hex.substr(1,2), 16);
+      var g = parseInt(hex.substr(3,2), 16);
+      var b = parseInt(hex.substr(5,2), 16);
+      r = Math.max(0, Math.floor(r * (1 - amount)));
+      g = Math.max(0, Math.floor(g * (1 - amount)));
+      b = Math.max(0, Math.floor(b * (1 - amount)));
+      return '#' + r.toString(16).padStart(2,'0') + g.toString(16).padStart(2,'0') + b.toString(16).padStart(2,'0');
+    }
 
     function triggerExcellent(){
       var el = document.getElementById('retro-excellent');
@@ -1356,71 +1400,61 @@ https://thingproxy.freeboard.io/fetch/</textarea>
             var newShape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
             col.shape = newShape;
             col.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-            col.speed = 1.5 + Math.random() * 1.5;
-            col.y = -newShape.length * blockSize - Math.random() * 100;
+            col.speed = 1.4 + Math.random() * 1.4;
+            col.y = -newShape.length * CELL_SIZE - Math.random() * 100;
             col.flashTimer = 0;
             continue;
           }
-          ctx.save();
-          ctx.globalAlpha = 1 - progress;
+          // render flash putih + jitter
           for(var bi=0;bi<col.blocks.length;bi++){
             var blk = col.blocks[bi];
             for(var r=0;r<blk.cells.length;r++){
               for(var c=0;c<blk.cells[r].length;c++){
                 if(!blk.cells[r][c]) continue;
-                var jitterX = (Math.random()*2-1) * 20 * progress;
-                var jitterY = (Math.random()*2-1) * 20 * progress;
-                var bx = col.x + c * blockSize + jitterX;
-                var by = blk.y + r * blockSize + jitterY;
-                var size = blockSize * (1 - progress * 0.4);
-                ctx.fillStyle = progress > 0.5 ? '#fff' : col.color;
-                ctx.fillRect(bx, by, size, size);
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(bx, by, size, size);
+                var jx = (Math.random()*2-1) * 16 * progress;
+                var jy = (Math.random()*2-1) * 16 * progress;
+                ctx.globalAlpha = 1 - progress;
+                ctx.fillStyle = progress > 0.5 ? '#fff' : '#ffff00';
+                ctx.fillRect(col.x + c * CELL_SIZE + jx, blk.y + r * CELL_SIZE + jy, CELL_SIZE - 1, CELL_SIZE - 1);
               }
             }
           }
-          for(var p=0;p<12;p++){
-            var angle = (Math.PI * 2 / 12) * p + progress * 6;
+          ctx.globalAlpha = 1;
+          // partikel
+          for(var p=0;p<14;p++){
+            var ang = (Math.PI * 2 / 14) * p + progress * 6;
             var dist = progress * 100;
-            ctx.fillStyle = '#fff';
-            ctx.globalAlpha = (1 - progress) * 0.9;
-            ctx.fillRect(col.x + 30 + Math.cos(angle)*dist, col.y + 30 + Math.sin(angle)*dist, 5, 5);
+            ctx.fillStyle = progress > 0.5 ? '#fff' : '#ffff00';
+            ctx.globalAlpha = 1 - progress;
+            ctx.fillRect(col.x + CELL_SIZE*2 + Math.cos(ang)*dist - 2, col.y + CELL_SIZE*2 + Math.sin(ang)*dist - 2, 4, 4);
           }
-          ctx.restore();
+          ctx.globalAlpha = 1;
           continue;
         }
 
         col.y += col.speed * (dt / 16);
+        for(var b2=0;b2<col.blocks.length;b2++) col.blocks[b2].y += col.speed * (dt / 16);
 
-        for(var b=0;b<col.blocks.length;b++) col.blocks[b].y += col.speed * (dt / 16);
-
-        var shapeH = col.shape.length * blockSize;
+        var shapeH = col.shape.length * CELL_SIZE;
         var landed = false;
 
-        if(col.y + shapeH > h){
-          col.y = h - shapeH;
-          landed = true;
-        }
+        if(col.y + shapeH > h){ col.y = h - shapeH; landed = true; }
 
         if(!landed){
-          for(var bi=0;bi<col.blocks.length;bi++){
-            var blk2 = col.blocks[bi];
-            for(var r=0;r<col.shape.length;r++){
-              for(var c=0;c<col.shape[r].length;c++){
-                if(!col.shape[r][c]) continue;
-                var cx = c * blockSize;
-                var checkY = col.y + r * blockSize + blockSize;
+          for(var bi2=0;bi2<col.blocks.length;bi2++){
+            var blk2 = col.blocks[bi2];
+            for(var r2=0;r2<col.shape.length;r2++){
+              for(var c2=0;c2<col.shape[r2].length;c2++){
+                if(!col.shape[r2][c2]) continue;
+                var cx = c2 * CELL_SIZE;
+                var checkY = col.y + r2 * CELL_SIZE + CELL_SIZE;
                 for(var er=0;er<blk2.cells.length;er++){
                   for(var ec=0;ec<blk2.cells[er].length;ec++){
                     if(!blk2.cells[er][ec]) continue;
-                    var ex = ec * blockSize;
+                    var ex = ec * CELL_SIZE;
                     if(cx === ex){
-                      var by2 = blk2.y + er * blockSize;
-                      if(checkY >= by2 && col.y + r * blockSize < by2 + blockSize){
-                        landed = true; break;
-                      }
+                      var by = blk2.y + er * CELL_SIZE;
+                      if(checkY >= by && col.y + r2 * CELL_SIZE < by + CELL_SIZE){ landed = true; break; }
                     }
                   }
                   if(landed) break;
@@ -1434,13 +1468,11 @@ https://thingproxy.freeboard.io/fetch/</textarea>
         }
 
         if(landed){
-          var snapY = Math.round(col.y / blockSize) * blockSize;
+          var snapY = Math.round(col.y / CELL_SIZE) * CELL_SIZE;
           col.blocks.push({ y: snapY, cells: col.shape, color: col.color });
 
           var maxHeight = h;
-          for(var bi=0;bi<col.blocks.length;bi++){
-            if(col.blocks[bi].y < maxHeight) maxHeight = col.blocks[bi].y;
-          }
+          for(var b3=0;b3<col.blocks.length;b3++){ if(col.blocks[b3].y < maxHeight) maxHeight = col.blocks[b3].y; }
           if(maxHeight < 100){
             col.clearing = true;
             col.flashTimer = 0;
@@ -1451,43 +1483,33 @@ https://thingproxy.freeboard.io/fetch/</textarea>
           var newShape2 = SHAPES[Math.floor(Math.random() * SHAPES.length)];
           col.shape = newShape2;
           col.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-          col.y = -newShape2.length * blockSize - Math.random() * 80;
-          col.speed = 1.5 + Math.random() * 1.5;
+          col.y = -newShape2.length * CELL_SIZE - Math.random() * 80;
+          col.speed = 1.4 + Math.random() * 1.4;
         }
 
-        for(var bi=0;bi<col.blocks.length;bi++){
-          var blk3 = col.blocks[bi];
-          for(var r=0;r<blk3.cells.length;r++){
-            for(var c=0;c<blk3.cells[r].length;c++){
-              if(!blk3.cells[r][c]) continue;
-              var bx3 = col.x + c * blockSize;
-              var by3 = blk3.y + r * blockSize;
-              if(by3 > h || by3 + blockSize < 0) continue;
-              ctx.fillStyle = blk3.color;
-              ctx.fillRect(bx3, by3, blockSize - 1, blockSize - 1);
-              ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-              ctx.lineWidth = 1;
-              ctx.strokeRect(bx3 + 0.5, by3 + 0.5, blockSize - 2, blockSize - 2);
-              ctx.fillStyle = 'rgba(255,255,255,0.15)';
-              ctx.fillRect(bx3, by3, blockSize - 1, 3);
+        // render existing blocks
+        for(var b4=0;b4<col.blocks.length;b4++){
+          var blk4 = col.blocks[b4];
+          for(var r4=0;r4<blk4.cells.length;r4++){
+            for(var c4=0;c4<blk4.cells[r4].length;c4++){
+              if(!blk4.cells[r4][c4]) continue;
+              var px4 = col.x + c4 * CELL_SIZE;
+              var py4 = blk4.y + r4 * CELL_SIZE;
+              if(py4 > h || py4 + CELL_SIZE < 0) continue;
+              drawCell(px4, py4, blk4.color);
             }
           }
         }
 
+        // render current falling shape
         if(col.y + shapeH > 0){
-          for(var r=0;r<col.shape.length;r++){
-            for(var c=0;c<col.shape[r].length;c++){
-              if(!col.shape[r][c]) continue;
-              var bx4 = col.x + c * blockSize;
-              var by4 = col.y + r * blockSize;
-              if(by4 + blockSize < 0) continue;
-              ctx.fillStyle = col.color;
-              ctx.fillRect(bx4, by4, blockSize - 1, blockSize - 1);
-              ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-              ctx.lineWidth = 1;
-              ctx.strokeRect(bx4 + 0.5, by4 + 0.5, blockSize - 2, blockSize - 2);
-              ctx.fillStyle = 'rgba(255,255,255,0.2)';
-              ctx.fillRect(bx4, by4, blockSize - 1, 3);
+          for(var r5=0;r5<col.shape.length;r5++){
+            for(var c5=0;c5<col.shape[r5].length;c5++){
+              if(!col.shape[r5][c5]) continue;
+              var px5 = col.x + c5 * CELL_SIZE;
+              var py5 = col.y + r5 * CELL_SIZE;
+              if(py5 + CELL_SIZE < 0) continue;
+              drawCell(px5, py5, col.color);
             }
           }
         }
