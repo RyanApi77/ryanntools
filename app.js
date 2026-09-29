@@ -1,4 +1,4 @@
-// app.js v10.6 — Fix tmp + P2U wire
+// app.js v10.7 — UPSCALE overhaul + progress fix + upload fix
 (function(){
 'use strict';
 
@@ -785,7 +785,7 @@ var SPY_STATE={code:'',blob:null,template:''};
   };
 })();
 
-// ============ SCRAPE ============
+// ============ SCRAPE — v10.7 progress fix ============
 (function scrapeInit(){
   if($('ds-paste')) $('ds-paste').onclick=function(){
     navigator.clipboard.readText().then(function(t){ $('ds-url').value=t.trim(); sndSuccess(); }).catch(function(){});
@@ -803,8 +803,33 @@ var SPY_STATE={code:'',blob:null,template:''};
     if(diff>0){ var m=Math.floor(diff/60000), s=Math.floor((diff%60000)/1000); btn.disabled=true; btn.textContent='⏳ '+m+'m '+s+'s'; }
     else { btn.disabled=false; btn.textContent='▶ START'; }
   }
-  function scrP(cur,total){ var pct=total>0?Math.min(100,(cur/total)*100):0; if($('scr-prog-fill')) $('scr-prog-fill').style.width=pct+'%'; if($('scr-prog-txt')) $('scr-prog-txt').textContent=cur+' / '+total; if($('scr-prog-label')) $('scr-prog-label').textContent='MENGUMPULKAN · '+pct.toFixed(1)+'%'; }
-  if($('scr-clear')) $('scr-clear').onclick=function(){ if(scrRunning)return; $('scr-log').innerHTML=''; $('scr-pbox').classList.add('hd'); scrResults=[]; $('scr-prog-wrap').classList.remove('on'); sndClick(); };
+  function scrP(cur,total,forceDone){
+    var wrap = $('scr-prog-wrap');
+    var pct = total>0?Math.min(100,(cur/total)*100):0;
+    if(forceDone){
+      pct = 100;
+      if(wrap) wrap.classList.add('done');
+    } else {
+      if(wrap) wrap.classList.remove('done');
+    }
+    if($('scr-prog-fill')) $('scr-prog-fill').style.width=pct+'%';
+    if($('scr-prog-txt')) $('scr-prog-txt').textContent=cur+' / '+total;
+    if($('scr-prog-label')){
+      if(forceDone){
+        $('scr-prog-label').textContent = 'SELESAI · ' + cur + ' proxy didapat';
+        $('scr-prog-label').style.color = 'var(--ok)';
+      } else {
+        $('scr-prog-label').textContent = 'MENGUMPULKAN · ' + pct.toFixed(1) + '%';
+        $('scr-prog-label').style.color = '';
+      }
+    }
+  }
+  if($('scr-clear')) $('scr-clear').onclick=function(){
+    if(scrRunning)return;
+    $('scr-log').innerHTML=''; $('scr-pbox').classList.add('hd');
+    scrResults=[]; $('scr-prog-wrap').classList.remove('on'); $('scr-prog-wrap').classList.remove('done');
+    sndClick();
+  };
   if($('scr-start')) $('scr-start').onclick=async function(){
     if(scrRunning) return;
     var last=S.get('scr_last',0); var diff=last+SCR_CD-Date.now();
@@ -813,7 +838,8 @@ var SPY_STATE={code:'',blob:null,template:''};
     if(!sources.length){ alert('Sumber kosong'); return; }
     var target=parseInt($('scr-target').value)||10000; if(target<100)target=100; if(target>120000)target=120000;
     $('scr-target').value=target;
-    scrRunning=true; $('scr-prog-wrap').classList.add('on'); scrP(0,target); $('scr-log').innerHTML=''; scrResults=[];
+    scrRunning=true; $('scr-prog-wrap').classList.add('on'); $('scr-prog-wrap').classList.remove('done');
+    scrP(0,target); $('scr-log').innerHTML=''; scrResults=[];
     logTo('scr-log','Target: '+target,'in'); sndSuccess();
     if(window.unlockAch) window.unlockAch('scrape_first');
     var seen={}, total=0;
@@ -829,8 +855,15 @@ var SPY_STATE={code:'',blob:null,template:''};
       scrP(total,target);
       await new Promise(function(res){ setTimeout(res,2000); });
     }
+    // v10.7: force complete — paksa bar 100% + label SELESAI walau hasil < target
+    scrP(total, target, true);
     scrRunning=false; S.set('scr_last',Date.now());
-    logTo('scr-log','SELESAI · '+total,'in'); scrCD(); sndSuccess();
+    if(total === 0){
+      logTo('scr-log','✗ TIDAK ADA HASIL — cek sumber / koneksi','er');
+    } else {
+      logTo('scr-log','✓ SELESAI · Hanya mendapatkan '+total+' proxy','in');
+    }
+    scrCD(); sndSuccess();
   };
   if($('scr-preview')) $('scr-preview').onclick=function(){
     var pb=$('scr-pbox');
@@ -1061,7 +1094,7 @@ function wireApiHub(tabId, catName){
     var log=$('apihub-'+tabId+'-log'), res=$('apihub-'+tabId+'-result');
     if(log){ log.innerHTML=''; log.classList.add('hd'); }
     if(res){ res.innerHTML=''; res.classList.add('hd'); }
-    if(catName==='UPSCALE' && typeof window.zyProgressHide==='function'){ try{ window.zyProgressHide(); }catch(e){} }
+    if(catName==='UPSCALE' && typeof window.zyProgressHide==='function'){ try{ window.zyProgressHide(true); }catch(e){} }
   });
 }
 wireApiHub('up','UPSCALE');
@@ -1224,7 +1257,7 @@ if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window
 // ============ TAG: PART 2 LANJUT DI SINI ============
 // [PART 2 LANJUT DI SINI]
 
-// ============ P2U WIRE v10.6 ============
+// ============ P2U WIRE v10.7 ============
 (function wireP2U(){
   if(!$('pg-p2u')) return;
   var inited = false;
@@ -1242,7 +1275,7 @@ if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window
   });
 })();
 
-// ============ VERCEL WIRE v10.6 ============
+// ============ VERCEL WIRE v10.7 ============
 (function wireVercel(){
   if(!$('pg-vc')) return;
   var inited = false;
@@ -1260,7 +1293,7 @@ if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window
   });
 })();
 
-// ============ GITHUB WIRE v10.6 ============
+// ============ GITHUB WIRE v10.7 ============
 (function wireGithub(){
   if(!$('pg-gh')) return;
   var inited = false;
