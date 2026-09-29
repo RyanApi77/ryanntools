@@ -1,4 +1,4 @@
-// zyvor.js v10.6 — P2U fix + Tempmail fix + Tetris support
+// zyvor.js v10.7 — UPSCALE overhaul + upload fix + P2U fix
 (function(){
 'use strict';
 
@@ -15,10 +15,10 @@ var CORS = [
 ];
 
 function timeoutFor(path){
-  if(!path) return 120000;
+  if(!path) return 180000;
   var heavy = ['/api/imagehd/', '/api/hdvidio/', '/api/maker/', '/api/downloader/'];
-  for(var i=0;i<heavy.length;i++){ if(path.indexOf(heavy[i]) !== -1) return 600000; }
-  return 120000;
+  for(var i=0;i<heavy.length;i++){ if(path.indexOf(heavy[i]) !== -1) return 1800000; }
+  return 180000;
 }
 function $id(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -175,7 +175,7 @@ async function fetchWithRetry(url, opts, timeoutMs, retries){
 // ============ PROXY FETCH ============
 async function proxyFetch(url, opts, timeoutMs, raw){
   opts = opts || {};
-  timeoutMs = timeoutMs || 120000;
+  timeoutMs = timeoutMs || 180000;
   var lastErr = null;
 
   async function readBody(r){
@@ -197,7 +197,7 @@ async function proxyFetch(url, opts, timeoutMs, raw){
     var p = CORS[i];
     var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
     try{
-      var r3 = await fetchWithRetry(full, {method: opts.method || 'GET', headers: opts.headers || {}, body: opts.body}, Math.min(timeoutMs, 60000), 1);
+      var r3 = await fetchWithRetry(full, {method: opts.method || 'GET', headers: opts.headers || {}, body: opts.body}, Math.min(timeoutMs, 120000), 1);
       if(r3.ok) return await readBody(r3);
       lastErr = new Error('Proxy ' + i + ' HTTP ' + r3.status);
     }catch(e){ lastErr = e; }
@@ -241,137 +241,133 @@ async function callAPIv2(path, params, method){
   return json;
 }
 
-// ============ MULTI-PROVIDER UPLOAD v10.6 — 7 PROVIDER ============
+// ============ UPLOAD PROVIDERS v10.7 — reorder + fix ============
+// Urutan: tmpfiles #1 (proven works), Catbox, 0x0, Litterbox, Uguu, filebin
+// HAPUS: transfer.sh (tutup), file.io (butuh key)
+
+async function uploadTmpfiles(file){
+  try{
+    var fd = new FormData(); fd.append('file', file);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
+    var r = await fetch('https://tmpfiles.org/api/v1/upload', { method:'POST', body:fd, signal:ctrl.signal });
+    clearTimeout(timer);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var j = await r.json();
+    if(j && j.data && j.data.url){
+      var direct = j.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+      return { ok:true, url:direct, provider:'tmpfiles.org' };
+    }
+    throw new Error('Bad response');
+  }catch(e){ return { ok:false, error: e.message || 'failed', provider:'tmpfiles.org' }; }
+}
 async function uploadCatbox(file){
   try{
     var fd = new FormData(); fd.append('reqtype', 'fileupload'); fd.append('fileToUpload', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
     var r = await fetch('https://catbox.moe/user/api.php', { method:'POST', body:fd, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
     var txt = (await r.text()).trim();
     if(/^https?:\/\//.test(txt)) return { ok:true, url:txt, provider:'Catbox' };
     throw new Error('Bad response');
-  }catch(e){ return { ok:false, error: e.message, provider:'Catbox' }; }
+  }catch(e){ return { ok:false, error: e.message || 'failed', provider:'Catbox' }; }
 }
 async function upload0x0(file){
   try{
     var fd = new FormData(); fd.append('file', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
-    var r = await fetch('https://0x0.st', { method:'POST', body:fd, headers:{'User-Agent':'RyannTools/10.6'}, signal:ctrl.signal });
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
+    var r = await fetch('https://0x0.st', { method:'POST', body:fd, headers:{'User-Agent':'RyannTools/10.7'}, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
     var txt = (await r.text()).trim();
     if(/^https?:\/\//.test(txt)) return { ok:true, url:txt, provider:'0x0.st' };
     throw new Error('Bad response');
-  }catch(e){ return { ok:false, error: e.message, provider:'0x0.st' }; }
+  }catch(e){ return { ok:false, error: e.message || 'failed', provider:'0x0.st' }; }
 }
 async function uploadLitterbox(file){
   try{
     var fd = new FormData(); fd.append('reqtype', 'fileupload'); fd.append('time', '72h'); fd.append('fileToUpload', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
     var r = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', { method:'POST', body:fd, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
     var txt = (await r.text()).trim();
     if(/^https?:\/\//.test(txt)) return { ok:true, url:txt, provider:'Litterbox' };
     throw new Error('Bad response');
-  }catch(e){ return { ok:false, error: e.message, provider:'Litterbox' }; }
+  }catch(e){ return { ok:false, error: e.message || 'failed', provider:'Litterbox' }; }
 }
 async function uploadUguu(file){
   try{
     var fd = new FormData(); fd.append('files[]', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
     var r = await fetch('https://uguu.se/upload.php', { method:'POST', body:fd, signal:ctrl.signal });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
     var j = await r.json();
     if(j && j.files && j.files[0] && j.files[0].url) return { ok:true, url:j.files[0].url, provider:'Uguu' };
     throw new Error('Bad response');
-  }catch(e){ return { ok:false, error: e.message, provider:'Uguu' }; }
+  }catch(e){ return { ok:false, error: e.message || 'failed', provider:'Uguu' }; }
 }
-async function uploadTmpfiles(file){
+async function uploadFilebin(file){
   try{
-    var fd = new FormData(); fd.append('file', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
-    var r = await fetch('https://tmpfiles.org/api/v1/upload', { method:'POST', body:fd, signal:ctrl.signal });
-    clearTimeout(timer);
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    var j = await r.json();
-    if(j && j.data && j.data.url){ var direct = j.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/'); return { ok:true, url:direct, provider:'tmpfiles.org' }; }
-    throw new Error('Bad response');
-  }catch(e){ return { ok:false, error: e.message, provider:'tmpfiles.org' }; }
-}
-async function uploadFileIo(file){
-  try{
-    var fd = new FormData(); fd.append('file', file);
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
-    var r = await fetch('https://file.io', { method:'POST', body:fd, signal:ctrl.signal });
-    clearTimeout(timer);
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    var j = await r.json();
-    if(j && j.link) return { ok:true, url:j.link, provider:'file.io' };
-    throw new Error('Bad response');
-  }catch(e){ return { ok:false, error: e.message, provider:'file.io' }; }
-}
-async function uploadTransferSh(file){
-  try{
-    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 45000);
-    var r = await fetch('https://transfer.sh/' + encodeURIComponent(file.name), {
-      method: 'PUT',
+    var binName = 'ryann-' + Math.random().toString(36).substring(2, 10);
+    var fileName = (file.name || 'file').replace(/[^a-zA-Z0-9._-]/g, '_');
+    var ctrl = new AbortController(); var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
+    var r = await fetch('https://filebin.net/' + binName + '/' + fileName, {
+      method: 'POST',
       body: file,
       headers: { 'Content-Type': 'application/octet-stream' },
       signal: ctrl.signal
     });
     clearTimeout(timer);
     if(!r.ok) throw new Error('HTTP '+r.status);
-    var txt = (await r.text()).trim();
-    if(/^https?:\/\//.test(txt)) return { ok:true, url:txt, provider:'transfer.sh' };
-    throw new Error('Bad response');
-  }catch(e){ return { ok:false, error: e.message, provider:'transfer.sh' }; }
+    return { ok:true, url: 'https://filebin.net/' + binName + '/' + fileName, provider:'filebin.net' };
+  }catch(e){ return { ok:false, error: e.message || 'failed', provider:'filebin.net' }; }
 }
 
-var UPLOAD_PROVIDERS = [uploadCatbox, upload0x0, uploadLitterbox, uploadUguu, uploadTmpfiles, uploadFileIo, uploadTransferSh];
+// Provider list — tmpfiles.org #1 (proven works di device user)
+var UPLOAD_PROVIDERS = [uploadTmpfiles, uploadCatbox, upload0x0, uploadLitterbox, uploadUguu, uploadFilebin];
 window.__UPLOAD_PROVIDERS = UPLOAD_PROVIDERS;
 
 async function uploadToCatbox(file, onProgress, logEl){
-  if(!file) return { ok:false, error:'No file' };
-  if(file.size / (1024*1024) > 200) return { ok:false, error:'File > 200MB' };
+  if(!file) return { ok:false, error:'No file', provider:null };
+  if(file.size / (1024*1024) > 200) return { ok:false, error:'File > 200MB', provider:null };
 
   for(var i=0;i<UPLOAD_PROVIDERS.length;i++){
     var provider = UPLOAD_PROVIDERS[i];
-    var providerName = (provider.name || 'provider').replace('upload','');
+    var providerName = (provider && provider.name) ? provider.name.replace('upload','') : ('provider-' + (i+1));
     if(logEl){
       var l = document.createElement('div'); l.className = 'in';
       l.textContent = '⏳ [' + (i+1) + '/' + UPLOAD_PROVIDERS.length + '] Upload ke ' + providerName + '...';
       logEl.appendChild(l); logEl.scrollTop = logEl.scrollHeight;
     }
     var res = await provider(file);
-    if(res.ok){
+    if(res && res.ok){
       if(logEl){
         var l2 = document.createElement('div'); l2.className = 'ok';
-        l2.textContent = '  ✓ ' + res.provider + ' → ' + res.url;
+        l2.textContent = '  ✓ ' + (res.provider || providerName) + ' → ' + res.url;
         logEl.appendChild(l2); logEl.scrollTop = logEl.scrollHeight;
       }
       return res;
     } else {
       if(logEl){
         var l3 = document.createElement('div'); l3.className = 'warn';
-        l3.textContent = '  ✗ ' + (res.provider||providerName) + ' — ' + (res.error||'failed');
+        l3.textContent = '  ✗ ' + ((res && res.provider) || providerName) + ' — ' + ((res && res.error) || 'failed');
         logEl.appendChild(l3); logEl.scrollTop = logEl.scrollHeight;
       }
     }
   }
-  return { ok:false, error:'SEMUA PROVIDER UPLOAD GAGAL', silent:true };
+  return { ok:false, error:'SEMUA PROVIDER UPLOAD GAGAL', silent:true, provider:null };
 }
 window.zyUploadMulti = uploadToCatbox;
+
 window.zyUploadP2U = async function(file, infoEl){
   if(!file) return { ok:false, error:'No file' };
   if(file.size / (1024*1024) > 200) return { ok:false, error:'File > 200MB' };
   for(var i=0;i<UPLOAD_PROVIDERS.length;i++){
     var provider = UPLOAD_PROVIDERS[i];
     var res = await provider(file);
-    if(res.ok) return res;
+    if(res && res.ok) return res;
   }
   return { ok:false, error:'Semua provider gagal' };
 };
@@ -548,11 +544,21 @@ window.zyCheckFileSizeSmart = function(file, category){
   return false;
 };
 
-// ============ PROGRESS ============
-var _progState = { active:false, startTime:0, estimatedMs:60000, phase:'idle', cancelled:false };
+// ============ PROGRESS v10.7 — 3 FASE + force complete ============
+var _progState = {
+  active:false,
+  startTime:0,
+  estimatedMs:180000,
+  phase:'idle',
+  cancelled:false,
+  hidden:true
+};
+
 function zyProgressShow(stage, msg){
   var wrap = $id('up-progress-bar'); if(!wrap) return;
   wrap.classList.add('on');
+  wrap.classList.remove('done');
+  _progState.hidden = false;
   var stageEl = $id('up-prog-stage'), msgEl = $id('up-prog-msg');
   if(stageEl) stageEl.textContent = stage || 'PROSES';
   if(msgEl) msgEl.textContent = msg || '';
@@ -566,19 +572,31 @@ function zyProgressUpdate(pct, stage, msg){
   if(msgEl && msg !== undefined) msgEl.textContent = msg;
   if(glow) glow.style.left = 'calc(' + p + '% - 20px)';
 }
-window.zyProgressHide = function(){
-  var wrap = $id('up-progress-bar'); if(wrap) wrap.classList.remove('on');
-  _progState.active = false; _progState.cancelled = true;
+function zyProgressForceDone(){
+  var wrap = $id('up-progress-bar');
+  if(wrap){ wrap.classList.add('on'); wrap.classList.add('done'); }
+  zyProgressUpdate(100, 'SELESAI', 'Video HD siap!');
+  setTimeout(function(){ window.zyProgressHide(true); }, 1500);
+}
+window.zyProgressForceDone = zyProgressForceDone;
+window.zyProgressHide = function(force){
+  if(!force && _progState.active) return; // jangan hide kalau masih aktif
+  var wrap = $id('up-progress-bar');
+  if(wrap){ wrap.classList.remove('on'); wrap.classList.remove('done'); }
+  _progState.active = false;
+  _progState.hidden = true;
 };
 window.zyProgressShow = zyProgressShow;
 window.zyProgressUpdate = zyProgressUpdate;
 
+// ============ FETCH WITH PROGRESS (real byte tracking kalau ada content-length) ============
 async function fetchWithProgress(url, opts, timeoutMs){
-  opts = opts || {}; timeoutMs = timeoutMs || 600000;
+  opts = opts || {}; timeoutMs = timeoutMs || 1800000;
   var ctrl = new AbortController();
   var externalAbort = opts.signal;
   var onAbort = function(){ try{ ctrl.abort(); }catch(e){} };
   if(externalAbort) externalAbort.addEventListener('abort', onAbort);
+
   var layers = [];
   layers.push({ url: url, name: 'direct' });
   layers.push({ url: WORKER + '/?url=' + encodeURIComponent(url), name: 'worker' });
@@ -587,49 +605,72 @@ async function fetchWithProgress(url, opts, timeoutMs){
     var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
     layers.push({ url: full, name: 'cors' + i });
   }
+
   var lastErr = null;
   for(var li=0;li<layers.length;li++){
     if(_progState.cancelled) throw new Error('cancelled');
     var L = layers[li];
+    if(li > 0){
+      // reset progress setiap pindah layer
+      zyProgressUpdate(2, 'MENGIRIM', 'Coba layer ' + L.name + '...');
+    }
     try{
       var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs);
       var r = await fetch(L.url, Object.assign({}, opts, {signal: ctrl.signal}));
       clearTimeout(timer);
       if(!r.ok){ lastErr = new Error('HTTP ' + r.status); continue; }
+
       var total = parseInt(r.headers.get('content-length') || '0', 10);
       var ct = (r.headers.get('content-type') || '').toLowerCase();
-      if(!r.body || !r.body.getReader || total === 0){
+      // detect kalau ini binary video/image
+      var isBinary = /^video\/|^image\/|^audio\//.test(ct);
+
+      // v10.7: kalau ga ada stream / content-length kecil → langsung arrayBuffer + paksa 95% (fase receiving)
+      if(!r.body || !r.body.getReader || total === 0 || total < 102400){
+        zyProgressUpdate(95, 'MENERIMA', 'Menerima hasil...');
         var buf0 = await r.arrayBuffer();
-        return { buffer: buf0, contentType: ct, total: buf0.byteLength, received: buf0.byteLength };
+        if(externalAbort) externalAbort.removeEventListener('abort', onAbort);
+        return { buffer: buf0, contentType: ct, total: buf0.byteLength, received: buf0.byteLength, isBinary: isBinary };
       }
+
+      // Ada content-length → real byte tracking
       var reader = r.body.getReader();
-      var chunks = []; var received = 0; var lastPct = 0;
-      _progState.received = 0; _progState.total = total;
+      var chunks = []; var received = 0; var lastPct = 90;
+      _progState.received = 0;
+      _progState.total = total;
+      _progState.phase = 'receiving';
+
       while(true){
         if(_progState.cancelled){ try{ reader.cancel(); }catch(e){} throw new Error('cancelled'); }
         var step = await reader.read();
         if(step.done) break;
         chunks.push(step.value); received += step.value.byteLength;
-        var pct = total > 0 ? (received / total) * 100 : 0;
-        if(pct - lastPct >= 0.5 || received === total){
+        var pct = total > 0 ? 90 + Math.min(9, (received / total) * 9) : 90;
+        if(pct - lastPct >= 0.3 || received === total){
           lastPct = pct;
           var mbRecv = (received / (1024*1024)).toFixed(2);
           var mbTot = (total / (1024*1024)).toFixed(2);
-          zyProgressUpdate(pct, pct < 95 ? 'MENERIMA' : 'FINALIZE', 'Menerima ' + mbRecv + ' / ' + mbTot + ' MB · ' + Math.round(pct) + '%');
+          zyProgressUpdate(pct, 'MENERIMA', 'Menerima ' + mbRecv + ' / ' + mbTot + ' MB');
         }
       }
+
       var totalLen = chunks.reduce(function(s,c){ return s + c.byteLength; }, 0);
       var merged = new Uint8Array(totalLen);
       var off = 0;
       for(var c=0;c<chunks.length;c++){ merged.set(chunks[c], off); off += chunks[c].byteLength; }
       if(externalAbort) externalAbort.removeEventListener('abort', onAbort);
-      return { buffer: merged.buffer, contentType: ct, total: total, received: received };
-    }catch(e){ lastErr = e; if(externalAbort && externalAbort.aborted) throw e; continue; }
+      return { buffer: merged.buffer, contentType: ct, total: total, received: received, isBinary: isBinary };
+    }catch(e){
+      lastErr = e;
+      if(externalAbort && externalAbort.aborted) throw e;
+      continue;
+    }
   }
   if(externalAbort) externalAbort.removeEventListener('abort', onAbort);
   throw lastErr || new Error('All layers failed');
 }
 
+// ============ CALL API WITH PROGRESS (UPSCALE / heavy) ============
 async function callAPIWithProgress(path, params, method, category){
   method = method || 'GET';
   var qs = '';
@@ -637,30 +678,51 @@ async function callAPIWithProgress(path, params, method, category){
   var url = BASE + path + qs;
   var opts = { method: method };
   if(method === 'POST'){ opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(params); }
+
   var timeout = timeoutFor(path);
-  var estMs = 90000;
-  if(category === 'UPSCALE') estMs = 180000;
-  if(category === 'IMG AI') estMs = 60000;
-  if(category === 'IMG HD') estMs = 60000;
-  if(category === 'MAKER') estMs = 30000;
-  _progState.cancelled = false; _progState.active = true;
-  _progState.startTime = Date.now(); _progState.estimatedMs = estMs;
+  var estMs = 180000;
+  if(category === 'UPSCALE') estMs = 300000;
+  if(category === 'IMG AI') estMs = 90000;
+  if(category === 'IMG HD') estMs = 90000;
+  if(category === 'MAKER') estMs = 60000;
+
+  _progState.cancelled = false;
+  _progState.active = true;
+  _progState.startTime = Date.now();
+  _progState.estimatedMs = estMs;
+  _progState.phase = 'sending';
+  _progState.hidden = false;
+
   zyProgressShow('MENGIRIM', 'Mengirim permintaan ke server...');
   zyProgressUpdate(2, 'MENGIRIM', 'Mengirim permintaan...');
+
+  // ticker prediktif — Fase 1 (2% → 50%) + Fase 2 (50% → 90%)
   var ticker = setInterval(function(){
-    if(_progState.cancelled) return;
-    var elapsed = Date.now() - _progState.startTime;
+    if(_progState.cancelled || _progState.hidden) return;
     if(_progState.phase === 'receiving') return;
-    var pred = Math.min(90, (elapsed / estMs) * 90);
-    var stage = elapsed < 3000 ? 'MENGIRIM' : 'MEMPROSES';
-    var msg = elapsed < 3000 ? 'Mengirim permintaan...' : 'Server memproses... (' + Math.round(elapsed/1000) + 's)';
+    var elapsed = Date.now() - _progState.startTime;
+    var pred, stage, msg;
+
+    if(elapsed < 3000){
+      pred = 2 + (elapsed / 3000) * 8;
+      stage = 'MENGIRIM';
+      msg = 'Mengirim permintaan...';
+    } else {
+      // prediktif naik dari 10 ke 90 selama estMs
+      pred = 10 + Math.min(80, (elapsed / estMs) * 80);
+      stage = 'MEMPROSES';
+      var secs = Math.round(elapsed / 1000);
+      msg = 'Server memproses ' + category.toLowerCase() + '... (' + secs + 's)';
+    }
     zyProgressUpdate(pred, stage, msg);
   }, 500);
+
   try{
     var res = await fetchWithProgress(url, opts, timeout);
     clearInterval(ticker);
     _progState.phase = 'receiving';
-    zyProgressUpdate(100, 'SELESAI', 'Selesai · ' + (res.received / 1024).toFixed(1) + ' KB');
+    zyProgressUpdate(95, 'FINALIZE', 'Memproses hasil akhir...');
+
     var buf = res.buffer;
     var bytes = new Uint8Array(buf.slice(0, 16));
     var mime = detectMagic(bytes);
@@ -668,19 +730,44 @@ async function callAPIWithProgress(path, params, method, category){
     if(!mime && ct.indexOf('image/') === 0) mime = ct.split(';')[0];
     if(!mime && ct.indexOf('video/') === 0) mime = ct.split(';')[0];
     if(!mime && ct.indexOf('audio/') === 0) mime = ct.split(';')[0];
-    if(mime){
+
+    // v10.7: kalau binary video/image → force progress complete
+    if(mime && (mime.indexOf('video/') === 0 || mime.indexOf('image/') === 0 || mime.indexOf('audio/') === 0)){
+      zyProgressForceDone();
       var blob = new Blob([buf], { type: mime });
       return { __binary:true, url: URL.createObjectURL(blob), blob: blob, mime: mime, size: buf.byteLength };
     }
+
     var txt = '';
     try{ txt = new TextDecoder('utf-8').decode(buf); }catch(e){ txt = ''; }
     var json;
     try{ json = JSON.parse(txt); }catch(e){ json = { raw: txt }; }
+
+    // v10.7: kalau JSON punya field URL video → force complete (karena proses selesai)
+    if(json && typeof json === 'object'){
+      var foundUrl = null;
+      var keys = ['url','result','video','output','download','link','hd','videoUrl','video_url'];
+      for(var kk=0; kk<keys.length; kk++){
+        var vv = json[keys[kk]];
+        if(typeof vv === 'string' && /^https?:\/\//.test(vv)){ foundUrl = vv; break; }
+        if(vv && typeof vv === 'object'){
+          var kk2 = ['url','video','output','download','link'];
+          for(var kk3=0; kk3<kk2.length; kk3++){
+            if(vv[kk2[kk3]] && typeof vv[kk2[kk3]] === 'string' && /^https?:\/\//.test(vv[kk2[kk3]])){
+              foundUrl = vv[kk2[kk3]]; break;
+            }
+          }
+          if(foundUrl) break;
+        }
+      }
+      if(foundUrl) zyProgressForceDone();
+    }
+
     return json;
   }catch(e){ clearInterval(ticker); throw e; }
 }
 
-// ============ LISTS ============
+// ============ BYPASS LIST ============
 var BYPASS_LIST = [
   { id:'bypasslink', name:'Bypass Link v1', path:'/api/bypass/bypasslink', method:'POST', params:['url','androidId'] },
   { id:'bypasslinkv2', name:'Bypass Link v2', path:'/api/bypass/bypasslinkv2', method:'POST', params:['url'] },
@@ -692,174 +779,8 @@ var BYPASS_LIST = [
   { id:'shrinkme', name:'ShrinkMe', path:'/api/bypass/shrinkme', method:'POST', params:['url'] },
   { id:'wellbypass', name:'Wellbypass', path:'/api/bypass/wellbypass', method:'POST', params:['url','turnstileToken'] }
 ];
-var DOWNLOADER_LIST = [
-  { id:'tikwm', name:'TikWM (recommended)', path:'TIKWM', method:'GET', params:['url'], cat:'TikTok', desc:'auto WM/NoWM/HD' },
-  { id:'tiktokv2', name:'TikTok v2 (HD)', path:'/api/downloader/tiktokv2', method:'GET', params:['url'], cat:'TikTok' },
-  { id:'tiktokv3', name:'TikTok v3', path:'/api/downloader/tiktokv3', method:'GET', params:['url'], cat:'TikTok' },
-  { id:'tiktokv4', name:'TikTok v4', path:'/api/downloader/tiktokv4', method:'GET', params:['url'], cat:'TikTok' },
-  { id:'tiktokv5', name:'TikTok v5 (slide)', path:'/api/downloader/tiktokv5', method:'GET', params:['url'], cat:'TikTok' },
-  { id:'tiktokio', name:'TikTok.io', path:'/api/downloader/tiktokio', method:'GET', params:['url'], cat:'TikTok' },
-  { id:'tiktok', name:'TikTok v1', path:'/api/downloader/tiktok', method:'GET', params:['url'], cat:'TikTok' },
-  { id:'youtubev1', name:'YouTube v1', path:'/api/downloader/youtubev1', method:'GET', params:['url','quality'], cat:'YouTube' },
-  { id:'youtubev2', name:'YouTube v2', path:'/api/downloader/youtubev2', method:'GET', params:['url'], cat:'YouTube' },
-  { id:'youtubev3', name:'YouTube v3', path:'/api/downloader/youtubev3', method:'GET', params:['url','json'], cat:'YouTube' },
-  { id:'youtubev4', name:'YouTube v4', path:'/api/downloader/youtubev4', method:'GET', params:['url'], cat:'YouTube' },
-  { id:'savetube', name:'SaveTube', path:'/api/downloader/savetube', method:'GET', params:['url','format'], cat:'YouTube' },
-  { id:'ytplay', name:'YT Play', path:'/api/downloader/ytplay', method:'GET', params:['query'], cat:'YouTube' },
-  { id:'igexport', name:'Instagram Export', path:'/api/downloader/igexport', method:'GET', params:['url'], cat:'Instagram' },
-  { id:'facebook', name:'Facebook', path:'/api/downloader/facebook', method:'GET', params:['url'], cat:'Facebook' },
-  { id:'capcut', name:'CapCut v1', path:'/api/downloader/capcut', method:'GET', params:['url'], cat:'CapCut' },
-  { id:'capcutv2', name:'CapCut v2', path:'/api/downloader/capcutv2', method:'GET', params:['url'], cat:'CapCut' },
-  { id:'pinterest', name:'Pinterest', path:'/api/downloader/pinterest', method:'GET', params:['url'], cat:'Pinterest' },
-  { id:'spotify', name:'Spotify', path:'/api/downloader/spotify', method:'GET', params:['url'], cat:'Spotify & Audio' },
-  { id:'flac', name:'FLAC / MP3', path:'/api/download/flac', method:'POST', params:['track_id','format'], cat:'Spotify & Audio' },
-  { id:'mediafire', name:'MediaFire', path:'/api/downloader/mediafire', method:'GET', params:['url'], cat:'File Hosting' },
-  { id:'meganz', name:'MEGA.NZ', path:'/api/downloader/meganz', method:'GET', params:['url'], cat:'File Hosting' },
-  { id:'gdrive', name:'Google Drive', path:'/api/downloader/gdrive', method:'GET', params:['url'], cat:'File Hosting' },
-  { id:'terabox', name:'TeraBox', path:'/api/downloader/terabox', method:'GET', params:['url'], cat:'File Hosting' },
-  { id:'allinone', name:'All-in-One v1', path:'/api/downloader/allinone', method:'GET', params:['url'], cat:'All-in-One' },
-  { id:'omnify', name:'Omnify', path:'/api/downloader/omnify', method:'GET', params:['url'], cat:'All-in-One' },
-  { id:'savefrom', name:'SaveFrom', path:'/api/downloader/savefrom', method:'GET', params:['url','type'], cat:'All-in-One' },
-  { id:'snapany', name:'SnapAny', path:'/api/downloader/snapany', method:'GET', params:['url'], cat:'All-in-One' }
-];
-var API_HUB_LIST = [
-  {id:'up_ai', name:'Video Upscale AI', path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
-  {id:'up_v1', name:'Video Upscale v1', path:'/api/hdvidio/upscale', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
-  {id:'up_tohd', name:'HD Video Processor', path:'/api/hdvidio/tohd', method:'GET', params:['video','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
-  {id:'up_wink', name:'Wink HD Video Enhancer', path:'/api/hdvidio/wink-hd-video', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
-  {id:'up_v2', name:'Video HD Enhancer', path:'/api/hdvidio/enhance', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
-  {id:'ai_poll', name:'Pollinations AI', path:'/api/imageai/pollinations', method:'GET', params:['prompt'], cat:'IMG AI'},
-  {id:'ai_nano', name:'Nano Banana AI', path:'/api/imageai/nanobanana', method:'GET', params:['prompt','ratio','resolution'], cat:'IMG AI'},
-  {id:'ai_bing', name:'AI Bing Image', path:'/api/imageai/bingimg', method:'GET', params:['query'], cat:'IMG AI'},
-  {id:'ai_seek', name:'AI Seek Image', path:'/api/imageai/aiseek', method:'GET', params:['prompt'], cat:'IMG AI'},
-  {id:'ai_gstory', name:'GStory AI Image', path:'/api/imageai/gstory', method:'GET', params:['prompt','style','ratio'], cat:'IMG AI'},
-  {id:'ai_t2i', name:'Text to Image (FreeGen)', path:'/api/imageai/text2image', method:'GET', params:['teks','ratio'], cat:'IMG AI'},
-  {id:'ai_t2iv2', name:'Text to Image v2 (FLUX)', path:'/api/imageai/text2imgv2', method:'GET', params:['teks'], cat:'IMG AI'},
-  {id:'ai_t2iv3', name:'Text to Image v3 (Baidu)', path:'/api/imageai/text2imgv3', method:'GET', params:['teks'], cat:'IMG AI'},
-  {id:'hd_en1', name:'AI Enhance HD', path:'/api/imagehd/ai-enhance', method:'GET', params:['url'], cat:'IMG HD'},
-  {id:'hd_en2', name:'AI Enhance HD v2', path:'/api/imagehd/ai-enhancev2', method:'GET', params:['url','size'], cat:'IMG HD'},
-  {id:'hd_remini', name:'Remini HD', path:'/api/imagehd/remini', method:'GET', params:['url'], cat:'IMG HD'},
-  {id:'hd_clearpng', name:'ClearPNG Upscaler', path:'/api/imagehd/clearpng', method:'GET', params:['url','ratio','format'], cat:'IMG HD'},
-  {id:'hd_ups1', name:'Image Upscaler', path:'/api/imagehd/imageupscaler', method:'GET', params:['url','scale'], cat:'IMG HD'},
-  {id:'hd_nex', name:'NexUpscale', path:'/api/imagehd/nexupscale', method:'GET', params:['url','mode'], cat:'IMG HD'},
-  {id:'hd_spark', name:'SparkPix HD Upscale', path:'/api/imagehd/sparkpix', method:'GET', params:['url','quality','face'], cat:'IMG HD'},
-  {id:'hd_super', name:'AI Super Resolution', path:'/api/imagehd/super-resolution', method:'GET', params:['url'], cat:'IMG HD'},
-  {id:'hd_upai', name:'Upscale AI', path:'/api/imagehd/upscale', method:'GET', params:['url'], cat:'IMG HD'},
-  {id:'hd_wink', name:'Wink HD Enhancer', path:'/api/imagehd/wink-hd', method:'GET', params:['url'], cat:'IMG HD'},
-  {id:'hd_yupra', name:'Yupra Enhancer', path:'/api/imagehd/yupra', method:'GET', params:['url'], cat:'IMG HD'},
-  {id:'mk_bounty', name:'Fake Bounty', path:'/api/maker/bounty', method:'GET', params:['image','text'], cat:'MAKER'},
-  {id:'mk_ektp', name:'EKTP Generator', path:'/api/maker/ektp', method:'GET', params:['nama','nik','provinsi','kota','ttl','jenis_kelamin','golongan_darah','alamat','rt/rw','kel/desa','kecamatan','agama','status','pekerjaan','kewarganegaraan','masa_berlaku','terbuat','pas_photo'], cat:'MAKER'},
-  {id:'mk_tweet', name:'Fake Tweet', path:'/api/maker/fake-tweet', method:'GET', params:['name','username','text','avatar'], cat:'MAKER'},
-  {id:'mk_igp', name:'Fake IG Profile', path:'/api/maker/fakeigprofile', method:'GET', params:['username','postingan','pengikut','mengikuti','bio','ppurl'], cat:'MAKER'},
-  {id:'mk_qcwa', name:'WA Quote Chat', path:'/api/maker/qcwa', method:'GET', params:['username','text','avatar','phone','tag','image','mode'], cat:'MAKER'},
-  {id:'mk_ff', name:'Fake FF', path:'/api/maker/fake-ff', method:'GET', params:['username','lobby'], cat:'MAKER'},
-  {id:'mk_ml', name:'Fake ML', path:'/api/maker/fake-ml', method:'GET', params:['username','rank','border','avatar'], cat:'MAKER'},
-  {id:'mk_bca', name:'Fake BCA Canvas', path:'/api/maker/fakebca', method:'GET', params:['nama','norek','saldo'], cat:'MAKER'},
-  {id:'mk_dana', name:'Fake Saldo Dana', path:'/api/maker/saldo-dana', method:'GET', params:['saldo'], cat:'MAKER'},
-  {id:'mk_gopay', name:'Fake Saldo Gopay', path:'/api/maker/saldo-gopay', method:'GET', params:['saldo','koin','terpakai','bulan'], cat:'MAKER'},
-  {id:'sr_wiki', name:'Wikipedia', path:'/api/search/wikipedia', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_anime', name:'Anime Search', path:'/api/search/anime', method:'GET', params:['q'], cat:'SEARCH'},
-  {id:'sr_cookpad', name:'Cookpad', path:'/api/search/cookpad', method:'GET', params:['action','query','id'], cat:'SEARCH'},
-  {id:'sr_webtoon', name:'Webtoon', path:'/api/search/webtoon', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_youtube', name:'YouTube', path:'/api/search/youtube-search', method:'GET', params:['query'], cat:'SEARCH'},
-  {id:'sr_pinterest', name:'Search Pinterest', path:'/api/search/pinterest', method: 'GET', params:['query','limit'], cat:'SEARCH'}
-];
-var SEARCH_APIS = {
-  'WEB': [
-    { id:'wikipedia', name:'Wikipedia', path:'/api/search/wikipedia', params:['query'] },
-    { id:'nasa', name:'NASA', path:'/api/search/nasa', params:['type','query'], fixed:{type:'images'} },
-    { id:'cookpad', name:'Cookpad', path:'/api/search/cookpad', params:['query'] },
-    { id:'goal', name:'Goal.com', path:'/api/search/goal', params:['query'] }
-  ],
-  'VIDEO': [
-    { id:'youtube', name:'YouTube', path:'/api/search/youtube-search', params:['query'] },
-    { id:'tiktok', name:'TikTok', path:'/api/search/tiktok-search', params:['query','region','type'], fixed:{region:'ID', type:'video'} }
-  ],
-  'MUSIC': [
-    { id:'spotify', name:'Spotify', path:'/api/search/spotify', params:['query'] }
-  ]
-};
-var PARAM_LISTS = {
-  'list-reso': ['480p','720p','1080p','1440p','2160p (4K)'],
-  'list-fps': ['24','30','60','120'],
-  'list-quality': ['low','medium','high','ultra'],
-  'list-enhance': ['off','on','auto'],
-  'list-denoise': ['off','low','medium','high'],
-  'list-stabilize': ['off','on'],
-  'list-format': ['mp4','mov','webm','mkv'],
-  'list-formatimg': ['png','jpg','jpeg','webp']
-};
-function paramType(name, category){
-  var n = (name || '').toLowerCase();
-  var c = (category || '').toUpperCase();
-  if(n === 'video' || (n === 'url' && c === 'UPSCALE')) return 'video';
-  if(['image','avatar','pp','ppurl','photo','fotourl','pas_photo','profilephoto','mainphoto','background'].indexOf(n) !== -1) return 'image';
-  if(n === 'url' && (c === 'IMG HD' || c === 'MAKER' || c === 'IMG AI')) return 'image';
-  if(n === 'resolution' || n === 'reso') return 'list-reso';
-  if(n === 'fps') return 'list-fps';
-  if(n === 'quality') return 'list-quality';
-  if(n === 'enhance') return 'list-enhance';
-  if(n === 'denoise') return 'list-denoise';
-  if(n === 'stabilize') return 'list-stabilize';
-  if(n === 'format') return c === 'MAKER' ? 'list-formatimg' : 'list-format';
-  if(['duration','saldo','pengikut','like','comment','postingan','koin','terpakai','rollno','width','height','nik','phone','contact'].indexOf(n) !== -1) return 'number';
-  return 'text';
-}
 
-// ============ TIKTOK UTILS ============
-function detectTikTokType(data){
-  if(!data || typeof data !== 'object') return 'unknown';
-  if(data.images && Array.isArray(data.images) && data.images.length > 0) return 'slideshow';
-  if(data.image_post_info && data.image_post_info.images) return 'slideshow';
-  if(data.slideshow && Array.isArray(data.slideshow)) return 'slideshow';
-  if(data.play || data.hdplay || data.wmplay || data.video || data.video_hd || data.video_wm) return 'video';
-  if(data.data) return detectTikTokType(data.data);
-  if(data.raw) return detectTikTokType(data.raw);
-  return 'unknown';
-}
-function urlLooksLikeSlideshow(url){ if(!url) return false; var u = url.toLowerCase(); return /\/photo\//.test(u) || /slideshow/.test(u); }
-function extractTikTokVariants(data){
-  var out = { noWM:null, noWMHD:null, wm:null, music:null, title:null, author:null, cover:null, stats:null, images:null };
-  if(!data) return out;
-  var d = data.data || data.raw || data;
-  out.title = d.title || data.title || null;
-  out.author = d.author || data.author || null;
-  out.cover = d.cover || d.origin_cover || data.cover || null;
-  var imgArr = null;
-  if(d.images && Array.isArray(d.images)) imgArr = d.images;
-  else if(d.image_post_info && d.image_post_info.images) imgArr = d.image_post_info.images;
-  else if(data.image_post_info && data.image_post_info.images) imgArr = data.image_post_info.images;
-  if(imgArr){
-    out.images = imgArr.map(function(x){
-      if(typeof x === 'string') return x;
-      if(x.url_list && x.url_list[0]) return x.url_list[0];
-      if(x.image_url && x.image_url.url_list) return x.image_url.url_list[0];
-      if(x.display_image && x.display_image.url_list) return x.display_image.url_list[0];
-      return null;
-    }).filter(Boolean);
-    return out;
-  }
-  out.noWM = d.play || d.video || d.video_sd || d.play_addr || null;
-  out.noWMHD = d.hdplay || d.video_hd || d.hd || d.play_addr_hd || null;
-  out.wm = d.wmplay || d.video_wm || d.wm || null;
-  out.music = d.music || (d.music_info && d.music_info.play) || d.music_url || null;
-  if(!out.noWM && d.video_data){
-    out.noWM = (d.video_data.play_addr && d.video_data.play_addr.url_list && d.video_data.play_addr.url_list[0]) || null;
-    out.noWMHD = (d.video_data.hd && d.video_data.hd.url_list && d.video_data.hd.url_list[0]) || null;
-    out.wm = (d.video_data.wm && d.video_data.wm.url_list && d.video_data.wm.url_list[0]) || null;
-  }
-  return out;
-}
-async function fetchTikWM(url){
-  var apiURL = TIKWM + '?url=' + encodeURIComponent(url) + '&hd=1';
-  var res = await proxyFetch(apiURL, {}, 60000);
-  var json = JSON.parse(res.text);
-  if(json.code !== 0) throw new Error(json.msg || 'tikwm error');
-  var d = json.data;
-  return { status:true, __type:detectTikTokType(d), title:d.title, author:d.author, cover:d.cover, duration:d.duration, stats:{ play:d.play_count, like:d.digg_count, comment:d.comment_count, share:d.share_count }, video_nowm:d.play, video_nowm_hd:d.hdplay, video_wm:d.wmplay, music:d.music, raw:d };
-}
-
-// ============ EXPLAIN + FALLBACK ============
+// ============ EXPLAIN FAILURE ============
 function explainFailure(res, err){
   var msg = '';
   if(err) msg = err.message || '';
@@ -874,6 +795,8 @@ function explainFailure(res, err){
   if(!msg){ return 'API tidak cocok — ganti API lain'; }
   return msg.length > 60 ? msg.substring(0, 60) + '...' : msg;
 }
+
+// ============ FALLBACK WITH LOG ============
 async function fetchWithFallback(list, params, logEl){
   for(var i=0;i<list.length;i++){
     var api = list[i];
@@ -881,7 +804,7 @@ async function fetchWithFallback(list, params, logEl){
     api.params.forEach(function(p){ if(params[p] !== undefined && params[p] !== '') callParams[p] = params[p]; });
     if(logEl){ var l1 = document.createElement('div'); l1.className='ok'; l1.textContent='['+(i+1)+'/'+list.length+'] '+api.name; logEl.appendChild(l1); logEl.scrollTop=logEl.scrollHeight; }
     try{
-      var res = api.path === 'TIKWM' ? await fetchTikWM(callParams.url) : await callAPIv2(api.path, callParams, api.method);
+      var res = await callAPIv2(api.path, callParams, api.method);
       var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url) || res.__binary);
       if(success){
         if(logEl){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='  ✓ '+api.name; logEl.appendChild(l2); logEl.scrollTop=logEl.scrollHeight; }
@@ -895,48 +818,6 @@ async function fetchWithFallback(list, params, logEl){
     }
   }
   return null;
-}
-async function fetchTikTokSmart(url, logEl){
-  var isSlideUrl = urlLooksLikeSlideshow(url);
-  if(logEl){ var l = document.createElement('div'); l.className='in'; l.textContent='🔍 '+(isSlideUrl?'SLIDESHOW':'VIDEO'); logEl.appendChild(l); logEl.scrollTop=logEl.scrollHeight; }
-  var order = isSlideUrl
-    ? ['tiktokv5','tiktokv4','tiktokv3','tikwm','tiktokv2','tiktokio','tiktok']
-    : ['tikwm','tiktokv2','tiktokv4','tiktokv3','tiktokv5','tiktokio','tiktok'];
-  var results = [];
-  for(var i=0;i<order.length;i++){
-    var apiId = order[i];
-    var api = DOWNLOADER_LIST.find(function(x){ return x.id===apiId; });
-    if(!api) continue;
-    if(logEl){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='['+(i+1)+'/'+order.length+'] '+api.name; logEl.appendChild(l2); logEl.scrollTop=logEl.scrollHeight; }
-    try{
-      var res = api.path === 'TIKWM' ? await fetchTikWM(url) : await callAPIv2(api.path, {url:url}, api.method);
-      var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url));
-      if(success){
-        var type = detectTikTokType(res);
-        if(logEl){ var l3 = document.createElement('div'); l3.className='ok'; l3.textContent='  ✓ '+type.toUpperCase(); logEl.appendChild(l3); logEl.scrollTop=logEl.scrollHeight; }
-        results.push({ api:api, result:res, type:type });
-        if(type === 'slideshow' || type === 'video') break;
-      } else {
-        if(logEl){ var l4 = document.createElement('div'); l4.className='er'; l4.textContent='  ✗ '+explainFailure(res); logEl.appendChild(l4); logEl.scrollTop=logEl.scrollHeight; }
-      }
-    }catch(e){
-      if(logEl){ var l5 = document.createElement('div'); l5.className='er'; l5.textContent='  ✗ '+explainFailure(null, e); logEl.appendChild(l5); logEl.scrollTop=logEl.scrollHeight; }
-    }
-  }
-  if(!results.length) return null;
-  var primary = results[0];
-  var combined = { api: primary.api, result: primary.result, type: primary.type, allVariants: {} };
-  results.forEach(function(r){
-    var v = extractTikTokVariants(r.result);
-    if(v.noWM && !combined.allVariants.noWM) combined.allVariants.noWM = v.noWM;
-    if(v.noWMHD && !combined.allVariants.noWMHD) combined.allVariants.noWMHD = v.noWMHD;
-    if(v.wm && !combined.allVariants.wm) combined.allVariants.wm = v.wm;
-    if(v.music && !combined.allVariants.music) combined.allVariants.music = v.music;
-    if(v.images && !combined.allVariants.images) combined.allVariants.images = v.images;
-    if(v.title && !combined.allVariants.title) combined.allVariants.title = v.title;
-    if(v.author && !combined.allVariants.author) combined.allVariants.author = v.author;
-  });
-  return combined;
 }
 
 // ============ EXTRACT BYPASS URL ============
@@ -1031,6 +912,592 @@ window.zyRunBypass = async function(){
     sndError();
   }
 };
+
+// ============ TEMPMAIL v10.7 — fix domain load ============
+var tmpToken=null, tmpEmail=null, tmpPassword=null, tmpMsgs=[], tmpProvider='mail.tm';
+var TMP_PROVIDERS = {
+  'mail.tm': { name:'mail.tm', base:'https://api.mail.tm' },
+  'mail.gw': { name:'mail.gw', base:'https://api.mail.gw' }
+};
+function tmpBase(){ return TMP_PROVIDERS[tmpProvider] ? TMP_PROVIDERS[tmpProvider].base : TMP_PROVIDERS['mail.tm'].base; }
+function tmpGetSaved(){ try{ return JSON.parse(localStorage.getItem('rx_tmp_accounts') || '[]'); }catch(e){ return []; } }
+function tmpSetSaved(arr){ try{ localStorage.setItem('rx_tmp_accounts', JSON.stringify(arr)); }catch(e){} }
+function tmpSaveCurrent(){
+  if(!tmpEmail || !tmpToken){ alert('Belum ada akun aktif'); return false; }
+  var saved = tmpGetSaved();
+  var idx = -1;
+  for(var i=0;i<saved.length;i++){ if(saved[i].email === tmpEmail){ idx = i; break; } }
+  var rec = { email: tmpEmail, password: tmpPassword, token: tmpToken, provider: tmpProvider, savedAt: Date.now() };
+  if(idx >= 0) saved[idx] = rec; else saved.unshift(rec);
+  if(saved.length > 20) saved = saved.slice(0, 20);
+  tmpSetSaved(saved);
+  tmpRenderSaved();
+  if(window.zyToast) window.zyToast('💾 Akun disave');
+  return true;
+}
+function tmpLoadAccount(email){
+  var saved = tmpGetSaved();
+  var rec = null;
+  for(var i=0;i<saved.length;i++){ if(saved[i].email === email){ rec = saved[i]; break; } }
+  if(!rec){ alert('Akun gak ketemu'); return; }
+  tmpEmail = rec.email; tmpPassword = rec.password; tmpToken = rec.token; tmpProvider = rec.provider || 'mail.tm';
+  if($id('tmp-email')) $id('tmp-email').textContent = tmpEmail;
+  if(window.zyToast) window.zyToast('📂 Loaded: ' + tmpEmail);
+  logTo('tmp-log', '✓ Akun di-restore: ' + tmpEmail, 'ok');
+  tmpRenderSaved();
+  setTimeout(function(){ if($id('tmp-refresh')) $id('tmp-refresh').click(); }, 300);
+}
+function tmpDeleteSaved(email){
+  if(!confirm('Hapus akun ' + email + '?')) return;
+  var saved = tmpGetSaved();
+  var out = [];
+  for(var i=0;i<saved.length;i++){ if(saved[i].email !== email) out.push(saved[i]); }
+  tmpSetSaved(out); tmpRenderSaved();
+  if(window.zyToast) window.zyToast('🗑 Dihapus');
+}
+function tmpRenderSaved(){
+  var wrap = $id('tmp-saved-list'); if(!wrap) return;
+  var saved = tmpGetSaved();
+  if(!saved.length){ wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'block';
+  var html = '<div style="font-size:.5rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:6px">AKUN TERSIMPAN (' + saved.length + ')</div>';
+  saved.forEach(function(r){
+    var dt = new Date(r.savedAt).toLocaleString('id-ID');
+    var isActive = (r.email === tmpEmail);
+    var emailEsc = esc(r.email).replace(/'/g, "\\'");
+    html += '<div class="msg-item" style="cursor:default;' + (isActive ? 'border-color:var(--ac);background:var(--acd)' : '') + '">';
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px">';
+    html += '<b style="word-break:break-all;font-size:.55rem">' + esc(r.email) + '</b>';
+    html += '<span style="font-size:.45rem;color:var(--txd);flex-shrink:0">' + esc(r.provider || 'mail.tm') + '</span>';
+    html += '</div>';
+    html += '<div style="font-size:.5rem;color:var(--txd);margin-bottom:6px">' + dt + (isActive ? ' · AKTIF' : '') + '</div>';
+    html += '<div style="display:flex;gap:5px">';
+    html += '<button class="g" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpLoadSaved(\'' + emailEsc + '\')">📂 LOAD</button>';
+    html += '<button class="g" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpCopySaved(\'' + emailEsc + '\')">📋 COPY</button>';
+    html += '<button class="d" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpDelSaved(\'' + emailEsc + '\')">🗑</button>';
+    html += '</div></div>';
+  });
+  wrap.innerHTML = html;
+}
+window.__tmpLoadSaved = tmpLoadAccount;
+window.__tmpDelSaved = tmpDeleteSaved;
+window.__tmpDeleteSaved = tmpDeleteSaved;
+window.__tmpCopySaved = function(email){
+  var saved = tmpGetSaved();
+  var rec = null;
+  for(var i=0;i<saved.length;i++){ if(saved[i].email === email){ rec = saved[i]; break; } }
+  if(!rec) return;
+  navigator.clipboard.writeText(rec.email).then(function(){
+    if(window.zyToast) window.zyToast('Email tersalin');
+    if(window.unlockAch) window.unlockAch('copy_email');
+  });
+};
+
+async function tmpFetchV2(url, opts){
+  opts = opts || {};
+  var method = opts.method || 'GET';
+  var headers = opts.headers || {};
+  var body = opts.body || null;
+  var externalSignal = opts.signal;
+  async function tryReturn(r){
+    if(!r) return null;
+    try{
+      var txt = await r.clone().text();
+      var trimmed = txt.trim();
+      if(trimmed.indexOf('<') === 0) return null;
+      var j = JSON.parse(txt);
+      if(j && typeof j === 'object') return r;
+      return null;
+    }catch(e){ return null; }
+  }
+  async function tryFetch(fetchUrl, timeoutMs){
+    if(externalSignal && externalSignal.aborted) throw new Error('aborted_by_user');
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs);
+    var onExtAbort = function(){ try{ ctrl.abort(); }catch(e){} };
+    if(externalSignal) externalSignal.addEventListener('abort', onExtAbort);
+    try{
+      var r = await fetch(fetchUrl, {method: method, headers: headers, body: body, signal: ctrl.signal});
+      clearTimeout(timer);
+      if(externalSignal) externalSignal.removeEventListener('abort', onExtAbort);
+      return r;
+    }catch(e){
+      clearTimeout(timer);
+      if(externalSignal) externalSignal.removeEventListener('abort', onExtAbort);
+      if(externalSignal && externalSignal.aborted) throw new Error('aborted_by_user');
+      throw e;
+    }
+  }
+  try{ var rd = await tryFetch(url, 15000); var vd = await tryReturn(rd); if(vd) return vd; }catch(e){ if(e.message === 'aborted_by_user') throw e; }
+  try{ var wurl = WORKER + '/?url=' + encodeURIComponent(url); var r1 = await tryFetch(wurl, 15000); var v1 = await tryReturn(r1); if(v1) return v1; }catch(e){ if(e.message === 'aborted_by_user') throw e; }
+  for(var ci=0;ci<CORS.length;ci++){
+    try{
+      var p = CORS[ci];
+      var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
+      var r3 = await tryFetch(full, 15000);
+      var v3 = await tryReturn(r3);
+      if(v3) return v3;
+    }catch(e){ if(e.message === 'aborted_by_user') throw e; }
+  }
+  throw new Error('Semua layer gagal');
+}
+
+var _tmpRetryCount = 0;
+var _tmpCache = { domains: [], time: 0 };
+var TMP_CACHE_MS = 10 * 60 * 1000;
+var _tmpLoading = false;
+
+async function tmpLoad(){
+  if(_tmpLoading) return;
+  _tmpLoading = true;
+  var log = document.getElementById('tmp-log');
+  if(log && _tmpRetryCount === 0) log.innerHTML = '';
+
+  if(_tmpCache.domains.length && (Date.now() - _tmpCache.time) < TMP_CACHE_MS){
+    logTo('tmp-log','⚡ Cache (' + _tmpCache.domains.length + ' domain)','ok');
+    _applyDomainItems(_tmpCache.domains);
+    _tmpLoading = false;
+    return;
+  }
+
+  logTo('tmp-log','🔍 Memuat provider...','in');
+  logTo('tmp-log','⏳ Fetch domain paralel...','in');
+  var providers = Object.keys(TMP_PROVIDERS);
+  var promises = providers.map(function(provName){
+    var provBase = TMP_PROVIDERS[provName].base;
+    return Promise.race([
+      tmpFetchV2(provBase + '/domains')
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          var arr = j['hydra:member'] || [];
+          logTo('tmp-log','  ✓ ' + provName + ' — ' + arr.length + ' domain','ok');
+          return arr.map(function(d){ return { domain: d.domain, provider: provName }; });
+        })
+        .catch(function(e){
+          logTo('tmp-log','  ✗ ' + provName + ' — ' + e.message,'er');
+          return [];
+        }),
+      new Promise(function(res){ setTimeout(function(){ logTo('tmp-log','  ⏱ ' + provName + ' timeout','warn'); res([]); }, 15000); })
+    ]);
+  });
+
+  var results = await Promise.all(promises);
+  var allDomains = [];
+  results.forEach(function(arr){ arr.forEach(function(d){ allDomains.push(d); }); });
+
+  if(allDomains.length){
+    _tmpCache.domains = allDomains;
+    _tmpCache.time = Date.now();
+    logTo('tmp-log','✓ Total ' + allDomains.length + ' domain siap dipakai','ok');
+    _applyDomainItems(allDomains);
+    _tmpRetryCount = 0;
+  } else {
+    if(_tmpRetryCount < 3){
+      _tmpRetryCount++;
+      logTo('tmp-log','⚠ Retry ' + _tmpRetryCount + '/3...','warn');
+      _tmpLoading = false;
+      setTimeout(function(){ tmpLoad(); }, 2000);
+      return;
+    } else {
+      logTo('tmp-log','⚠ Gagal semua. Klik RELOAD.','warn');
+      _tmpRetryCount = 0;
+    }
+  }
+  _tmpLoading = false;
+}
+
+function _applyDomainItems(allDomains){
+  if(!window.__selTmpDom) return;
+  var items = [{id:'', name:'— CHOOSE (' + allDomains.length + ') —'}];
+  allDomains.forEach(function(d){
+    items.push({ id: d.provider + '|' + d.domain, name: d.domain, desc: d.provider });
+  });
+  window.__selTmpDom.setItems(items);
+}
+
+window.tmpLoadDomains = function(){ _tmpRetryCount = 0; _tmpCache.time = 0; tmpRenderSaved(); return tmpLoad(); };
+if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ window.tmpLoadDomains(); };
+
+function tmpInitProviderSelector(){
+  if(typeof window.initCustomSelect !== 'function') return;
+  var provEl = document.getElementById('tmp-provider');
+  if(!provEl) return;
+  if(provEl.__inited) return;
+  provEl.__inited = true;
+  var items = Object.keys(TMP_PROVIDERS).map(function(k){ return { id:k, name: TMP_PROVIDERS[k].name }; });
+  window.__selTmpProvider = window.initCustomSelect('tmp-provider', items, tmpProvider, function(id){
+    tmpProvider = id;
+    if(window.__selTmpDom) window.__selTmpDom.setItems([{id:'', name:'— CHOOSE —'}]);
+    window.tmpLoadDomains();
+  });
+}
+window.tmpInitProviderSelector = tmpInitProviderSelector;
+
+window.__tmpAbort = null;
+if($id('tmp-stop')) $id('tmp-stop').onclick=function(){
+  if(window.__tmpAbort){ try{ window.__tmpAbort.abort(); }catch(e){} window.__tmpAbort = null; }
+  var sb = $id('tmp-stop'); if(sb) sb.style.display = 'none';
+  var gb = $id('tmp-gen'); if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
+  logTo('tmp-log','⛔ Dihentikan user','warn');
+};
+
+var _lastGenTime = 0;
+if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
+  if(Date.now() - _lastGenTime < 3000){ alert('Tunggu 3 detik'); return; }
+  _lastGenTime = Date.now();
+  var log = document.getElementById('tmp-log');
+  if(log) log.innerHTML = '';
+  var nm = $id('tmp-name').value.trim() || ('user' + Math.floor(Math.random()*99999));
+  var domRaw = (window.__selTmpDom ? window.__selTmpDom.getValue() : '');
+  if(!domRaw){ alert('Pilih domain dulu'); return; }
+  var parts = domRaw.split('|');
+  var provKey = parts[0] || tmpProvider;
+  var dom = parts[1] || domRaw;
+  var base = TMP_PROVIDERS[provKey] ? TMP_PROVIDERS[provKey].base : tmpBase();
+  tmpProvider = provKey;
+  var em = nm + '@' + dom;
+  var pw = 'RyannTmp!' + Math.floor(Math.random()*99999);
+  var gb = $id('tmp-gen'); if(gb){ gb.disabled = true; gb.textContent = '⏳...'; }
+  var sb = $id('tmp-stop'); if(sb) sb.style.display = 'block';
+  window.__tmpAbort = new AbortController();
+  logTo('tmp-log','⏳ Membuat ' + em + ' via ' + provKey + '...','in');
+  try{
+    var r = await tmpFetchV2(base + '/accounts', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({address:em, password:pw}),
+      signal: window.__tmpAbort.signal
+    });
+    var j = null; try{ j = await r.json(); }catch(e){}
+    if(r.status >= 400){
+      var errMsg = (j && (j['hydra:description'] || j.message || j.error || j.detail)) || ('HTTP ' + r.status);
+      if(errMsg.toLowerCase().indexOf('already') !== -1 || r.status === 422){
+        logTo('tmp-log','⚠ AKUN SUDAH ADA','warn');
+        logTo('tmp-log','→ Coba login pakai akun itu...','in');
+        var rLogin = await tmpFetchV2(base + '/token', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({address:em, password:pw}),
+          signal: window.__tmpAbort.signal
+        });
+        var jLogin = null; try{ jLogin = await rLogin.json(); }catch(e){}
+        if(rLogin.status === 200 && jLogin && jLogin.token){
+          tmpToken = jLogin.token; tmpEmail = em; tmpPassword = pw;
+          $id('tmp-email').textContent = em;
+          logTo('tmp-log','✓ Login ke akun lama OK','ok');
+          tmpSaveCurrent();
+          if(window.sndSuccess) window.sndSuccess();
+          if(window.unlockAch) window.unlockAch('tmp_first');
+          return;
+        } else {
+          var lm = (jLogin && (jLogin['hydra:description'] || jLogin.message)) || 'password beda';
+          logTo('tmp-log','✗ Login gagal: ' + lm,'er');
+          logTo('tmp-log','💡 Ganti nama lain (mis: ' + nm + Math.floor(Math.random()*9999) + ')','warn');
+          return;
+        }
+      }
+      if(r.status === 429){
+        logTo('tmp-log','✗ Rate limit — coba domain / provider lain','er');
+        return;
+      }
+      logTo('tmp-log','✗ ' + errMsg,'er');
+      return;
+    }
+    logTo('tmp-log','✓ Account OK: ' + em,'ok');
+    var r2 = await tmpFetchV2(base + '/token', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({address:em, password:pw}),
+      signal: window.__tmpAbort.signal
+    });
+    var j2 = null; try{ j2 = await r2.json(); }catch(e){}
+    if(r2.status === 200 && j2 && j2.token){
+      tmpToken = j2.token; tmpEmail = em; tmpPassword = pw;
+      $id('tmp-email').textContent = em;
+      logTo('tmp-log','✓ Login OK [' + provKey + ']','ok');
+      tmpSaveCurrent();
+      if(window.sndSuccess) window.sndSuccess();
+      if(window.unlockAch) window.unlockAch('tmp_first');
+    } else {
+      var tm = (j2 && (j2['hydra:description'] || j2.message)) || ('HTTP ' + r2.status);
+      logTo('tmp-log','✗ Login: ' + tm,'er');
+    }
+  }catch(e){
+    if(e.name === 'AbortError' || (e.message && e.message.indexOf('aborted') !== -1)){ logTo('tmp-log','⛔ Dibatalkan','warn'); }
+    else { logTo('tmp-log','✗ Network error: ' + e.message,'er'); }
+  }finally{
+    window.__tmpAbort = null;
+    if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
+    if(sb) sb.style.display = 'none';
+  }
+};
+
+if($id('tmp-save')) $id('tmp-save').onclick=function(){ if(window.sndClick) window.sndClick(); tmpSaveCurrent(); };
+if($id('tmp-load')) $id('tmp-load').onclick=function(){
+  if(window.sndClick) window.sndClick();
+  var saved = tmpGetSaved();
+  if(!saved.length){ alert('Belum ada akun tersimpan'); return; }
+  tmpRenderSaved();
+  var wrap = $id('tmp-saved-list');
+  if(wrap) wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
+};
+setTimeout(function(){ tmpRenderSaved(); }, 500);
+if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail){ navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); if(window.unlockAch) window.unlockAch('copy_email'); }); } };
+if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
+  if(!tmpToken){ alert('Generate dulu'); return; }
+  var base = tmpBase();
+  try{
+    var r = await tmpFetchV2(base + '/messages', {headers:{'Authorization':'Bearer '+tmpToken}});
+    var j = await r.json();
+    tmpMsgs = j['hydra:member'] || [];
+    var el = $id('tmp-list');
+    el.innerHTML = tmpMsgs.map(function(m,i){ return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'</div>'; }).join('');
+    el.querySelectorAll('.msg-item').forEach(function(it){
+      it.onclick=function(){
+        var idx = parseInt(it.dataset.i); var m = tmpMsgs[idx];
+        $id('tmp-msg-view').innerHTML='<b>From:</b> '+m.from.address+'<br><b>Subj:</b> '+m.subject+'<br><br>'+(m.intro||'');
+        $id('tmp-msg-view').classList.remove('hd');
+      };
+    });
+    if(window.sndSuccess) window.sndSuccess();
+    if(window.unlockAch) window.unlockAch('inbox_first');
+  }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
+};
+if($id('tmp-inbox-dl')) $id('tmp-inbox-dl').onclick=function(){
+  if(!tmpMsgs.length) return;
+  var t = tmpMsgs.map(function(m){ return m.from.address+' | '+m.subject; }).join('\n');
+  var b = new Blob([t],{type:'text/plain'});
+  var u = URL.createObjectURL(b);
+  var a = document.createElement('a'); a.href=u; a.download='inbox.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+};
+
+// ============ TAG: PART 2 LANJUT DI SINI ============
+// [PART 2 LANJUT DI SINI]
+
+// ============ DOWNLOADER LIST ============
+var DOWNLOADER_LIST = [
+  { id:'tikwm', name:'TikWM (recommended)', path:'TIKWM', method:'GET', params:['url'], cat:'TikTok', desc:'auto WM/NoWM/HD' },
+  { id:'tiktokv2', name:'TikTok v2 (HD)', path:'/api/downloader/tiktokv2', method:'GET', params:['url'], cat:'TikTok' },
+  { id:'tiktokv3', name:'TikTok v3', path:'/api/downloader/tiktokv3', method:'GET', params:['url'], cat:'TikTok' },
+  { id:'tiktokv4', name:'TikTok v4', path:'/api/downloader/tiktokv4', method:'GET', params:['url'], cat:'TikTok' },
+  { id:'tiktokv5', name:'TikTok v5 (slide)', path:'/api/downloader/tiktokv5', method:'GET', params:['url'], cat:'TikTok' },
+  { id:'tiktokio', name:'TikTok.io', path:'/api/downloader/tiktokio', method:'GET', params:['url'], cat:'TikTok' },
+  { id:'tiktok', name:'TikTok v1', path:'/api/downloader/tiktok', method:'GET', params:['url'], cat:'TikTok' },
+  { id:'youtubev1', name:'YouTube v1', path:'/api/downloader/youtubev1', method:'GET', params:['url','quality'], cat:'YouTube' },
+  { id:'youtubev2', name:'YouTube v2', path:'/api/downloader/youtubev2', method:'GET', params:['url'], cat:'YouTube' },
+  { id:'youtubev3', name:'YouTube v3', path:'/api/downloader/youtubev3', method:'GET', params:['url','json'], cat:'YouTube' },
+  { id:'youtubev4', name:'YouTube v4', path:'/api/downloader/youtubev4', method:'GET', params:['url'], cat:'YouTube' },
+  { id:'savetube', name:'SaveTube', path:'/api/downloader/savetube', method:'GET', params:['url','format'], cat:'YouTube' },
+  { id:'ytplay', name:'YT Play', path:'/api/downloader/ytplay', method:'GET', params:['query'], cat:'YouTube' },
+  { id:'igexport', name:'Instagram Export', path:'/api/downloader/igexport', method:'GET', params:['url'], cat:'Instagram' },
+  { id:'facebook', name:'Facebook', path:'/api/downloader/facebook', method:'GET', params:['url'], cat:'Facebook' },
+  { id:'capcut', name:'CapCut v1', path:'/api/downloader/capcut', method:'GET', params:['url'], cat:'CapCut' },
+  { id:'capcutv2', name:'CapCut v2', path:'/api/downloader/capcutv2', method:'GET', params:['url'], cat:'CapCut' },
+  { id:'pinterest', name:'Pinterest', path:'/api/downloader/pinterest', method:'GET', params:['url'], cat:'Pinterest' },
+  { id:'spotify', name:'Spotify', path:'/api/downloader/spotify', method:'GET', params:['url'], cat:'Spotify & Audio' },
+  { id:'flac', name:'FLAC / MP3', path:'/api/download/flac', method:'POST', params:['track_id','format'], cat:'Spotify & Audio' },
+  { id:'mediafire', name:'MediaFire', path:'/api/downloader/mediafire', method:'GET', params:['url'], cat:'File Hosting' },
+  { id:'meganz', name:'MEGA.NZ', path:'/api/downloader/meganz', method:'GET', params:['url'], cat:'File Hosting' },
+  { id:'gdrive', name:'Google Drive', path:'/api/downloader/gdrive', method:'GET', params:['url'], cat:'File Hosting' },
+  { id:'terabox', name:'TeraBox', path:'/api/downloader/terabox', method:'GET', params:['url'], cat:'File Hosting' },
+  { id:'allinone', name:'All-in-One v1', path:'/api/downloader/allinone', method:'GET', params:['url'], cat:'All-in-One' },
+  { id:'omnify', name:'Omnify', path:'/api/downloader/omnify', method:'GET', params:['url'], cat:'All-in-One' },
+  { id:'savefrom', name:'SaveFrom', path:'/api/downloader/savefrom', method:'GET', params:['url','type'], cat:'All-in-One' },
+  { id:'snapany', name:'SnapAny', path:'/api/downloader/snapany', method:'GET', params:['url'], cat:'All-in-One' }
+];
+
+// ============ API HUB LIST ============
+var API_HUB_LIST = [
+  // UPSCALE — 5 endpoint (auto-fallback chain)
+  {id:'up_ai', name:'Video Upscale AI', path:'/api/hdvidio/ai-upscale-vidio', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
+  {id:'up_v1', name:'Video Upscale v1', path:'/api/hdvidio/upscale', method:'GET', params:['url','resolution'], cat:'UPSCALE'},
+  {id:'up_tohd', name:'HD Video Processor', path:'/api/hdvidio/tohd', method:'GET', params:['video','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
+  {id:'up_wink', name:'Wink HD Video Enhancer', path:'/api/hdvidio/wink-hd-video', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
+  {id:'up_v2', name:'Video HD Enhancer', path:'/api/hdvidio/enhance', method:'GET', params:['url','fps','resolution','quality','enhance','denoise','stabilize','format'], cat:'UPSCALE'},
+
+  // IMG AI
+  {id:'ai_poll', name:'Pollinations AI', path:'/api/imageai/pollinations', method:'GET', params:['prompt'], cat:'IMG AI'},
+  {id:'ai_nano', name:'Nano Banana AI', path:'/api/imageai/nanobanana', method:'GET', params:['prompt','ratio','resolution'], cat:'IMG AI'},
+  {id:'ai_bing', name:'AI Bing Image', path:'/api/imageai/bingimg', method:'GET', params:['query'], cat:'IMG AI'},
+  {id:'ai_seek', name:'AI Seek Image', path:'/api/imageai/aiseek', method:'GET', params:['prompt'], cat:'IMG AI'},
+  {id:'ai_gstory', name:'GStory AI Image', path:'/api/imageai/gstory', method:'GET', params:['prompt','style','ratio'], cat:'IMG AI'},
+  {id:'ai_t2i', name:'Text to Image (FreeGen)', path:'/api/imageai/text2image', method:'GET', params:['teks','ratio'], cat:'IMG AI'},
+  {id:'ai_t2iv2', name:'Text to Image v2 (FLUX)', path:'/api/imageai/text2imgv2', method:'GET', params:['teks'], cat:'IMG AI'},
+  {id:'ai_t2iv3', name:'Text to Image v3 (Baidu)', path:'/api/imageai/text2imgv3', method:'GET', params:['teks'], cat:'IMG AI'},
+
+  // IMG HD
+  {id:'hd_en1', name:'AI Enhance HD', path:'/api/imagehd/ai-enhance', method:'GET', params:['url'], cat:'IMG HD'},
+  {id:'hd_en2', name:'AI Enhance HD v2', path:'/api/imagehd/ai-enhancev2', method:'GET', params:['url','size'], cat:'IMG HD'},
+  {id:'hd_remini', name:'Remini HD', path:'/api/imagehd/remini', method:'GET', params:['url'], cat:'IMG HD'},
+  {id:'hd_clearpng', name:'ClearPNG Upscaler', path:'/api/imagehd/clearpng', method:'GET', params:['url','ratio','format'], cat:'IMG HD'},
+  {id:'hd_ups1', name:'Image Upscaler', path:'/api/imagehd/imageupscaler', method:'GET', params:['url','scale'], cat:'IMG HD'},
+  {id:'hd_nex', name:'NexUpscale', path:'/api/imagehd/nexupscale', method:'GET', params:['url','mode'], cat:'IMG HD'},
+  {id:'hd_spark', name:'SparkPix HD Upscale', path:'/api/imagehd/sparkpix', method:'GET', params:['url','quality','face'], cat:'IMG HD'},
+  {id:'hd_super', name:'AI Super Resolution', path:'/api/imagehd/super-resolution', method:'GET', params:['url'], cat:'IMG HD'},
+  {id:'hd_upai', name:'Upscale AI', path:'/api/imagehd/upscale', method:'GET', params:['url'], cat:'IMG HD'},
+  {id:'hd_wink', name:'Wink HD Enhancer', path:'/api/imagehd/wink-hd', method:'GET', params:['url'], cat:'IMG HD'},
+  {id:'hd_yupra', name:'Yupra Enhancer', path:'/api/imagehd/yupra', method:'GET', params:['url'], cat:'IMG HD'},
+
+  // MAKER
+  {id:'mk_bounty', name:'Fake Bounty', path:'/api/maker/bounty', method:'GET', params:['image','text'], cat:'MAKER'},
+  {id:'mk_ektp', name:'EKTP Generator', path:'/api/maker/ektp', method:'GET', params:['nama','nik','provinsi','kota','ttl','jenis_kelamin','golongan_darah','alamat','rt/rw','kel/desa','kecamatan','agama','status','pekerjaan','kewarganegaraan','masa_berlaku','terbuat','pas_photo'], cat:'MAKER'},
+  {id:'mk_tweet', name:'Fake Tweet', path:'/api/maker/fake-tweet', method:'GET', params:['name','username','text','avatar'], cat:'MAKER'},
+  {id:'mk_igp', name:'Fake IG Profile', path:'/api/maker/fakeigprofile', method:'GET', params:['username','postingan','pengikut','mengikuti','bio','ppurl'], cat:'MAKER'},
+  {id:'mk_qcwa', name:'WA Quote Chat', path:'/api/maker/qcwa', method:'GET', params:['username','text','avatar','phone','tag','image','mode'], cat:'MAKER'},
+  {id:'mk_ff', name:'Fake FF', path:'/api/maker/fake-ff', method:'GET', params:['username','lobby'], cat:'MAKER'},
+  {id:'mk_ml', name:'Fake ML', path:'/api/maker/fake-ml', method:'GET', params:['username','rank','border','avatar'], cat:'MAKER'},
+  {id:'mk_bca', name:'Fake BCA Canvas', path:'/api/maker/fakebca', method:'GET', params:['nama','norek','saldo'], cat:'MAKER'},
+  {id:'mk_dana', name:'Fake Saldo Dana', path:'/api/maker/saldo-dana', method:'GET', params:['saldo'], cat:'MAKER'},
+  {id:'mk_gopay', name:'Fake Saldo Gopay', path:'/api/maker/saldo-gopay', method:'GET', params:['saldo','koin','terpakai','bulan'], cat:'MAKER'},
+
+  // SEARCH API
+  {id:'sr_wiki', name:'Wikipedia', path:'/api/search/wikipedia', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_anime', name:'Anime Search', path:'/api/search/anime', method:'GET', params:['q'], cat:'SEARCH'},
+  {id:'sr_cookpad', name:'Cookpad', path:'/api/search/cookpad', method:'GET', params:['action','query','id'], cat:'SEARCH'},
+  {id:'sr_webtoon', name:'Webtoon', path:'/api/search/webtoon', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_youtube', name:'YouTube', path:'/api/search/youtube-search', method:'GET', params:['query'], cat:'SEARCH'},
+  {id:'sr_pinterest', name:'Search Pinterest', path:'/api/search/pinterest', method:'GET', params:['query','limit'], cat:'SEARCH'}
+];
+
+// ============ SEARCH APIS ============
+var SEARCH_APIS = {
+  'WEB': [
+    { id:'wikipedia', name:'Wikipedia', path:'/api/search/wikipedia', params:['query'] },
+    { id:'nasa', name:'NASA', path:'/api/search/nasa', params:['type','query'], fixed:{type:'images'} },
+    { id:'cookpad', name:'Cookpad', path:'/api/search/cookpad', params:['query'] },
+    { id:'goal', name:'Goal.com', path:'/api/search/goal', params:['query'] }
+  ],
+  'VIDEO': [
+    { id:'youtube', name:'YouTube', path:'/api/search/youtube-search', params:['query'] },
+    { id:'tiktok', name:'TikTok', path:'/api/search/tiktok-search', params:['query','region','type'], fixed:{region:'ID', type:'video'} }
+  ],
+  'MUSIC': [
+    { id:'spotify', name:'Spotify', path:'/api/search/spotify', params:['query'] }
+  ]
+};
+
+// ============ PARAM LISTS ============
+var PARAM_LISTS = {
+  'list-reso': ['480p','720p','1080p','1440p','2160p (4K)'],
+  'list-fps': ['24','30','60','120'],
+  'list-quality': ['low','medium','high','ultra'],
+  'list-enhance': ['off','on','auto'],
+  'list-denoise': ['off','low','medium','high'],
+  'list-stabilize': ['off','on'],
+  'list-format': ['mp4','mov','webm','mkv'],
+  'list-formatimg': ['png','jpg','jpeg','webp']
+};
+function paramType(name, category){
+  var n = (name || '').toLowerCase();
+  var c = (category || '').toUpperCase();
+  if(n === 'video' || (n === 'url' && c === 'UPSCALE')) return 'video';
+  if(['image','avatar','pp','ppurl','photo','fotourl','pas_photo','profilephoto','mainphoto','background'].indexOf(n) !== -1) return 'image';
+  if(n === 'url' && (c === 'IMG HD' || c === 'MAKER' || c === 'IMG AI')) return 'image';
+  if(n === 'resolution' || n === 'reso') return 'list-reso';
+  if(n === 'fps') return 'list-fps';
+  if(n === 'quality') return 'list-quality';
+  if(n === 'enhance') return 'list-enhance';
+  if(n === 'denoise') return 'list-denoise';
+  if(n === 'stabilize') return 'list-stabilize';
+  if(n === 'format') return c === 'MAKER' ? 'list-formatimg' : 'list-format';
+  if(['duration','saldo','pengikut','like','comment','postingan','koin','terpakai','rollno','width','height','nik','phone','contact'].indexOf(n) !== -1) return 'number';
+  return 'text';
+}
+
+// ============ TIKTOK UTILS ============
+function detectTikTokType(data){
+  if(!data || typeof data !== 'object') return 'unknown';
+  if(data.images && Array.isArray(data.images) && data.images.length > 0) return 'slideshow';
+  if(data.image_post_info && data.image_post_info.images) return 'slideshow';
+  if(data.slideshow && Array.isArray(data.slideshow)) return 'slideshow';
+  if(data.play || data.hdplay || data.wmplay || data.video || data.video_hd || data.video_wm) return 'video';
+  if(data.data) return detectTikTokType(data.data);
+  if(data.raw) return detectTikTokType(data.raw);
+  return 'unknown';
+}
+function urlLooksLikeSlideshow(url){ if(!url) return false; var u = url.toLowerCase(); return /\/photo\//.test(u) || /slideshow/.test(u); }
+function extractTikTokVariants(data){
+  var out = { noWM:null, noWMHD:null, wm:null, music:null, title:null, author:null, cover:null, stats:null, images:null };
+  if(!data) return out;
+  var d = data.data || data.raw || data;
+  out.title = d.title || data.title || null;
+  out.author = d.author || data.author || null;
+  out.cover = d.cover || d.origin_cover || data.cover || null;
+  var imgArr = null;
+  if(d.images && Array.isArray(d.images)) imgArr = d.images;
+  else if(d.image_post_info && d.image_post_info.images) imgArr = d.image_post_info.images;
+  else if(data.image_post_info && data.image_post_info.images) imgArr = data.image_post_info.images;
+  if(imgArr){
+    out.images = imgArr.map(function(x){
+      if(typeof x === 'string') return x;
+      if(x.url_list && x.url_list[0]) return x.url_list[0];
+      if(x.image_url && x.image_url.url_list) return x.image_url.url_list[0];
+      if(x.display_image && x.display_image.url_list) return x.display_image.url_list[0];
+      return null;
+    }).filter(Boolean);
+    return out;
+  }
+  out.noWM = d.play || d.video || d.video_sd || d.play_addr || null;
+  out.noWMHD = d.hdplay || d.video_hd || d.hd || d.play_addr_hd || null;
+  out.wm = d.wmplay || d.video_wm || d.wm || null;
+  out.music = d.music || (d.music_info && d.music_info.play) || d.music_url || null;
+  if(!out.noWM && d.video_data){
+    out.noWM = (d.video_data.play_addr && d.video_data.play_addr.url_list && d.video_data.play_addr.url_list[0]) || null;
+    out.noWMHD = (d.video_data.hd && d.video_data.hd.url_list && d.video_data.hd.url_list[0]) || null;
+    out.wm = (d.video_data.wm && d.video_data.wm.url_list && d.video_data.wm.url_list[0]) || null;
+  }
+  return out;
+}
+async function fetchTikWM(url){
+  var apiURL = TIKWM + '?url=' + encodeURIComponent(url) + '&hd=1';
+  var res = await proxyFetch(apiURL, {}, 60000);
+  var json = JSON.parse(res.text);
+  if(json.code !== 0) throw new Error(json.msg || 'tikwm error');
+  var d = json.data;
+  return { status:true, __type:detectTikTokType(d), title:d.title, author:d.author, cover:d.cover, duration:d.duration, stats:{ play:d.play_count, like:d.digg_count, comment:d.comment_count, share:d.share_count }, video_nowm:d.play, video_nowm_hd:d.hdplay, video_wm:d.wmplay, music:d.music, raw:d };
+}
+
+// ============ SMART TIKTOK FALLBACK ============
+async function fetchTikTokSmart(url, logEl){
+  var isSlideUrl = urlLooksLikeSlideshow(url);
+  if(logEl){ var l = document.createElement('div'); l.className='in'; l.textContent='🔍 '+(isSlideUrl?'SLIDESHOW':'VIDEO'); logEl.appendChild(l); logEl.scrollTop=logEl.scrollHeight; }
+  var order = isSlideUrl
+    ? ['tiktokv5','tiktokv4','tiktokv3','tikwm','tiktokv2','tiktokio','tiktok']
+    : ['tikwm','tiktokv2','tiktokv4','tiktokv3','tiktokv5','tiktokio','tiktok'];
+  var results = [];
+  for(var i=0;i<order.length;i++){
+    var apiId = order[i];
+    var api = DOWNLOADER_LIST.find(function(x){ return x.id===apiId; });
+    if(!api) continue;
+    if(logEl){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='['+(i+1)+'/'+order.length+'] '+api.name; logEl.appendChild(l2); logEl.scrollTop=logEl.scrollHeight; }
+    try{
+      var res = api.path === 'TIKWM' ? await fetchTikWM(url) : await callAPIv2(api.path, {url:url}, api.method);
+      var success = res && ((res.status === true) || (res.status === 'success') || (res.success === true) || (res.result && !res.error) || (res.data) || (res.url) || (res.video) || (res.download_url));
+      if(success){
+        var type = detectTikTokType(res);
+        if(logEl){ var l3 = document.createElement('div'); l3.className='ok'; l3.textContent='  ✓ '+type.toUpperCase(); logEl.appendChild(l3); logEl.scrollTop=logEl.scrollHeight; }
+        results.push({ api:api, result:res, type:type });
+        if(type === 'slideshow' || type === 'video') break;
+      } else {
+        if(logEl){ var l4 = document.createElement('div'); l4.className='er'; l4.textContent='  ✗ '+explainFailure(res); logEl.appendChild(l4); logEl.scrollTop=logEl.scrollHeight; }
+      }
+    }catch(e){
+      if(logEl){ var l5 = document.createElement('div'); l5.className='er'; l5.textContent='  ✗ '+explainFailure(null, e); logEl.appendChild(l5); logEl.scrollTop=logEl.scrollHeight; }
+    }
+  }
+  if(!results.length) return null;
+  var primary = results[0];
+  var combined = { api: primary.api, result: primary.result, type: primary.type, allVariants: {} };
+  results.forEach(function(r){
+    var v = extractTikTokVariants(r.result);
+    if(v.noWM && !combined.allVariants.noWM) combined.allVariants.noWM = v.noWM;
+    if(v.noWMHD && !combined.allVariants.noWMHD) combined.allVariants.noWMHD = v.noWMHD;
+    if(v.wm && !combined.allVariants.wm) combined.allVariants.wm = v.wm;
+    if(v.music && !combined.allVariants.music) combined.allVariants.music = v.music;
+    if(v.images && !combined.allVariants.images) combined.allVariants.images = v.images;
+    if(v.title && !combined.allVariants.title) combined.allVariants.title = v.title;
+    if(v.author && !combined.allVariants.author) combined.allVariants.author = v.author;
+  });
+  return combined;
+}
 
 // ============ DL INIT + RUN ============
 var dlCat = 'ALL'; var dlApi = 'tikwm';
@@ -1213,73 +1680,6 @@ window.zyRunSearch = async function(){
 };
 window.zyOpenLink = function(url){ window.open(url, '_blank', 'noopener,noreferrer'); };
 
-// ============ API HUB INIT + RUN ============
-var apiHubState = {};
-window.zyInitApiHub = function(tabId, catName){
-  if(typeof window.initCustomSelect !== 'function') return;
-  var filtered = API_HUB_LIST.filter(function(x){ return x.cat === catName; });
-  if(!filtered.length) return;
-  if(!apiHubState[tabId]) apiHubState[tabId] = { endpoint: filtered[0], __init: false };
-  if(apiHubState[tabId].__init) return;
-  apiHubState[tabId].__init = true;
-  var items = filtered.map(function(x){ return { id:x.id, name:x.name, desc:'params: '+x.params.length }; });
-  window.initCustomSelect(tabId+'-endpoint', items, apiHubState[tabId].endpoint.id, function(id){
-    apiHubState[tabId].endpoint = filtered.find(function(x){ return x.id===id; });
-    window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
-  });
-  window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
-};
-window.zyRunApiHub = async function(tabId, catName){
-  var st = apiHubState[tabId];
-  if(!st || !st.endpoint){ alert('Pilih endpoint'); return; }
-  var params = window.zyCollectParams(st.endpoint.params, tabId, catName);
-  var log = document.getElementById(tabId+'-log'), res = document.getElementById(tabId+'-result');
-  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
-  if(res){ res.innerHTML=''; res.classList.add('hd'); }
-  var loadingMsg = '⏳ Tunggu...';
-  if(catName === 'UPSCALE') loadingMsg = '🎬 Memproses video...';
-  else if(catName === 'IMG AI'){ var p = params.prompt || params.teks || params.query || params.text || ''; loadingMsg = '🎨 Membuat ' + (p ? String(p).substring(0,50) : 'objek') + '...'; }
-  else if(catName === 'IMG HD') loadingMsg = '🖼 Enhancing image...';
-  else if(catName === 'MAKER') loadingMsg = '🎨 Membuat ' + st.endpoint.name + '...';
-  else if(catName === 'SEARCH') loadingMsg = '🔍 Mencari...';
-  if(log){ var l1 = document.createElement('div'); l1.className='in'; l1.textContent=loadingMsg; log.appendChild(l1); }
-  var useProgress = (catName === 'UPSCALE');
-  var r;
-  try{
-    if(useProgress){
-      try{ r = await callAPIWithProgress(st.endpoint.path, params, st.endpoint.method || 'GET', catName); }
-      catch(e){ window.zyProgressHide(); throw e; }
-      setTimeout(function(){ window.zyProgressHide(); }, 2500);
-    } else {
-      r = await callAPIv2(st.endpoint.path, params, st.endpoint.method || 'GET');
-    }
-    if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='✓ Selesai'; log.appendChild(l2); }
-    if(r && !r.__binary && typeof window.zyMaterializeResult === 'function'){
-      try{ var mat = await window.zyMaterializeResult(r); if(mat && mat.__binary){ r = mat; } }catch(e){}
-    }
-    window.zyRenderApiResult(res, r, st.endpoint.name, catName);
-    if(window.unlockAch){
-      if(catName === 'UPSCALE') window.unlockAch('upscale_first');
-      else if(catName === 'IMG AI') window.unlockAch('imgai_first');
-      else if(catName === 'IMG HD') window.unlockAch('imghd_first');
-      else if(catName === 'MAKER') window.unlockAch('maker_first');
-      else if(catName === 'SEARCH') window.unlockAch('search_first');
-    }
-    if(window.__addGen) window.__addGen();
-    try{
-      var txt = (r && r.__binary) ? ('[BINARY ' + r.mime + ' ' + (r.size/1024).toFixed(1) + ' KB]') : JSON.stringify(r);
-      var h = JSON.parse(localStorage.getItem('rx_history') || '[]');
-      h.unshift({n: st.endpoint.name + ' [' + catName + ']', s: (txt.length/1024).toFixed(1), l: txt.length, t: Date.now(), c: txt.substring(0, 40000)});
-      if(h.length > 30) h = h.slice(0,30);
-      localStorage.setItem('rx_history', JSON.stringify(h));
-    }catch(e){}
-  }catch(e){
-    if(useProgress) window.zyProgressHide();
-    if(log){ var l3 = document.createElement('div'); l3.className='er'; l3.textContent='✗ '+explainFailure(null, e); log.appendChild(l3); }
-    if(res){ res.innerHTML='<div class="zy-head er">✗ '+esc(e.message)+'</div>'; res.classList.remove('hd'); }
-  }
-};
-
 // ============ RENDER DYNAMIC INPUTS ============
 window.zyRenderDynamicInputs = function(container, params, idPrefix, category){
   if(!container) return;
@@ -1320,24 +1720,17 @@ window.zyRenderDynamicInputs = function(container, params, idPrefix, category){
             info.style.display = 'block';
             info.style.color = 'var(--ac2)';
             info.textContent = '⏳ Upload ' + f.name + ' (' + (f.size/1024/1024).toFixed(1) + ' MB)...';
+            // v10.7: pakai uploadToCatbox (7 provider dengan fallback + log)
             var res = await uploadToCatbox(f, null, null);
-            if(res.ok){
+            if(res && res.ok){
               urlIn.value = res.url;
               info.style.color = 'var(--ok)';
               info.textContent = '✓ Upload via ' + res.provider;
               setTimeout(function(){ info.style.display = 'none'; }, 2500);
             } else {
-              var p2u = await window.zyUploadP2U(f, info);
-              if(p2u && p2u.ok){
-                urlIn.value = p2u.url;
-                info.style.color = 'var(--ok)';
-                info.textContent = '✓ Upload via P2U (' + p2u.provider + ')';
-                setTimeout(function(){ info.style.display = 'none'; }, 2500);
-              } else {
-                info.style.color = 'var(--er)';
-                info.textContent = '✗ Semua provider gagal — isi URL manual';
-                if(window.zyToast) window.zyToast('UPLOAD GAGAL — ISI URL MANUAL', 'error');
-              }
+              info.style.color = 'var(--er)';
+              info.textContent = '✗ Semua provider gagal — isi URL manual';
+              if(window.zyToast) window.zyToast('UPLOAD GAGAL — ISI URL MANUAL', 'error');
             }
           });
         }
@@ -1386,7 +1779,115 @@ window.zyCollectParams = function(params, idPrefix, category){
   return out;
 };
 
-// ============ EXTRACT MAKER IMAGES + RENDER API ============
+// ============ API HUB INIT + RUN v10.7 — UPSCALE OVERHAUL ============
+var apiHubState = {};
+
+window.zyInitApiHub = function(tabId, catName){
+  if(typeof window.initCustomSelect !== 'function') return;
+  var filtered = API_HUB_LIST.filter(function(x){ return x.cat === catName; });
+  if(!filtered.length) return;
+  if(!apiHubState[tabId]) apiHubState[tabId] = { endpoint: filtered[0], __init: false };
+  if(apiHubState[tabId].__init) return;
+  apiHubState[tabId].__init = true;
+  var items = filtered.map(function(x){ return { id:x.id, name:x.name, desc:'params: '+x.params.length }; });
+  window.initCustomSelect(tabId+'-endpoint', items, apiHubState[tabId].endpoint.id, function(id){
+    apiHubState[tabId].endpoint = filtered.find(function(x){ return x.id===id; });
+    window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
+  });
+  window.zyRenderDynamicInputs(document.getElementById(tabId+'-params'), apiHubState[tabId].endpoint.params, tabId, catName);
+};
+
+// v10.7: UPSCALE auto-fallback 5 endpoint + auto-render video player
+window.zyRunApiHub = async function(tabId, catName){
+  var st = apiHubState[tabId];
+  if(!st || !st.endpoint){ alert('Pilih endpoint'); return; }
+  var params = window.zyCollectParams(st.endpoint.params, tabId, catName);
+  var log = document.getElementById(tabId+'-log');
+  var res = document.getElementById(tabId+'-result');
+  if(log){ log.innerHTML=''; log.classList.remove('hd'); }
+  if(res){ res.innerHTML=''; res.classList.add('hd'); }
+
+  // Khusus UPSCALE: auto-fallback 5 endpoint
+  if(catName === 'UPSCALE'){
+    var upscaleEndpoints = API_HUB_LIST.filter(function(x){ return x.cat === 'UPSCALE'; });
+    // Endpoint terpilih dulu, sisanya nanti
+    var orderedEndpoints = [st.endpoint].concat(upscaleEndpoints.filter(function(x){ return x.id !== st.endpoint.id; }));
+
+    if(log){ var li = document.createElement('div'); li.className='in'; li.textContent='🎬 UPSCALE auto-fallback ('+orderedEndpoints.length+' endpoint)'; log.appendChild(li); }
+
+    for(var ei=0; ei<orderedEndpoints.length; ei++){
+      var ep = orderedEndpoints[ei];
+      if(log){ var l1 = document.createElement('div'); l1.className='in'; l1.textContent='['+(ei+1)+'/'+orderedEndpoints.length+'] '+ep.name; log.appendChild(l1); log.scrollTop = log.scrollHeight; }
+
+      // Ambil params untuk endpoint ini (kalau endpoint berbeda, re-collect params)
+      var epParams = params;
+      if(ep.id !== st.endpoint.id){
+        // Untuk endpoint fallback, coba pakai params yang sama — kalau ga ada, isi default
+        epParams = {};
+        Object.keys(params).forEach(function(k){ epParams[k] = params[k]; });
+      }
+
+      try{
+        var r = await callAPIWithProgress(ep.path, epParams, ep.method || 'GET', catName);
+        if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='  ✓ SUKSES via '+ep.name; log.appendChild(l2); log.scrollTop = log.scrollHeight; }
+        // hasil ketemu
+        if(r && !r.__binary && typeof window.zyMaterializeResult === 'function'){
+          try{ var mat = await window.zyMaterializeResult(r); if(mat && mat.__binary){ r = mat; } }catch(e){}
+        }
+        window.zyRenderApiResult(res, r, ep.name, catName);
+        if(window.unlockAch) window.unlockAch('upscale_first');
+        if(window.__addGen) window.__addGen();
+        return;
+      }catch(e){
+        var reason = explainFailure(null, e);
+        if(log){ var l3 = document.createElement('div'); l3.className='er'; l3.textContent='  ✗ '+reason; log.appendChild(l3); log.scrollTop = log.scrollHeight; }
+        // reset progress sebelum coba endpoint berikutnya
+        window.zyProgressHide(true);
+      }
+    }
+    // semua endpoint gagal
+    if(log){ var lf = document.createElement('div'); lf.className='er'; lf.textContent='✗ SEMUA ENDPOINT UPSCALE GAGAL'; log.appendChild(lf); }
+    res.innerHTML = '<div class="zy-head er">✗ Semua endpoint UPSCALE gagal — coba lagi nanti atau cek koneksi</div>';
+    res.classList.remove('hd');
+    return;
+  }
+
+  // Endpoint non-UPSCALE: single call tanpa fallback
+  var loadingMsg = '⏳ Tunggu...';
+  if(catName === 'IMG AI'){ var p0 = params.prompt || params.teks || params.query || params.text || ''; loadingMsg = '🎨 Membuat ' + (p0 ? String(p0).substring(0,50) : 'objek') + '...'; }
+  else if(catName === 'IMG HD') loadingMsg = '🖼 Enhancing image...';
+  else if(catName === 'MAKER') loadingMsg = '🎨 Membuat ' + st.endpoint.name + '...';
+  else if(catName === 'SEARCH') loadingMsg = '🔍 Mencari...';
+  if(log){ var l0 = document.createElement('div'); l0.className='in'; l0.textContent=loadingMsg; log.appendChild(l0); }
+
+  try{
+    var r = await callAPIv2(st.endpoint.path, params, st.endpoint.method || 'GET');
+    if(log){ var l2 = document.createElement('div'); l2.className='ok'; l2.textContent='✓ Selesai'; log.appendChild(l2); }
+    if(r && !r.__binary && typeof window.zyMaterializeResult === 'function'){
+      try{ var mat = await window.zyMaterializeResult(r); if(mat && mat.__binary){ r = mat; } }catch(e){}
+    }
+    window.zyRenderApiResult(res, r, st.endpoint.name, catName);
+    if(window.unlockAch){
+      if(catName === 'IMG AI') window.unlockAch('imgai_first');
+      else if(catName === 'IMG HD') window.unlockAch('imghd_first');
+      else if(catName === 'MAKER') window.unlockAch('maker_first');
+      else if(catName === 'SEARCH') window.unlockAch('search_first');
+    }
+    if(window.__addGen) window.__addGen();
+    try{
+      var txt = (r && r.__binary) ? ('[BINARY ' + r.mime + ' ' + (r.size/1024).toFixed(1) + ' KB]') : JSON.stringify(r);
+      var h = JSON.parse(localStorage.getItem('rx_history') || '[]');
+      h.unshift({n: st.endpoint.name + ' [' + catName + ']', s: (txt.length/1024).toFixed(1), l: txt.length, t: Date.now(), c: txt.substring(0, 40000)});
+      if(h.length > 30) h = h.slice(0,30);
+      localStorage.setItem('rx_history', JSON.stringify(h));
+    }catch(e){}
+  }catch(e){
+    if(log){ var l3 = document.createElement('div'); l3.className='er'; l3.textContent='✗ '+explainFailure(null, e); log.appendChild(l3); }
+    if(res){ res.innerHTML='<div class="zy-head er">✗ '+esc(e.message)+'</div>'; res.classList.remove('hd'); }
+  }
+};
+
+// ============ EXTRACT MAKER IMAGES ============
 function extractMakerImages(data){
   if(data && data.__binary && data.url){ return [data.url]; }
   var out = []; var seen = {};
@@ -1402,6 +1903,8 @@ function extractMakerImages(data){
   walk(data, 0);
   return out;
 }
+
+// ============ RENDER API RESULT v10.7 — auto video player ============
 window.zyRenderApiResult = function(container, data, name, catName){
   if(catName === 'MAKER' || (data && data.__binary)){
     var mkImgs = extractMakerImages(data);
@@ -1427,6 +1930,7 @@ window.zyRenderApiResult = function(container, data, name, catName){
       return;
     }
   }
+
   var html = '<div class="zy-head">✓ '+esc(name)+'</div>';
   var mediaItems = collectMedia(data, []);
   var seen = {}; var unique = [];
@@ -1435,6 +1939,30 @@ window.zyRenderApiResult = function(container, data, name, catName){
   var videos = unique.filter(function(x){ return classify(x.url)==='video'; });
   var audios = unique.filter(function(x){ return classify(x.url)==='audio'; });
   window.__apiHubMedia = unique;
+
+  // v10.7: kalau ada VIDEO (UPSCALE) → tampilkan player prominent
+  if(videos.length && catName === 'UPSCALE'){
+    html += '<div class="zy-media-wrap" style="border-color:var(--ok)"><div class="zy-media-title" style="color:var(--ok)">🎬 VIDEO HD HASIL UPSCALE ('+videos.length+')</div>';
+    videos.forEach(function(v, i){
+      var idx = unique.indexOf(v);
+      var ts = new Date().toISOString().replace(/[:.]/g,'-').substring(0,19);
+      html += '<div class="zy-media-item" style="border-color:var(--ok)">';
+      html += '<video controls preload="metadata" class="zy-video" src="'+esc(v.url)+'" style="border:1px solid var(--ok)"></video>';
+      html += '<div class="zy-media-actions">';
+      html += '<button class="zy-dl-btn" onclick="zyDownload(\''+esc(v.url).replace(/'/g,"\\'")+'\',\'upscale_'+ts+'_'+i+'.mp4\')" style="background:var(--ok)">⬇ DOWNLOAD VIDEO</button>';
+      html += '<button class="zy-cp-btn" onclick="zyCp(\''+esc(v.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button>';
+      html += '<button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🔍 FULLSCREEN</button>';
+      html += '</div></div>';
+    });
+    html += '</div>';
+  } else if(videos.length){
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">🎬 VIDEO ('+videos.length+')</div>';
+    videos.slice(0,3).forEach(function(v, i){
+      var idx = unique.indexOf(v);
+      html += '<div class="zy-media-item"><video controls preload="metadata" class="zy-video" src="'+esc(v.url)+'"></video><div class="zy-media-actions"><button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🖼 PREVIEW</button><button class="zy-dl-btn" onclick="zyDownload(\''+esc(v.url).replace(/'/g,"\\'")+'\',\'video_'+i+'.mp4\')">⬇ DOWNLOAD</button><button class="zy-cp-btn" onclick="zyCp(\''+esc(v.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button></div></div>';
+    });
+    html += '</div>';
+  }
   if(images.length){
     html += '<div class="zy-media-wrap"><div class="zy-media-title">🖼 IMAGE ('+images.length+')</div>';
     images.slice(0,12).forEach(function(img, i){
@@ -1449,14 +1977,6 @@ window.zyRenderApiResult = function(container, data, name, catName){
     });
     html += '</div>';
   }
-  if(videos.length){
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">🎬 VIDEO ('+videos.length+')</div>';
-    videos.slice(0,3).forEach(function(v, i){
-      var idx = unique.indexOf(v);
-      html += '<div class="zy-media-item"><video controls preload="metadata" class="zy-video" src="'+esc(v.url)+'"></video><div class="zy-media-actions"><button class="zy-dl-btn" onclick="zyOpenPreview('+idx+')">🖼 PREVIEW</button><button class="zy-dl-btn" onclick="zyDownload(\''+esc(v.url).replace(/'/g,"\\'")+'\',\'video_'+i+'.mp4\')">⬇ DOWNLOAD</button><button class="zy-cp-btn" onclick="zyCp(\''+esc(v.url).replace(/'/g,"\\'")+'\')">📋 COPY URL</button></div></div>';
-    });
-    html += '</div>';
-  }
   if(audios.length){
     html += '<div class="zy-media-wrap"><div class="zy-media-title">🎵 AUDIO ('+audios.length+')</div>';
     audios.slice(0,3).forEach(function(a, i){
@@ -1466,21 +1986,23 @@ window.zyRenderApiResult = function(container, data, name, catName){
   }
   if(!images.length && !videos.length && !audios.length){
     var rawDisplay2 = (data && data.__binary) ? '[BINARY '+(data.mime||'?')+' — '+((data.size||0)/1024).toFixed(1)+' KB]' : JSON.stringify(data,null,2);
-    html += '<div class="zy-media-wrap"><div class="zy-media-title">📄 RESPONSE</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all">'+esc(rawDisplay2)+'</pre></div>';
+    html += '<div class="zy-media-wrap"><div class="zy-media-title">📄 RESPONSE</div><pre style="background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:.6rem;color:var(--ac2);overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:300px">'+esc(rawDisplay2)+'</pre></div>';
   }
   html += '<details class="zy-raw"><summary>RAW JSON</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>';
   html += '<button class="zy-copy" onclick="zyCopyJson(this)">📋 COPY JSON</button>';
   container.innerHTML = html; container.classList.remove('hd');
 };
 
-// ============ P2U INIT v10.6 ============
+// ============ P2U INIT v10.7 — fix scope + log detail ============
 var p2uFiles = [];
+
 window.zyP2UInit = function(){
   var drop = $id('p2u-drop'); var input = $id('p2u-file');
   var list = $id('p2u-list'); var transform = $id('p2u-transform'); var clear = $id('p2u-clear'); var result = $id('p2u-result');
   if(!drop || !input) return;
   if(drop.__inited) return;
   drop.__inited = true;
+
   drop.addEventListener('click', function(){ input.click(); });
   drop.addEventListener('dragover', function(e){ e.preventDefault(); drop.classList.add('dragover'); });
   drop.addEventListener('dragleave', function(){ drop.classList.remove('dragover'); });
@@ -1495,6 +2017,7 @@ window.zyP2UInit = function(){
     files.forEach(function(f){ p2uFiles.push(f); });
     renderP2UList(); input.value = '';
   });
+
   function renderP2UList(){
     if(!list) return;
     if(!p2uFiles.length){ list.innerHTML = '<div class="r" style="font-size:.6rem;color:var(--txd)">Belum ada foto</div>'; return; }
@@ -1513,26 +2036,29 @@ window.zyP2UInit = function(){
     });
   }
   renderP2UList();
+
   if(transform) transform.onclick = async function(){
     if(!p2uFiles.length){ alert('Pilih foto dulu'); return; }
     if(window.sndClick) window.sndClick();
     var log = $id('p2u-log'); if(log){ log.innerHTML = ''; log.classList.remove('hd'); }
     if(result){ result.innerHTML = ''; result.classList.add('hd'); }
+
     var results = [];
     for(var i=0;i<p2uFiles.length;i++){
       var f = p2uFiles[i];
       if(log){ var l = document.createElement('div'); l.className = 'in'; l.textContent = '[' + (i+1) + '/' + p2uFiles.length + '] ' + f.name + ' (' + (f.size/1024).toFixed(1) + ' KB)'; log.appendChild(l); log.scrollTop = log.scrollHeight; }
-      var res = await window.zyUploadP2U(f, null);
-      if(res.ok){
+      // v10.7: PAKAI uploadToCatbox yang sama dengan Image AI — dengan log per-provider
+      var res = await uploadToCatbox(f, null, log);
+      if(res && res.ok){
         results.push({ name:f.name, url:res.url, provider:res.provider });
-        if(log){ var l2 = document.createElement('div'); l2.className = 'ok'; l2.textContent = '  ✓ ' + res.provider + ' → ' + res.url; log.appendChild(l2); log.scrollTop = log.scrollHeight; }
       } else {
-        results.push({ name:f.name, url:null, provider:null, error:res.error });
-        if(log){ var l3 = document.createElement('div'); l3.className = 'er'; l3.textContent = '  ✗ ' + (res.error || 'GAGAL'); log.appendChild(l3); log.scrollTop = log.scrollHeight; }
+        results.push({ name:f.name, url:null, provider:null, error:(res && res.error) || 'unknown' });
       }
     }
+
     if(result){
-      var html = '<div class="zy-head">✓ SELESAI · ' + results.filter(function(r){ return r.url; }).length + '/' + results.length + ' berhasil</div>';
+      var okCount = results.filter(function(r){ return r.url; }).length;
+      var html = '<div class="zy-head">✓ SELESAI · ' + okCount + '/' + results.length + ' berhasil</div>';
       html += '<div class="p2u-results">';
       results.forEach(function(r, i){
         if(r.url){
@@ -1545,7 +2071,7 @@ window.zyP2UInit = function(){
           html += '</button>';
           html += '</div></div>';
         } else {
-          html += '<div class="p2u-result-item p2u-fail"><div class="p2u-result-name">' + esc(r.name) + ' <span class="p2u-badge p2u-badge-err">GAGAL</span></div></div>';
+          html += '<div class="p2u-result-item p2u-fail"><div class="p2u-result-name">' + esc(r.name) + ' <span class="p2u-badge p2u-badge-err">GAGAL</span></div><div style="font-size:.5rem;color:var(--er);margin-top:4px">' + esc(r.error || 'gagal') + '</div></div>';
         }
       });
       html += '</div>';
@@ -1568,6 +2094,7 @@ window.zyP2UInit = function(){
       });
     }
   };
+
   if(clear) clear.onclick = function(){
     p2uFiles = []; renderP2UList();
     var log = $id('p2u-log'); if(log){ log.innerHTML = ''; log.classList.add('hd'); }
@@ -1686,7 +2213,7 @@ async function ghRequest(method, path, body){
       'Accept': 'application/vnd.github+json',
       'Authorization': 'Bearer ' + ghToken,
       'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'RyannTools-GitHub/10.6'
+      'User-Agent': 'RyannTools-GitHub/10.7'
     }
   };
   if(body){ opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
@@ -1900,352 +2427,9 @@ window.zyGithubInit = function(){
   };
 };
 
-// ============ TEMPMAIL v10.6 — FIX DOMAIN LOAD ============
-var tmpToken=null, tmpEmail=null, tmpPassword=null, tmpMsgs=[], tmpProvider='mail.tm';
-var TMP_PROVIDERS = {
-  'mail.tm': { name:'mail.tm', base:'https://api.mail.tm' },
-  'mail.gw': { name:'mail.gw', base:'https://api.mail.gw' }
-};
-function tmpBase(){ return TMP_PROVIDERS[tmpProvider] ? TMP_PROVIDERS[tmpProvider].base : TMP_PROVIDERS['mail.tm'].base; }
-function tmpGetSaved(){ try{ return JSON.parse(localStorage.getItem('rx_tmp_accounts') || '[]'); }catch(e){ return []; } }
-function tmpSetSaved(arr){ try{ localStorage.setItem('rx_tmp_accounts', JSON.stringify(arr)); }catch(e){} }
-function tmpSaveCurrent(){
-  if(!tmpEmail || !tmpToken){ alert('Belum ada akun aktif'); return false; }
-  var saved = tmpGetSaved();
-  var idx = -1;
-  for(var i=0;i<saved.length;i++){ if(saved[i].email === tmpEmail){ idx = i; break; } }
-  var rec = { email: tmpEmail, password: tmpPassword, token: tmpToken, provider: tmpProvider, savedAt: Date.now() };
-  if(idx >= 0) saved[idx] = rec; else saved.unshift(rec);
-  if(saved.length > 20) saved = saved.slice(0, 20);
-  tmpSetSaved(saved);
-  tmpRenderSaved();
-  if(window.zyToast) window.zyToast('💾 Akun disave');
-  return true;
-}
-function tmpLoadAccount(email){
-  var saved = tmpGetSaved();
-  var rec = null;
-  for(var i=0;i<saved.length;i++){ if(saved[i].email === email){ rec = saved[i]; break; } }
-  if(!rec){ alert('Akun gak ketemu'); return; }
-  tmpEmail = rec.email; tmpPassword = rec.password; tmpToken = rec.token; tmpProvider = rec.provider || 'mail.tm';
-  if($id('tmp-email')) $id('tmp-email').textContent = tmpEmail;
-  if(window.zyToast) window.zyToast('📂 Loaded: ' + tmpEmail);
-  logTo('tmp-log', '✓ Akun di-restore: ' + tmpEmail, 'ok');
-  tmpRenderSaved();
-  setTimeout(function(){ if($id('tmp-refresh')) $id('tmp-refresh').click(); }, 300);
-}
-function tmpDeleteSaved(email){
-  if(!confirm('Hapus akun ' + email + '?')) return;
-  var saved = tmpGetSaved();
-  var out = [];
-  for(var i=0;i<saved.length;i++){ if(saved[i].email !== email) out.push(saved[i]); }
-  tmpSetSaved(out); tmpRenderSaved();
-  if(window.zyToast) window.zyToast('🗑 Dihapus');
-}
-function tmpRenderSaved(){
-  var wrap = $id('tmp-saved-list'); if(!wrap) return;
-  var saved = tmpGetSaved();
-  if(!saved.length){ wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
-  wrap.style.display = 'block';
-  var html = '<div style="font-size:.5rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:6px">AKUN TERSIMPAN (' + saved.length + ')</div>';
-  saved.forEach(function(r){
-    var dt = new Date(r.savedAt).toLocaleString('id-ID');
-    var isActive = (r.email === tmpEmail);
-    var emailEsc = esc(r.email).replace(/'/g, "\\'");
-    html += '<div class="msg-item" style="cursor:default;' + (isActive ? 'border-color:var(--ac);background:var(--acd)' : '') + '">';
-    html += '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px">';
-    html += '<b style="word-break:break-all;font-size:.55rem">' + esc(r.email) + '</b>';
-    html += '<span style="font-size:.45rem;color:var(--txd);flex-shrink:0">' + esc(r.provider || 'mail.tm') + '</span>';
-    html += '</div>';
-    html += '<div style="font-size:.5rem;color:var(--txd);margin-bottom:6px">' + dt + (isActive ? ' · AKTIF' : '') + '</div>';
-    html += '<div style="display:flex;gap:5px">';
-    html += '<button class="g" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpLoadSaved(\'' + emailEsc + '\')">📂 LOAD</button>';
-    html += '<button class="g" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpCopySaved(\'' + emailEsc + '\')">📋 COPY</button>';
-    html += '<button class="d" style="margin:0;padding:5px 10px;font-size:.5rem;width:auto;flex:1" onclick="window.__tmpDelSaved(\'' + emailEsc + '\')">🗑</button>';
-    html += '</div></div>';
-  });
-  wrap.innerHTML = html;
-}
-window.__tmpLoadSaved = tmpLoadAccount;
-window.__tmpDelSaved = tmpDeleteSaved;
-window.__tmpDeleteSaved = tmpDeleteSaved;
-window.__tmpCopySaved = function(email){
-  var saved = tmpGetSaved();
-  var rec = null;
-  for(var i=0;i<saved.length;i++){ if(saved[i].email === email){ rec = saved[i]; break; } }
-  if(!rec) return;
-  navigator.clipboard.writeText(rec.email).then(function(){
-    if(window.zyToast) window.zyToast('Email tersalin');
-    if(window.unlockAch) window.unlockAch('copy_email');
-  });
-};
-async function tmpFetchV2(url, opts){
-  opts = opts || {};
-  var method = opts.method || 'GET';
-  var headers = opts.headers || {};
-  var body = opts.body || null;
-  var externalSignal = opts.signal;
-  async function tryReturn(r){
-    if(!r) return null;
-    try{
-      var txt = await r.clone().text();
-      var trimmed = txt.trim();
-      if(trimmed.indexOf('<') === 0) return null;
-      var j = JSON.parse(txt);
-      if(j && typeof j === 'object') return r;
-      return null;
-    }catch(e){ return null; }
-  }
-  async function tryFetch(fetchUrl, timeoutMs){
-    if(externalSignal && externalSignal.aborted) throw new Error('aborted_by_user');
-    var ctrl = new AbortController();
-    var timer = setTimeout(function(){ ctrl.abort(); }, timeoutMs);
-    var onExtAbort = function(){ try{ ctrl.abort(); }catch(e){} };
-    if(externalSignal) externalSignal.addEventListener('abort', onExtAbort);
-    try{
-      var r = await fetch(fetchUrl, {method: method, headers: headers, body: body, signal: ctrl.signal});
-      clearTimeout(timer);
-      if(externalSignal) externalSignal.removeEventListener('abort', onExtAbort);
-      return r;
-    }catch(e){
-      clearTimeout(timer);
-      if(externalSignal) externalSignal.removeEventListener('abort', onExtAbort);
-      if(externalSignal && externalSignal.aborted) throw new Error('aborted_by_user');
-      throw e;
-    }
-  }
-  try{ var rd = await tryFetch(url, 15000); var vd = await tryReturn(rd); if(vd) return vd; }catch(e){ if(e.message === 'aborted_by_user') throw e; }
-  try{ var wurl = WORKER + '/?url=' + encodeURIComponent(url); var r1 = await tryFetch(wurl, 15000); var v1 = await tryReturn(r1); if(v1) return v1; }catch(e){ if(e.message === 'aborted_by_user') throw e; }
-  for(var ci=0;ci<CORS.length;ci++){
-    try{
-      var p = CORS[ci];
-      var full = p + (p.indexOf('?') !== -1 ? encodeURIComponent(url) : url);
-      var r3 = await tryFetch(full, 15000);
-      var v3 = await tryReturn(r3);
-      if(v3) return v3;
-    }catch(e){ if(e.message === 'aborted_by_user') throw e; }
-  }
-  throw new Error('Semua layer gagal');
-}
-var _tmpRetryCount = 0;
-var _tmpCache = { domains: [], time: 0 };
-var TMP_CACHE_MS = 10 * 60 * 1000;
-var _tmpLoading = false;
-async function tmpLoad(){
-  if(_tmpLoading) return;
-  _tmpLoading = true;
-  var log = document.getElementById('tmp-log');
-  if(log && _tmpRetryCount === 0) log.innerHTML = '';
-  if(_tmpCache.domains.length && (Date.now() - _tmpCache.time) < TMP_CACHE_MS){
-    logTo('tmp-log','⚡ Cache (' + _tmpCache.domains.length + ' domain)','ok');
-    _applyDomainItems(_tmpCache.domains);
-    _tmpLoading = false;
-    return;
-  }
-  logTo('tmp-log','🔍 Memuat provider...','in');
-  logTo('tmp-log','⏳ Fetch domain paralel...','in');
-  var providers = Object.keys(TMP_PROVIDERS);
-  var promises = providers.map(function(provName){
-    var provBase = TMP_PROVIDERS[provName].base;
-    return Promise.race([
-      tmpFetchV2(provBase + '/domains')
-        .then(function(r){ return r.json(); })
-        .then(function(j){
-          var arr = j['hydra:member'] || [];
-          logTo('tmp-log','  ✓ ' + provName + ' — ' + arr.length + ' domain','ok');
-          return arr.map(function(d){ return { domain: d.domain, provider: provName }; });
-        })
-        .catch(function(e){
-          logTo('tmp-log','  ✗ ' + provName + ' — ' + e.message,'er');
-          return [];
-        }),
-      new Promise(function(res){ setTimeout(function(){ logTo('tmp-log','  ⏱ ' + provName + ' timeout','warn'); res([]); }, 15000); })
-    ]);
-  });
-  var results = await Promise.all(promises);
-  var allDomains = [];
-  results.forEach(function(arr){ arr.forEach(function(d){ allDomains.push(d); }); });
-  if(allDomains.length){
-    _tmpCache.domains = allDomains;
-    _tmpCache.time = Date.now();
-    logTo('tmp-log','✓ Total ' + allDomains.length + ' domain siap dipakai','ok');
-    _applyDomainItems(allDomains);
-    _tmpRetryCount = 0;
-  } else {
-    if(_tmpRetryCount < 3){
-      _tmpRetryCount++;
-      logTo('tmp-log','⚠ Retry ' + _tmpRetryCount + '/3...','warn');
-      _tmpLoading = false;
-      setTimeout(function(){ tmpLoad(); }, 2000);
-      return;
-    } else {
-      logTo('tmp-log','⚠ Gagal semua. Klik RELOAD.','warn');
-      _tmpRetryCount = 0;
-    }
-  }
-  _tmpLoading = false;
-}
-function _applyDomainItems(allDomains){
-  if(!window.__selTmpDom) return;
-  var items = [{id:'', name:'— CHOOSE (' + allDomains.length + ') —'}];
-  allDomains.forEach(function(d){
-    items.push({ id: d.provider + '|' + d.domain, name: d.domain, desc: d.provider });
-  });
-  window.__selTmpDom.setItems(items);
-}
-window.tmpLoadDomains = function(){ _tmpRetryCount = 0; _tmpCache.time = 0; tmpRenderSaved(); return tmpLoad(); };
-if($id('tmp-reaload')) $id('tmp-reaload').onclick=function(){ window.tmpLoadDomains(); };
-function tmpInitProviderSelector(){
-  if(typeof window.initCustomSelect !== 'function') return;
-  var provEl = document.getElementById('tmp-provider');
-  if(!provEl) return;
-  if(provEl.__inited) return;
-  provEl.__inited = true;
-  var items = Object.keys(TMP_PROVIDERS).map(function(k){ return { id:k, name: TMP_PROVIDERS[k].name }; });
-  window.__selTmpProvider = window.initCustomSelect('tmp-provider', items, tmpProvider, function(id){
-    tmpProvider = id;
-    if(window.__selTmpDom) window.__selTmpDom.setItems([{id:'', name:'— CHOOSE —'}]);
-    window.tmpLoadDomains();
-  });
-}
-window.tmpInitProviderSelector = tmpInitProviderSelector;
-window.__tmpAbort = null;
-if($id('tmp-stop')) $id('tmp-stop').onclick=function(){
-  if(window.__tmpAbort){ try{ window.__tmpAbort.abort(); }catch(e){} window.__tmpAbort = null; }
-  var sb = $id('tmp-stop'); if(sb) sb.style.display = 'none';
-  var gb = $id('tmp-gen'); if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
-  logTo('tmp-log','⛔ Dihentikan user','warn');
-};
-var _lastGenTime = 0;
-if($id('tmp-gen')) $id('tmp-gen').onclick=async function(){
-  if(Date.now() - _lastGenTime < 3000){ alert('Tunggu 3 detik'); return; }
-  _lastGenTime = Date.now();
-  var log = document.getElementById('tmp-log');
-  if(log) log.innerHTML = '';
-  var nm = $id('tmp-name').value.trim() || ('user' + Math.floor(Math.random()*99999));
-  var domRaw = (window.__selTmpDom ? window.__selTmpDom.getValue() : '');
-  if(!domRaw){ alert('Pilih domain dulu'); return; }
-  var parts = domRaw.split('|');
-  var provKey = parts[0] || tmpProvider;
-  var dom = parts[1] || domRaw;
-  var base = TMP_PROVIDERS[provKey] ? TMP_PROVIDERS[provKey].base : tmpBase();
-  tmpProvider = provKey;
-  var em = nm + '@' + dom;
-  var pw = 'RyannTmp!' + Math.floor(Math.random()*99999);
-  var gb = $id('tmp-gen'); if(gb){ gb.disabled = true; gb.textContent = '⏳...'; }
-  var sb = $id('tmp-stop'); if(sb) sb.style.display = 'block';
-  window.__tmpAbort = new AbortController();
-  logTo('tmp-log','⏳ Membuat ' + em + ' via ' + provKey + '...','in');
-  try{
-    var r = await tmpFetchV2(base + '/accounts', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({address:em, password:pw}),
-      signal: window.__tmpAbort.signal
-    });
-    var j = null; try{ j = await r.json(); }catch(e){}
-    if(r.status >= 400){
-      var errMsg = (j && (j['hydra:description'] || j.message || j.error || j.detail)) || ('HTTP ' + r.status);
-      if(errMsg.toLowerCase().indexOf('already') !== -1 || r.status === 422){
-        logTo('tmp-log','⚠ AKUN SUDAH ADA','warn');
-        logTo('tmp-log','→ Coba login pakai akun itu...','in');
-        var rLogin = await tmpFetchV2(base + '/token', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({address:em, password:pw}),
-          signal: window.__tmpAbort.signal
-        });
-        var jLogin = null; try{ jLogin = await rLogin.json(); }catch(e){}
-        if(rLogin.status === 200 && jLogin && jLogin.token){
-          tmpToken = jLogin.token; tmpEmail = em; tmpPassword = pw;
-          $id('tmp-email').textContent = em;
-          logTo('tmp-log','✓ Login ke akun lama OK','ok');
-          tmpSaveCurrent();
-          if(window.sndSuccess) window.sndSuccess();
-          if(window.unlockAch) window.unlockAch('tmp_first');
-          return;
-        } else {
-          var lm = (jLogin && (jLogin['hydra:description'] || jLogin.message)) || 'password beda';
-          logTo('tmp-log','✗ Login gagal: ' + lm,'er');
-          logTo('tmp-log','💡 Ganti nama lain (mis: ' + nm + Math.floor(Math.random()*9999) + ')','warn');
-          return;
-        }
-      }
-      if(r.status === 429){
-        logTo('tmp-log','✗ Rate limit — coba domain / provider lain','er');
-        return;
-      }
-      logTo('tmp-log','✗ ' + errMsg,'er');
-      return;
-    }
-    logTo('tmp-log','✓ Account OK: ' + em,'ok');
-    var r2 = await tmpFetchV2(base + '/token', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({address:em, password:pw}),
-      signal: window.__tmpAbort.signal
-    });
-    var j2 = null; try{ j2 = await r2.json(); }catch(e){}
-    if(r2.status === 200 && j2 && j2.token){
-      tmpToken = j2.token; tmpEmail = em; tmpPassword = pw;
-      $id('tmp-email').textContent = em;
-      logTo('tmp-log','✓ Login OK [' + provKey + ']','ok');
-      tmpSaveCurrent();
-      if(window.sndSuccess) window.sndSuccess();
-      if(window.unlockAch) window.unlockAch('tmp_first');
-    } else {
-      var tm = (j2 && (j2['hydra:description'] || j2.message)) || ('HTTP ' + r2.status);
-      logTo('tmp-log','✗ Login: ' + tm,'er');
-    }
-  }catch(e){
-    if(e.name === 'AbortError' || (e.message && e.message.indexOf('aborted') !== -1)){ logTo('tmp-log','⛔ Dibatalkan','warn'); }
-    else { logTo('tmp-log','✗ Network error: ' + e.message,'er'); }
-  }finally{
-    window.__tmpAbort = null;
-    if(gb){ gb.disabled = false; gb.textContent = 'GEN'; }
-    if(sb) sb.style.display = 'none';
-  }
-};
-if($id('tmp-save')) $id('tmp-save').onclick=function(){ if(window.sndClick) window.sndClick(); tmpSaveCurrent(); };
-if($id('tmp-load')) $id('tmp-load').onclick=function(){
-  if(window.sndClick) window.sndClick();
-  var saved = tmpGetSaved();
-  if(!saved.length){ alert('Belum ada akun tersimpan'); return; }
-  tmpRenderSaved();
-  var wrap = $id('tmp-saved-list');
-  if(wrap) wrap.scrollIntoView({behavior:'smooth', block:'nearest'});
-};
-setTimeout(function(){ tmpRenderSaved(); }, 500);
-if($id('tmp-copy')) $id('tmp-copy').onclick=function(){ if(tmpEmail){ navigator.clipboard.writeText(tmpEmail).then(function(){ if(window.sndSuccess) window.sndSuccess(); if(window.unlockAch) window.unlockAch('copy_email'); }); } };
-if($id('tmp-refresh')) $id('tmp-refresh').onclick=async function(){
-  if(!tmpToken){ alert('Generate dulu'); return; }
-  var base = tmpBase();
-  try{
-    var r = await tmpFetchV2(base + '/messages', {headers:{'Authorization':'Bearer '+tmpToken}});
-    var j = await r.json();
-    tmpMsgs = j['hydra:member'] || [];
-    var el = $id('tmp-list');
-    el.innerHTML = tmpMsgs.map(function(m,i){ return '<div class="msg-item" data-i="'+i+'"><b>'+m.from.address+'</b> · '+m.subject+'</div>'; }).join('');
-    el.querySelectorAll('.msg-item').forEach(function(it){
-      it.onclick=function(){
-        var idx = parseInt(it.dataset.i); var m = tmpMsgs[idx];
-        $id('tmp-msg-view').innerHTML='<b>From:</b> '+m.from.address+'<br><b>Subj:</b> '+m.subject+'<br><br>'+(m.intro||'');
-        $id('tmp-msg-view').classList.remove('hd');
-      };
-    });
-    if(window.sndSuccess) window.sndSuccess();
-    if(window.unlockAch) window.unlockAch('inbox_first');
-  }catch(e){ logTo('tmp-log','✗ '+e.message,'er'); }
-};
-if($id('tmp-inbox-dl')) $id('tmp-inbox-dl').onclick=function(){
-  if(!tmpMsgs.length) return;
-  var t = tmpMsgs.map(function(m){ return m.from.address+' | '+m.subject; }).join('\n');
-  var b = new Blob([t],{type:'text/plain'});
-  var u = URL.createObjectURL(b);
-  var a = document.createElement('a'); a.href=u; a.download='inbox.txt';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-};
-
 // ============ EXPORT ============
 window.ZYVOR = {
-  version: '10.6',
+  version: '10.7',
   base: BASE,
   worker: WORKER,
   call: callAPIv2,
