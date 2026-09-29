@@ -1,4 +1,4 @@
-// app.js v10.5 FIXED — P2U + Vercel + GitHub wired
+// app.js v10.6 — Fix tmp + P2U wire
 (function(){
 'use strict';
 
@@ -97,7 +97,7 @@ function logTo(id,msg,cls){
 }
 window.logTo=logTo; window.sndSuccess=sndSuccess; window.sndClick=sndClick; window.sndError=sndError;
 
-// ============ ACHIEVEMENTS (26, no duplicate) ============
+// ============ ACHIEVEMENTS (26) ============
 var ACH_LIST = [
   {id:'first_gen',name:'The Beginning',desc:'Pertama kali generate'},
   {id:'ten_gen',name:'Taking Off',desc:'10x generate'},
@@ -133,8 +133,7 @@ function setAch(a){ try{ localStorage.setItem(ACH_KEY,JSON.stringify(a)); }catch
 function renderAch(){
   var wrap=document.getElementById('ach-wrap'); if(!wrap) return;
   var ach=getAch();
-  var count=Object.keys(ach).length;
-  if(ach['all']) count = count - 1; // exclude 'all' dari counter
+  var count=Object.keys(ach).filter(function(k){ return k !== 'all'; }).length;
   var counter=document.getElementById('achCounter');
   if(counter) counter.innerHTML=count+' <span>/ '+ACH_LIST.length+'</span>';
   var html='';
@@ -430,7 +429,6 @@ if($('test-snd')) $('test-snd').onclick=function(){
   sndSuccess();
   setTimeout(function(){ _sndPack=old; },300);
 };
-
 var volRange=$('vol-range');
 if(volRange){
   volRange.value=_volume;
@@ -477,7 +475,7 @@ function switchPage(name){
   if(name==='dl' && typeof window.zyInitDownloader==='function'){ try{ window.zyInitDownloader(); }catch(e){} }
   if(name==='hst'){ try{ renderHist(); }catch(e){} }
   if(name==='home'){ try{ renderAch(); }catch(e){} }
-  if(name==='tmp'){ try{ if(typeof window.tmpLoadDomains==='function') window.tmpLoadDomains(); }catch(e){} }
+  if(name==='tmp'){ try{ if(typeof window.tmpInitProviderSelector==='function') window.tmpInitProviderSelector(); }catch(e){} try{ if(typeof window.tmpLoadDomains==='function') window.tmpLoadDomains(); }catch(e){} }
   if(name==='up' && typeof window.zyInitApiHub==='function'){ try{ window.zyInitApiHub('apihub-up','UPSCALE'); }catch(e){} }
   if(name==='imgai' && typeof window.zyInitApiHub==='function'){ try{ window.zyInitApiHub('apihub-ai','IMG AI'); }catch(e){} }
   if(name==='imghd' && typeof window.zyInitApiHub==='function'){ try{ window.zyInitApiHub('apihub-hd','IMG HD'); }catch(e){} }
@@ -1223,42 +1221,57 @@ if($('dl-run')) $('dl-run').onclick=function(){
 if($('dl-preview')) $('dl-preview').onclick=function(){ sndClick(); if(window.unlockAch) window.unlockAch('preview'); if(typeof window.zyPreviewResult==='function') try{ window.zyPreviewResult(); }catch(e){} };
 if($('dl-clear')) $('dl-clear').onclick=function(){ sndClick(); if(typeof window.zyClearDownloader==='function') try{ window.zyClearDownloader(); }catch(e){} };
 
-// ============ P2U WIRE — FIXED ============
+// ============ TAG: PART 2 LANJUT DI SINI ============
+// [PART 2 LANJUT DI SINI]
+
+// ============ P2U WIRE v10.6 ============
 (function wireP2U(){
   if(!$('pg-p2u')) return;
   var inited = false;
   window.__initP2U = function(){
     if(inited) return;
-    if(typeof window.zyP2UInit === 'function'){ window.zyP2UInit(); inited = true; }
-    else setTimeout(function(){ if(!inited){ window.__initP2U(); } }, 200);
+    if(typeof window.zyP2UInit === 'function'){
+      try{ window.zyP2UInit(); inited = true; }
+      catch(e){ console.error('[P2U init error]', e); }
+    } else {
+      setTimeout(function(){ if(!inited){ window.__initP2U(); } }, 200);
+    }
   };
   if($('p2u-transform')) $('p2u-transform').addEventListener('click', function(){
     if(window.unlockAch) window.unlockAch('p2u_first');
   });
 })();
 
-// ============ VERCEL WIRE — FIXED ============
+// ============ VERCEL WIRE v10.6 ============
 (function wireVercel(){
   if(!$('pg-vc')) return;
   var inited = false;
   window.__initVercel = function(){
     if(inited) return;
-    if(typeof window.zyVercelInit === 'function'){ window.zyVercelInit(); inited = true; }
-    else setTimeout(function(){ if(!inited){ window.__initVercel(); } }, 200);
+    if(typeof window.zyVercelInit === 'function'){
+      try{ window.zyVercelInit(); inited = true; }
+      catch(e){ console.error('[Vercel init error]', e); }
+    } else {
+      setTimeout(function(){ if(!inited){ window.__initVercel(); } }, 200);
+    }
   };
   if($('vc-upload')) $('vc-upload').addEventListener('click', function(){
     if(window.unlockAch) window.unlockAch('deploy_first');
   });
 })();
 
-// ============ GITHUB WIRE — FIXED ============
+// ============ GITHUB WIRE v10.6 ============
 (function wireGithub(){
   if(!$('pg-gh')) return;
   var inited = false;
   window.__initGithub = function(){
     if(inited) return;
-    if(typeof window.zyGithubInit === 'function'){ window.zyGithubInit(); inited = true; }
-    else setTimeout(function(){ if(!inited){ window.__initGithub(); } }, 200);
+    if(typeof window.zyGithubInit === 'function'){
+      try{ window.zyGithubInit(); inited = true; }
+      catch(e){ console.error('[GitHub init error]', e); }
+    } else {
+      setTimeout(function(){ if(!inited){ window.__initGithub(); } }, 200);
+    }
   };
   if($('gh-upload')) $('gh-upload').addEventListener('click', function(){
     if(window.unlockAch) window.unlockAch('github_first');
@@ -1314,9 +1327,11 @@ function bootAfterLogin(){
   try{ if(typeof window.zyInitDownloader==='function') window.zyInitDownloader(); }catch(e){}
   try{ renderAch(); }catch(e){}
   try{
-    if(window.initCustomSelect && $('tmp-domain')){ window.__selTmpDom=window.initCustomSelect('tmp-domain',[{id:'',name:'— CHOOSE —'}],'',function(){}); }
+    if(window.initCustomSelect && $('tmp-domain') && !window.__selTmpDom){
+      window.__selTmpDom=window.initCustomSelect('tmp-domain',[{id:'',name:'— CHOOSE —'}],'',function(){});
+    }
     if(typeof window.tmpInitProviderSelector==='function'){ window.tmpInitProviderSelector(); }
-  }catch(e){}
+  }catch(e){ console.error('[tmp init]', e); }
 }
 
 // ============ BOOT ============
