@@ -3,16 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<title>TOOLS BY RYANNXD · v10.4</title>
+<title>TOOLS BY RYANNXD · v10.5</title>
 <meta name="theme-color" content="#04080f">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@400;700;900&family=VT323&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#04080f;--card:rgba(10,20,35,.78);--border:#1e4d5c;--bl:#2a6b7f;--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--tx:#e0f2fe;--txd:#64748b;--ok:#4ade80;--er:#f87171;--wr:#fbbf24;--fs:13px;--fh:'Orbitron',sans-serif;--fm:'JetBrains Mono',monospace}
 *{margin:0;padding:0;box-sizing:border-box}html{font-size:var(--fs)}
 body{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),var(--bg);background-attachment:fixed;color:var(--tx);font-family:var(--fm);line-height:1.5;min-height:100vh;overflow-x:hidden;position:relative;padding-bottom:96px}
 
+/* ========== GATE PASSWORD (ZERO TOUCH v10.3) ========== */
 #passwordGate{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:transparent;transition:opacity .6s,visibility .6s;overflow:hidden}
 #passwordGate.gate-hidden{opacity:0;visibility:hidden;pointer-events:none}
 .gate-galaxy{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,#0d1830,transparent 55%),#04080f}
@@ -73,6 +74,7 @@ body{background:radial-gradient(ellipse 80% 60% at 20% 15%,#0a1525,transparent 5
 @keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-11px)}30%{transform:translateX(11px)}45%{transform:translateX(-8px)}60%{transform:translateX(8px)}80%{transform:translateX(-4px)}}
 @media (max-width:480px){.access-card{padding:32px 18px 24px}.password-box{width:36px;height:46px;font-size:20px}}
 
+/* ========== THEME PRESETS ========== */
 body[data-theme="t-cyan"]{--ac:#22d3ee;--ac2:#67e8f9;--acd:rgba(34,211,238,.15);--bl:#2a6b7f;--border:#1e4d5c}
 body[data-theme="t-green"]{--ac:#4ade80;--ac2:#86efac;--acd:rgba(74,222,128,.15);--bl:#2a7f4a;--border:#1e5c38}
 body[data-theme="t-red"]{--ac:#f87171;--ac2:#fca5a5;--acd:rgba(248,113,113,.15);--bl:#7f2a2a;--border:#5c1e1e}
@@ -90,9 +92,11 @@ body[data-theme="t-fuchsia"]{--ac:#e879f9;--ac2:#f0abfc;--acd:rgba(232,121,249,.
 body[data-theme="t-slate"]{--ac:#94a3b8;--ac2:#cbd5e1;--acd:rgba(148,163,184,.15);--bl:#4a5c73;--border:#334155}
 body[data-theme="t-mono"]{--ac:#e0f2fe;--ac2:#f8fafc;--acd:rgba(224,242,254,.15);--bl:#4a5c73;--border:#334155}
 
+/* ========== BG LAYER BASE ========== */
 .bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .bg-layer > *{display:none}
 
+/* ========== GALAXY ========== */
 body.bg-galaxy .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 30% 60%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 55% 15%,#fff,transparent),radial-gradient(1px 1px at 80% 40%,#e0f2fe,transparent),radial-gradient(2px 2px at 15% 75%,#fff,transparent),radial-gradient(1px 1px at 45% 85%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 70% 55%,#fff,transparent),radial-gradient(1px 1px at 90% 15%,#e0f2fe,transparent),radial-gradient(1.5px 1.5px at 5% 50%,#fff,transparent);background-size:400px 400px;animation:starTwinkle 5s infinite}
 body.bg-galaxy .aurora{display:block;position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,rgba(34,211,238,.12),transparent 40%),radial-gradient(circle at 75% 60%,rgba(139,92,246,.10),transparent 45%),radial-gradient(circle at 50% 85%,rgba(236,72,153,.08),transparent 40%);animation:auroraMove 20s ease-in-out infinite}
 @keyframes auroraMove{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
@@ -111,25 +115,109 @@ body.bg-galaxy .planet-4{display:block;position:absolute;bottom:25%;right:20%;wi
 body.bg-galaxy .planet-5{display:block;position:absolute;top:8%;left:45%;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#facc15,#854d0e);box-shadow:0 0 28px rgba(250,204,21,.35)}
 body.bg-galaxy .planet-6{display:block;position:absolute;bottom:10%;left:40%;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f472b6,#831843);box-shadow:0 0 22px rgba(244,114,182,.35)}
 
+/* ========== BINARY ========== */
 body.bg-binary{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(2,16,10,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(4,28,16,.9),transparent 55%),#000400;background-attachment:fixed}
 body.bg-binary .bin-rain{display:block !important;position:fixed;inset:0;pointer-events:none;overflow:hidden;opacity:.9;z-index:0}
 .bin-rain canvas{display:block;width:100%;height:100%}
 
+/* ========== UFO v10.5 — MULTI-ARAH + planet + bintang + blackhole ========== */
 body.bg-ufo{background:radial-gradient(ellipse 80% 60% at 20% 15%,rgba(10,5,32,.9),transparent 55%),radial-gradient(ellipse 70% 50% at 85% 75%,rgba(20,8,42,.9),transparent 55%),#050210;background-attachment:fixed}
-body.bg-ufo .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 65% 15%,#fff,transparent),radial-gradient(1px 1px at 25% 80%,#fff,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
+body.bg-ufo .starfield{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 8% 25%,#fff,transparent),radial-gradient(1.5px 1.5px at 22% 45%,#fff,transparent),radial-gradient(1px 1px at 42% 55%,#cbd5e1,transparent),radial-gradient(1.5px 1.5px at 65% 15%,#fff,transparent),radial-gradient(1px 1px at 25% 80%,#fff,transparent),radial-gradient(2px 2px at 78% 68%,#e0f2fe,transparent),radial-gradient(1px 1px at 92% 32%,#fff,transparent),radial-gradient(1.5px 1.5px at 55% 90%,#cbd5e1,transparent);background-size:420px 420px;animation:starTwinkle 6s infinite}
+body.bg-ufo .aurora{display:block;position:absolute;inset:0;background:radial-gradient(circle at 15% 40%,rgba(139,92,246,.10),transparent 45%),radial-gradient(circle at 85% 65%,rgba(34,211,238,.08),transparent 45%);animation:auroraMove 25s ease-in-out infinite}
+body.bg-ufo .shooting-star-1{display:block;position:absolute;top:8%;left:-10%;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:ssF 7s linear infinite}
+body.bg-ufo .shooting-star-2{display:block;position:absolute;top:55%;left:-15%;width:2px;height:2px;border-radius:50%;background:#a5f3fc;animation:ssF2 10s linear infinite 2s}
+body.bg-ufo .blackhole{display:block;position:absolute;top:70%;right:8%;width:100px;height:100px}
+body.bg-ufo .blackhole .bh-core{position:absolute;top:50%;left:50%;width:24px;height:24px;margin-left:-12px;margin-top:-12px;border-radius:50%;background:radial-gradient(circle,#000 40%,#1a0a2e 70%,transparent);box-shadow:0 0 50px rgba(139,92,246,.5);z-index:3}
+body.bg-ufo .blackhole .bh-disk{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:rgba(139,92,246,.65);animation:bhDisk 3.5s linear infinite}
+body.bg-ufo .blackhole .bh-disk2{position:absolute;top:14px;left:14px;right:14px;bottom:14px;border-radius:50%;border:2px solid transparent;border-top-color:rgba(34,211,238,.65);animation:bhDisk 2.2s linear infinite reverse}
+body.bg-ufo .planet-1{display:block;position:absolute;top:12%;left:6%;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fb923c,#7c2d12);box-shadow:0 0 28px rgba(251,146,60,.35)}
+body.bg-ufo .planet-2{display:block;position:absolute;top:78%;left:12%;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#075985);box-shadow:0 0 22px rgba(125,211,252,.4)}
+body.bg-ufo .planet-3{display:block;position:absolute;top:35%;right:10%;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#c084fc,#4c1d95);box-shadow:0 0 26px rgba(192,132,252,.4)}
+body.bg-ufo .planet-4{display:block;position:absolute;bottom:22%;right:22%;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#34d399,#065f46);box-shadow:0 0 20px rgba(52,211,153,.4)}
+body.bg-ufo .planet-5{display:block;position:absolute;top:6%;left:55%;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#facc15,#854d0e);box-shadow:0 0 24px rgba(250,204,21,.4)}
+body.bg-ufo .planet-big{display:block;position:absolute;top:65%;left:60%;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f472b6,#831843);box-shadow:0 0 40px rgba(244,114,182,.35);opacity:.7}
 body.bg-ufo .ufo-scene{display:block;position:absolute;inset:0;overflow:hidden}
-body.bg-ufo .ufo-scene .ufo-craft{position:absolute;bottom:30%;left:-200px;width:100px;height:56px}
-body.bg-ufo .ufo-scene .ufo-craft:nth-child(1){animation:ufoWarp 5s ease-in infinite}
-body.bg-ufo .ufo-scene .ufo-craft:nth-child(2){animation:ufoWarp 7s ease-in infinite 2s;transform:scale(.7)}
-body.bg-ufo .ufo-scene .ufo-craft:nth-child(3){animation:ufoWarp 9s ease-in infinite 4s;transform:scale(.5)}
+body.bg-ufo .ufo-scene .ufo-craft{position:absolute;width:70px;height:40px;filter:drop-shadow(0 0 6px rgba(103,232,249,.5))}
+/* UFO 1 — kiri bawah ke kanan atas (menuju planet-3 kanan atas) */
+body.bg-ufo .ufo-scene .ufo-craft:nth-child(1){bottom:10%;left:-120px;animation:ufoToTopRight 8s ease-in infinite}
+/* UFO 2 — kanan atas ke kiri bawah (menuju planet-2 kiri bawah) */
+body.bg-ufo .ufo-scene .ufo-craft:nth-child(2){top:8%;right:-120px;animation:ufoToBottomLeft 10s ease-in infinite 2s}
+/* UFO 3 — kiri atas ke kanan bawah (menuju planet-4 kanan bawah) */
+body.bg-ufo .ufo-scene .ufo-craft:nth-child(3){top:15%;left:-120px;animation:ufoToBottomRight 12s ease-in infinite 4s}
 body.bg-ufo .ufo-scene .ufo-smoke{position:absolute;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,rgba(200,220,255,.55),transparent 70%);pointer-events:none;animation:ufoSmokeFade 3s ease-out forwards;filter:blur(4px)}
 @keyframes ufoSmokeFade{0%{transform:scale(.5);opacity:.9}30%{transform:scale(1.3);opacity:.7}100%{transform:scale(3);opacity:0}}
-@keyframes ufoWarp{0%{transform:translate(0,0) scale(.6);opacity:0}5%{transform:translate(60px,-20px) scale(1);opacity:1}35%{transform:translate(50vw,-10px);opacity:1}70%{transform:translate(90vw,-25vh) scale(.5);opacity:.7}100%{transform:translate(120vw,-45vh) scale(0);opacity:0}}
+@keyframes ufoToTopRight{
+  0%{transform:translate(0,0) rotate(0deg) scale(.7);opacity:0}
+  8%{transform:translate(60px,-20px) rotate(-10deg) scale(1);opacity:1}
+  50%{transform:translate(50vw,-22vh) rotate(-15deg) scale(1);opacity:1}
+  92%{transform:translate(90vw,-30vh) rotate(-20deg) scale(.9);opacity:.8}
+  100%{transform:translate(110vw,-38vh) rotate(-25deg) scale(0);opacity:0}
+}
+@keyframes ufoToBottomLeft{
+  0%{transform:translate(0,0) rotate(180deg) scale(.7);opacity:0}
+  8%{transform:translate(-60px,20px) rotate(190deg) scale(1);opacity:1}
+  50%{transform:translate(-50vw,22vh) rotate(200deg) scale(1);opacity:1}
+  92%{transform:translate(-90vw,28vh) rotate(205deg) scale(.9);opacity:.8}
+  100%{transform:translate(-110vw,36vh) rotate(215deg) scale(0);opacity:0}
+}
+@keyframes ufoToBottomRight{
+  0%{transform:translate(0,0) rotate(15deg) scale(.7);opacity:0}
+  8%{transform:translate(60px,15px) rotate(20deg) scale(1);opacity:1}
+  50%{transform:translate(50vw,22vh) rotate(25deg) scale(1);opacity:1}
+  92%{transform:translate(90vw,28vh) rotate(30deg) scale(.9);opacity:.8}
+  100%{transform:translate(110vw,36vh) rotate(35deg) scale(0);opacity:0}
+}
+
+/* ========== RETRO ARCADE 8-BIT ========== */
+body.bg-retro{background:#050810;background-attachment:fixed;font-family:'VT323','JetBrains Mono',monospace}
+body.bg-retro .retro-grid{display:block;position:absolute;inset:0;background-image:linear-gradient(rgba(74,222,128,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(74,222,128,.06) 1px,transparent 1px);background-size:24px 24px;opacity:.9;animation:retroGridScroll 8s linear infinite}
+@keyframes retroGridScroll{0%{background-position:0 0}100%{background-position:0 24px}}
+body.bg-retro .retro-scanline{display:block;position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0,rgba(0,0,0,.15) 1px,transparent 1px,transparent 2px);pointer-events:none;opacity:.5;z-index:100;mix-blend-mode:multiply}
+body.bg-retro .retro-glow{display:block;position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(74,222,128,.06),transparent 60%);pointer-events:none}
+body.bg-retro .retro-star{display:block;position:absolute;width:4px;height:4px;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:retroStarBlink 1s steps(2) infinite}
+body.bg-retro .retro-star:nth-child(1){top:15%;left:10%;animation-delay:0s}
+body.bg-retro .retro-star:nth-child(2){top:25%;left:75%;animation-delay:.2s}
+body.bg-retro .retro-star:nth-child(3){top:55%;left:20%;animation-delay:.5s}
+body.bg-retro .retro-star:nth-child(4){top:70%;left:85%;animation-delay:.7s}
+body.bg-retro .retro-star:nth-child(5){top:35%;left:45%;animation-delay:.3s}
+body.bg-retro .retro-star:nth-child(6){top:80%;left:35%;animation-delay:.9s}
+@keyframes retroStarBlink{0%,100%{opacity:.4}50%{opacity:1}}
+body.bg-retro .retro-invader{display:block;position:absolute;width:32px;height:32px;image-rendering:pixelated;animation:invaderWalk 12s linear infinite}
+body.bg-retro .retro-invader svg{width:100%;height:100%;fill:#4ade80;filter:drop-shadow(0 0 4px #4ade80)}
+body.bg-retro .retro-invader:nth-child(1){top:20%;left:5%;animation-duration:15s}
+body.bg-retro .retro-invader:nth-child(2){top:60%;left:15%;animation-duration:18s;animation-delay:2s}
+body.bg-retro .retro-invader:nth-child(3){top:40%;left:80%;animation-duration:14s;animation-delay:4s;transform:scaleX(-1)}
+@keyframes invaderWalk{0%{transform:translateX(0) translateY(0)}25%{transform:translateX(20px) translateY(-10px)}50%{transform:translateX(40px) translateY(0)}75%{transform:translateX(20px) translateY(10px)}100%{transform:translateX(0) translateY(0)}}
+
+/* ========== STAR WARS ========== */
+body.bg-starwars{background:radial-gradient(ellipse at 60% 30%,rgba(20,10,40,.85),transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(40,15,15,.7),transparent 55%),#020104;background-attachment:fixed}
+body.bg-starwars .sw-stars{display:block;position:absolute;inset:-50px;background-image:radial-gradient(1px 1px at 5% 10%,#fff,transparent),radial-gradient(1.5px 1.5px at 15% 30%,#fff,transparent),radial-gradient(1px 1px at 30% 55%,#fff,transparent),radial-gradient(2px 2px at 45% 20%,#fff,transparent),radial-gradient(1px 1px at 60% 70%,#fff,transparent),radial-gradient(1.5px 1.5px at 75% 35%,#fff,transparent),radial-gradient(1px 1px at 90% 85%,#fff,transparent),radial-gradient(1px 1px at 25% 90%,#fff,transparent),radial-gradient(2px 2px at 55% 5%,#fff,transparent),radial-gradient(1px 1px at 85% 60%,#fff,transparent);background-size:500px 500px;animation:starTwinkle 4s infinite}
+body.bg-starwars .sw-deathstar{display:block;position:absolute;top:20%;right:12%;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#4a4a4a,#1a1a1a 60%,#0a0a0a);box-shadow:inset -30px -30px 60px rgba(0,0,0,.8),0 0 60px rgba(100,100,100,.2);position:relative}
+body.bg-starwars .sw-deathstar::after{content:"";position:absolute;top:48%;left:48%;width:14px;height:14px;background:#000;border-radius:50%;box-shadow:0 0 8px rgba(255,60,60,.5)}
+body.bg-starwars .sw-planet{display:block;position:absolute;bottom:15%;left:8%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#d4845c,#5c2418 70%,#2a0f08);box-shadow:0 0 40px rgba(212,132,92,.3)}
+body.bg-starwars .sw-battle{display:block;position:absolute;inset:0;overflow:hidden}
+body.bg-starwars .sw-battle .laser{position:absolute;height:2px;background:linear-gradient(90deg,transparent,#ff3b3b,#fff,#ff3b3b,transparent);box-shadow:0 0 8px #ff3b3b,0 0 16px #ff3b3b;transform-origin:left center;animation:laserShot 1.5s linear infinite}
+body.bg-starwars .sw-battle .laser:nth-child(1){top:35%;left:15%;width:120px;animation-delay:0s;transform:rotate(-25deg)}
+body.bg-starwars .sw-battle .laser:nth-child(2){top:45%;left:55%;width:150px;animation-delay:.6s;transform:rotate(15deg);background:linear-gradient(90deg,transparent,#3bff3b,#fff,#3bff3b,transparent);box-shadow:0 0 8px #3bff3b,0 0 16px #3bff3b}
+body.bg-starwars .sw-battle .laser:nth-child(3){top:55%;left:25%;width:100px;animation-delay:1.2s;transform:rotate(35deg)}
+body.bg-starwars .sw-battle .laser:nth-child(4){top:30%;left:70%;width:130px;animation-delay:.9s;transform:rotate(-40deg);background:linear-gradient(90deg,transparent,#3bff3b,#fff,#3bff3b,transparent);box-shadow:0 0 8px #3bff3b}
+body.bg-starwars .sw-battle .explosion{position:absolute;width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,#fff,#ffb347,#ff3b3b,transparent 70%);animation:explode 2s ease-out infinite;pointer-events:none}
+body.bg-starwars .sw-battle .explosion:nth-child(5){top:38%;left:22%;animation-delay:.3s}
+body.bg-starwars .sw-battle .explosion:nth-child(6){top:48%;left:62%;animation-delay:1.5s}
+body.bg-starwars .sw-battle .xwing{position:absolute;width:60px;height:30px;filter:drop-shadow(0 0 4px rgba(200,200,255,.6));animation:xwingFly 6s linear infinite}
+body.bg-starwars .sw-battle .xwing:nth-child(7){top:25%;left:-80px;animation-delay:0s}
+body.bg-starwars .sw-battle .tie{position:absolute;width:50px;height:50px;filter:drop-shadow(0 0 4px rgba(255,80,80,.5));animation:tieFly 7s linear infinite}
+body.bg-starwars .sw-battle .tie:nth-child(8){top:60%;right:-80px;animation-delay:1s;transform:scaleX(-1)}
+@keyframes laserShot{0%{opacity:0;transform:translateX(-50px) rotate(var(--rot,0))}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateX(200px) rotate(var(--rot,0))}}
+@keyframes explode{0%{transform:scale(0);opacity:0}30%{transform:scale(.5);opacity:1}60%{transform:scale(1.8);opacity:.8}100%{transform:scale(2.5);opacity:0}}
+@keyframes xwingFly{0%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(60vw,10vh) rotate(5deg)}100%{transform:translate(120vw,0) rotate(0deg)}}
+@keyframes tieFly{0%{transform:translate(0,0) rotate(0deg) scaleX(-1)}50%{transform:translate(-60vw,-5vh) rotate(-5deg) scaleX(-1)}100%{transform:translate(-120vw,0) rotate(0deg) scaleX(-1)}}
 
 body.bg-plain{background:var(--bg)}
 body.no-anim *{animation:none!important}
 body.light{--bg:#f0f4f8;--card:rgba(255,255,255,.94);--border:#cbd5e1;--tx:#0f172a;--txd:#475569;background:#f0f4f8;color:#0f172a}
 
+/* ========== LAYOUT CORE ========== */
 .w{max-width:520px;margin:0 auto;padding:10px;position:relative;z-index:2}
 .tb{display:flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--ac);border-radius:10px;background:var(--card);margin-bottom:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);min-height:42px;overflow:hidden}
 .lg{font-family:var(--fh);font-weight:900;font-size:.78rem;letter-spacing:1.2px;color:var(--ac);flex-shrink:0;line-height:1;white-space:nowrap}.lg .y{color:var(--ac2)}
@@ -218,6 +306,7 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 .zy-raw pre{background:rgba(0,0,0,.5);border:1px solid var(--ac);border-radius:5px;padding:8px;font-size:.5rem;overflow-x:auto;color:var(--ac2);max-height:300px;overflow-y:auto;margin-top:5px}
 .zy-copy{width:auto;padding:6px 14px;font-size:.55rem;background:transparent;color:var(--ac);border:1px solid var(--ac);border-radius:6px;margin-top:8px;letter-spacing:1px;display:inline-block;margin-right:5px}
 
+/* ========== RESULT URL BOX (bypass) ========== */
 .result-url-box{padding:12px;border:1.5px solid var(--ac);border-radius:8px;background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(139,92,246,.05));margin-bottom:8px;box-shadow:0 0 20px rgba(34,211,238,.1)}
 .result-url-label{font-size:.5rem;color:var(--ac);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:6px}
 .result-url-text{font-family:var(--fm);font-size:.65rem;color:var(--tx);word-break:break-all;padding:8px 10px;border-radius:6px;background:rgba(0,0,0,.5);border:1px solid var(--bl);min-height:32px;max-height:100px;overflow-y:auto;line-height:1.4;display:flex;align-items:center}
@@ -232,6 +321,7 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 .result-url-actions{display:flex;justify-content:center;gap:8px}
 .result-url-actions button{width:auto;padding:9px 28px;margin:0}
 
+/* ========== PROGRESS BAR UPSCALE ========== */
 .up-prog{margin-top:10px;padding:12px;border:1.5px solid var(--ac);border-radius:10px;background:linear-gradient(180deg,rgba(10,20,35,.9),rgba(6,12,22,.95));display:none}
 .up-prog.on{display:block}
 .up-prog-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -244,6 +334,7 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 .up-prog-msg{font-size:.55rem;color:var(--txd);margin-top:8px;letter-spacing:1px;min-height:14px;text-align:center}
 .up-prog-glow{position:absolute;top:-2px;bottom:-2px;width:40px;background:radial-gradient(circle,rgba(103,232,249,.6),transparent 70%);border-radius:50%;pointer-events:none;transition:left .4s ease-out;filter:blur(6px);left:0}
 
+/* ========== SMART WARN TOAST (ikut theme) ========== */
 .zy-smart-warn{background:linear-gradient(180deg,var(--card),var(--card));border:1.5px solid var(--ac);border-radius:10px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:auto;animation:zyToastIn .35s ease-out;backdrop-filter:blur(10px)}
 .zy-smart-warn .sw-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:.7rem;color:var(--ac);letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;gap:8px;line-height:1.3}
 .zy-smart-warn .sw-icon{font-size:1.1rem}
@@ -251,72 +342,60 @@ button.d{background:transparent;color:var(--er);border:1px solid var(--er)}
 
 #bp-scan-badge{display:none;margin-top:6px;padding:8px 10px;border-radius:7px;border:1px solid var(--ac);background:var(--acd);color:var(--ac);font-size:.6rem;font-weight:700;text-align:center}
 
-.filedrop{border:2px dashed var(--ac);border-radius:9px;background:rgba(4,8,15,.4);padding:16px;text-align:center;cursor:pointer}
-.filelist{margin-top:8px;font-size:.6rem}
-.filelist .fitem{padding:6px 9px;border:1px solid var(--ac);border-radius:6px;background:rgba(0,0,0,.3);margin-bottom:4px;display:flex;justify-content:space-between;gap:8px}
-.filelist .fitem .nm{color:var(--ac2);flex:1}
-.filelist .fitem .rm{color:var(--er);cursor:pointer;font-weight:700;padding:0 5px}
-.color-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
-.color-pick{text-align:center}
-.color-pick input[type="color"]{width:100%;height:38px;border:2px solid var(--ac);border-radius:7px;background:transparent;padding:2px}
-.switch-row{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border:1px solid var(--ac);border-radius:8px;background:rgba(4,8,15,.4);margin-top:6px}
-.switch-row .lbl{font-size:.6rem;color:var(--ac);font-weight:700;text-transform:uppercase}
-.switch{position:relative;width:44px;height:22px;flex-shrink:0}
-.switch input{opacity:0;width:0;height:0}
-.switch .slider{position:absolute;cursor:pointer;inset:0;background:rgba(0,0,0,.5);border:1px solid var(--ac);border-radius:22px}
-.switch .slider:before{content:"";position:absolute;height:16px;width:16px;left:2px;top:2px;background:var(--txd);border-radius:50%;transition:.25s}
-.switch input:checked+.slider{border-color:var(--ac)}
-.switch input:checked+.slider:before{transform:translateX(22px);background:var(--ac)}
-input[type="range"].vol-range{width:100%;height:4px;border-radius:2px;background:var(--ac);outline:none;-webkit-appearance:none;padding:0}
-input[type="range"].vol-range::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--ac)}
-input[type="range"].fs-range{width:100%;height:4px;border-radius:2px;background:var(--ac);outline:none;-webkit-appearance:none}
-input[type="range"].fs-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ac)}
+/* ========== P2U STYLES ========== */
+.p2u-drop{border:2px dashed var(--ac);border-radius:12px;background:rgba(4,8,15,.5);padding:24px 16px;text-align:center;cursor:pointer;transition:all .2s}
+.p2u-drop:hover,.p2u-drop.dragover{border-color:var(--ac2);background:var(--acd);transform:scale(1.01)}
+.p2u-drop .p2u-ic{font-size:42px;display:block;margin-bottom:8px}
+.p2u-drop .p2u-label{font-family:var(--fh);font-weight:900;font-size:.8rem;color:var(--ac);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.p2u-drop .p2u-hint{font-size:.55rem;color:var(--txd);letter-spacing:1px}
+.p2u-list{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.p2u-item{display:flex;gap:10px;padding:8px;border:1px solid var(--ac);border-radius:8px;background:rgba(4,8,15,.5);align-items:center}
+.p2u-thumb{width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;border:1px solid var(--bl)}
+.p2u-meta{flex:1;min-width:0}
+.p2u-name{font-size:.6rem;color:var(--tx);word-break:break-all;font-weight:700}
+.p2u-size{font-size:.5rem;color:var(--txd);margin-top:2px}
+.p2u-rm{width:24px;height:24px;flex-shrink:0;background:transparent;border:1px solid var(--er);color:var(--er);border-radius:6px;cursor:pointer;font-size:.7rem;padding:0;margin:0;display:flex;align-items:center;justify-content:center}
+.p2u-rm:hover{background:rgba(248,113,113,.15)}
+.p2u-results{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.p2u-result-item{padding:10px;border:1px solid var(--ac);border-radius:8px;background:rgba(4,8,15,.5)}
+.p2u-result-item.p2u-fail{border-color:var(--er);background:rgba(248,113,113,.06)}
+.p2u-result-name{font-size:.6rem;color:var(--ac);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.p2u-badge{font-size:.45rem;padding:2px 6px;border-radius:4px;background:var(--acd);color:var(--ac);border:1px solid var(--ac);letter-spacing:1px;font-weight:700}
+.p2u-badge-err{background:rgba(248,113,113,.15);color:var(--er);border-color:var(--er)}
+.p2u-result-url-row{display:flex;align-items:center;gap:8px}
+.p2u-result-url{flex:1;font-family:var(--fm);font-size:.6rem;color:var(--txd);word-break:break-all;padding:6px 8px;background:rgba(0,0,0,.5);border:1px solid var(--bl);border-radius:6px;max-height:60px;overflow-y:auto}
 
-.snd-pack{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
-.snd-opt{padding:8px 4px;border-radius:7px;border:2px solid var(--ac);cursor:pointer;text-align:center;font-size:.55rem;font-weight:700;color:var(--txd);background:rgba(10,20,35,.6);text-transform:uppercase}
-.snd-opt.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
-.tg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
-.to{aspect-ratio:1;border-radius:7px;border:2px solid var(--ac);cursor:pointer;position:relative}
-.to.a{border-color:var(--ac);transform:scale(1.08)}
-.to .lbl{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:.4rem;color:#fff;text-shadow:0 0 4px #000}
-.drop{border:2px dashed var(--ac);border-radius:9px;background:rgba(4,8,15,.4);padding:18px;text-align:center;cursor:pointer}
-.drop .ic{font-size:28px;display:block;margin-bottom:5px}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
-.tab{border:1px solid var(--ac);border-radius:8px;padding:9px 6px;text-align:center;cursor:pointer;font-weight:700;font-size:.6rem;color:var(--txd);text-transform:uppercase}
-.tab.a{border-color:var(--ac);color:var(--ac);background:var(--acd)}
-.gulp{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;padding:0 22px;border:none;border-radius:999px;background:linear-gradient(180deg,var(--ac),var(--bl));color:#04080f;font-family:var(--fm);font-size:.8rem;font-weight:800;cursor:pointer;overflow:hidden;margin-top:7px;transition:width .55s}
-.gulp .gulp_face{display:flex;align-items:center;gap:9px;height:100%;white-space:nowrap;z-index:2}
-.gulp .gulp_icon{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none}
-.gulp .gulp_bin{position:absolute;right:14px;top:50%;width:26px;height:26px;transform:translateY(-50%) scale(.7);opacity:0;z-index:3;transition:opacity .3s}
-.gulp[data-state="eat"] .gulp_face{opacity:0;transform:translateX(44px) scale(.6)}
-.gulp[data-state="eat"] .gulp_bin{opacity:1;transform:translateY(-50%) scale(1.25);right:50%;margin-right:-13px}
-.gulp[data-state="pending"]{width:56px!important;padding:0!important}
-.gulp[data-state="pending"] .gulp_face{opacity:0}
-.gulp[data-state="pending"] .gulp_bin{opacity:1;right:50%;margin-right:-13px}
-.gulp[data-state="done"]{width:56px!important;padding:0!important}
-.gulp[data-state="done"] .gulp_face{opacity:0}
-.gulp[data-state="done"] .gulp_bin{opacity:1;right:50%;margin-right:-13px}
-.ach{padding:9px;margin-bottom:5px;border-radius:7px;border:1px solid var(--ac);background:rgba(0,0,0,.3);font-size:.6rem}
-.ach.locked{opacity:.5}
-.ach.unlocked{border-color:var(--ac);background:var(--acd);color:var(--ac);font-weight:700}
-.ach .desc{font-size:.5rem;color:var(--txd);margin-top:2px;font-weight:400}
-.ach-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.ach-counter{font-family:var(--fh);font-weight:900;font-size:1.1rem;color:var(--ac);text-align:center;margin-bottom:8px;letter-spacing:2px}
-.ach-counter span{color:var(--ac2)}
-.hi{padding:9px;border-radius:7px;border:1px solid var(--ac);background:rgba(4,8,15,.5);margin-bottom:5px;font-size:.6rem}
-.hi b{color:var(--ac)}
+/* ========== CHECKBOX SVG (Vercel + GitHub) ========== */
+.gh-file-item{display:flex;gap:10px;padding:8px 10px;border:1px solid var(--ac);border-radius:8px;background:rgba(4,8,15,.5);margin-bottom:6px;align-items:center}
+.gh-file-item:last-child{margin-bottom:0}
+.gh-file-check{width:22px;height:22px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:2px solid var(--ac);border-radius:6px;cursor:pointer;background:transparent;transition:all .15s;color:var(--ac)}
+.gh-file-check svg{display:none}
+.gh-file-check.on{background:var(--ac);color:#04080f}
+.gh-file-check.on svg{display:block;stroke:#04080f}
+.gh-file-check:hover{border-color:var(--ac2)}
+.gh-file-name{flex:1;font-family:var(--fm);font-size:.65rem;color:var(--tx);word-break:break-all;font-weight:700}
+.gh-file-rm{width:24px;height:24px;flex-shrink:0;background:transparent;border:1px solid var(--er);color:var(--er);border-radius:6px;cursor:pointer;font-size:.7rem;padding:0;margin:0;display:flex;align-items:center;justify-content:center}
+.gh-file-rm:hover{background:rgba(248,113,113,.15)}
+.gh-repo-info{font-size:.55rem;color:var(--txd);padding:8px 10px;background:rgba(0,0,0,.35);border-radius:6px;margin-top:6px;border:1px solid var(--bl);word-break:break-all}
+.gh-user-badge{font-size:.55rem;color:var(--ac);border:1px solid var(--ac);padding:4px 8px;border-radius:6px;background:var(--acd);font-weight:700;letter-spacing:1px;display:inline-block;margin-top:4px}
+
+/* ========== CONSOLE LOG ========== */
 .console-log{background:rgba(4,8,15,.8);border:1px solid var(--ac);border-radius:8px;padding:10px;margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:.6rem;line-height:1.5;color:var(--ok);overflow-y:auto;white-space:pre-wrap;word-break:break-all;max-height:300px}
 .console-log .ok{color:var(--ok)}
 .console-log .er{color:var(--er)}
 .console-log .in{color:var(--ac2)}
 .console-log .warn{color:var(--wr)}
 .console-log .link{color:var(--ac);text-decoration:underline;word-break:break-all}
+
+/* ========== MISC ========== */
 .msg-item{padding:9px;border:1px solid var(--ac);border-radius:7px;margin-bottom:5px;cursor:pointer;font-size:.6rem;background:rgba(4,8,15,.5)}
 .msg-item b{color:var(--ac)}
 .upload-dual{display:flex;flex-direction:column;gap:6px}
 .upload-btn{background:transparent;color:var(--ac);border:1.5px dashed var(--ac);padding:10px;border-radius:8px;cursor:pointer;font-family:var(--fh);font-size:.6rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;width:100%;margin-top:0}
 .upload-info{font-family:var(--fm);font-size:.55rem}
 input[type="file"]{display:none!important}
+
+/* ========== SEARCH ========== */
 .search-wrap{position:relative;margin-bottom:12px}
 .search-box{display:flex;align-items:center;gap:8px;padding:0 4px 0 16px;border:1.5px solid var(--ac);border-radius:999px;background:rgba(4,8,15,.85);overflow:hidden}
 .search-box svg{width:18px;height:18px;stroke:var(--ac);stroke-width:2;fill:none;flex-shrink:0}
@@ -341,6 +420,8 @@ input[type="file"]{display:none!important}
 .apihub-title{font-family:var(--fh);font-weight:900;font-size:1.1rem;letter-spacing:3px;color:var(--ac);text-shadow:0 0 12px var(--ac);margin-bottom:4px}
 .apihub-sub{font-size:.55rem;color:var(--txd);letter-spacing:2px;text-transform:uppercase}
 .apihub-count{display:inline-block;margin-top:6px;font-size:.55rem;color:var(--ac2);border:1px solid var(--ac);padding:2px 10px;border-radius:12px;background:var(--acd);font-weight:700}
+
+/* ========== TOAST / MODAL / MISC ========== */
 #ach-toast-wrap{position:fixed;right:12px;bottom:96px;z-index:9999;display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none;max-width:300px}
 .ach-toast{background:var(--card);border:1.5px solid var(--ac);border-radius:10px;padding:10px 14px;pointer-events:auto}
 .ach-toast .t{font-family:var(--fh);font-weight:900;font-size:.7rem;color:var(--ac);letter-spacing:1.2px;text-transform:uppercase}
@@ -391,6 +472,7 @@ input[type="file"]{display:none!important}
 .pwd-status.used{background:var(--acd);color:var(--ac);border:1px solid var(--ac)}
 .pwd-status.revoked{background:rgba(248,113,113,.15);color:var(--er);border:1px solid var(--er)}
 .device-id{font-family:var(--fm);font-size:.5rem;color:var(--txd);word-break:break-all;background:rgba(0,0,0,.3);padding:4px 6px;border-radius:4px;margin-top:4px}
+
 #accessCodeGate{position:fixed;inset:0;z-index:999998;background:rgba(4,8,15,.6);display:none;align-items:center;justify-content:center;padding:20px}
 #accessCodeGate.show{display:flex}
 .acc-box{background:linear-gradient(180deg,rgba(14,18,24,.85),rgba(8,12,18,.92));border:1.5px solid var(--ac);border-radius:18px;padding:28px 24px;width:100%;max-width:420px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
@@ -404,6 +486,7 @@ input[type="file"]{display:none!important}
 </head>
 <body data-theme="t-cyan" class="bg-galaxy">
 
+<!-- ============ PASSWORD GATE (ZERO TOUCH v10.3) ============ -->
 <div id="passwordGate">
   <div class="gate-galaxy">
     <div class="sf"></div><div class="p1"></div><div class="p2"></div><div class="p3"></div>
@@ -412,7 +495,7 @@ input[type="file"]{display:none!important}
   </div>
   <div class="access-card" id="accessCard">
     <div class="card-line"></div>
-    <h1>RYANNTOOLS <span>v10.4</span></h1>
+    <h1>RYANNTOOLS <span>v10.5</span></h1>
     <div class="subtitle">ACCESS VERIFICATION</div>
     <p class="description">Enter your password to continue</p>
     <textarea id="passwordInput" maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text" rows="1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-9999px"></textarea>
@@ -436,7 +519,9 @@ input[type="file"]{display:none!important}
   </div>
 </div>
 
+<!-- ============ BG LAYER ============ -->
 <div class="bg-layer">
+  <!-- GALAXY -->
   <div class="starfield"></div>
   <div class="aurora"></div>
   <div class="shooting-star-1"></div>
@@ -450,34 +535,67 @@ input[type="file"]{display:none!important}
   <div class="planet-4"></div>
   <div class="planet-5"></div>
   <div class="planet-6"></div>
+
+  <!-- BINARY -->
   <div class="bin-rain" id="bin-rain"></div>
+
+  <!-- UFO v10.5 -->
   <div class="ufo-scene" id="ufo-scene">
-    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(165,243,252,.95)"/><stop offset="60%" stop-color="rgba(103,232,249,.65)"/></radialGradient><linearGradient id="bodyG2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG2)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG2)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
-    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG3" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(216,180,254,.95)"/><stop offset="60%" stop-color="rgba(192,132,252,.65)"/></radialGradient><linearGradient id="bodyG3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8b4fe"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG3)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG3)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
-    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeG4" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="rgba(253,186,116,.95)"/><stop offset="60%" stop-color="rgba(251,146,60,.65)"/></radialGradient><linearGradient id="bodyG4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdba74"/><stop offset="100%" stop-color="#c2410c"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyG4)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeG4)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
+    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeU1" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(165,243,252,.95)"/><stop offset="60%" stop-color="rgba(103,232,249,.65)"/></radialGradient><linearGradient id="bodyU1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a5f3fc"/><stop offset="100%" stop-color="#0891b2"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyU1)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeU1)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
+    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeU2" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(216,180,254,.95)"/><stop offset="60%" stop-color="rgba(192,132,252,.65)"/></radialGradient><linearGradient id="bodyU2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d8b4fe"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyU2)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeU2)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
+    <div class="ufo-craft"><svg viewBox="0 0 100 56"><defs><radialGradient id="domeU3" cx="50%" cy="40%" r="60%"><stop offset="0%" stop-color="rgba(253,186,116,.95)"/><stop offset="60%" stop-color="rgba(251,146,60,.65)"/></radialGradient><linearGradient id="bodyU3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdba74"/><stop offset="100%" stop-color="#c2410c"/></linearGradient></defs><ellipse cx="50" cy="38" rx="44" ry="12" fill="url(#bodyU3)"/><path d="M26 34 Q50 8 74 34 Q50 26 26 34 Z" fill="url(#domeU3)"/><circle cx="36" cy="38" r="2.5" fill="#fff"/><circle cx="50" cy="39" r="2.5" fill="#fff"/><circle cx="64" cy="38" r="2.5" fill="#fff"/></svg></div>
+  </div>
+
+  <!-- RETRO ARCADE 8-BIT -->
+  <div class="retro-grid"></div>
+  <div class="retro-star"></div><div class="retro-star"></div><div class="retro-star"></div><div class="retro-star"></div><div class="retro-star"></div><div class="retro-star"></div>
+  <div class="retro-glow"></div>
+  <div class="retro-invader"><svg viewBox="0 0 16 16"><path d="M4 2h2v2H4zm6 0h2v2h-2zM2 4h12v2H2zm0 2h2v2H2zm10 0h2v2h-2zM4 6h2v2H4zm6 0h2v2h-2zM6 8h4v2H6zM4 10h2v2H4zm6 0h2v2h-2zM2 12h2v2H2zm10 0h2v2h-2zM6 12h4v2H6z"/></svg></div>
+  <div class="retro-invader"><svg viewBox="0 0 16 16"><path d="M4 2h2v2H4zm6 0h2v2h-2zM2 4h12v2H2zm0 2h2v2H2zm10 0h2v2h-2zM4 6h2v2H4zm6 0h2v2h-2zM6 8h4v2H6zM4 10h2v2H4zm6 0h2v2h-2zM2 12h2v2H2zm10 0h2v2h-2zM6 12h4v2H6z"/></svg></div>
+  <div class="retro-invader"><svg viewBox="0 0 16 16"><path d="M4 2h2v2H4zm6 0h2v2h-2zM2 4h12v2H2zm0 2h2v2H2zm10 0h2v2h-2zM4 6h2v2H4zm6 0h2v2h-2zM6 8h4v2H6zM4 10h2v2H4zm6 0h2v2h-2zM2 12h2v2H2zm10 0h2v2h-2zM6 12h4v2H6z"/></svg></div>
+  <div class="retro-scanline"></div>
+
+  <!-- STAR WARS -->
+  <div class="sw-stars"></div>
+  <div class="sw-deathstar"></div>
+  <div class="sw-planet"></div>
+  <div class="sw-battle">
+    <div class="laser"></div>
+    <div class="laser"></div>
+    <div class="laser"></div>
+    <div class="laser"></div>
+    <div class="explosion"></div>
+    <div class="explosion"></div>
+    <div class="xwing"><svg viewBox="0 0 100 50"><path d="M10 25 L50 15 L90 25 L50 35 Z" fill="#cbd5e1"/><rect x="45" y="20" width="10" height="10" fill="#64748b"/><path d="M15 25 L5 15 M15 25 L5 35 M85 25 L95 15 M85 25 L95 35" stroke="#cbd5e1" stroke-width="2" fill="none"/></svg></div>
+    <div class="tie"><svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="8" fill="#1e293b" stroke="#94a3b8" stroke-width="2"/><rect x="0" y="0" width="8" height="50" fill="#475569"/><rect x="42" y="0" width="8" height="50" fill="#475569"/><line x1="8" y1="25" x2="17" y2="25" stroke="#94a3b8" stroke-width="2"/><line x1="33" y1="25" x2="42" y2="25" stroke="#94a3b8" stroke-width="2"/></svg></div>
   </div>
 </div>
 
+<!-- ============ WELCOME MODAL ============ -->
 <div id="welcome-modal" class="hd">
   <div class="wm-box">
     <button class="wm-skip" id="wm-skip">✕</button>
     <img class="wm-banner" id="wm-banner" src="banner.png" alt="Ryann Tools">
     <div class="wm-body">
       <div class="wm-title">WELCOME TO RYANN <span class="y">TOOLS</span></div>
-      <div class="wm-ver">v10.4</div>
+      <div class="wm-ver">v10.5</div>
       <div class="wm-changes-title">WHAT'S NEW?</div>
       <ul class="wm-changes">
-        <li><b>Universal decoder</b> — raw → file watchable</li>
-        <li><b>Smart adjustment</b> — auto 50MB warn</li>
-        <li><b>Upscale progress</b> — bar futuristik</li>
-        <li><b>Bypass scan</b> — auto-detect + URL box</li>
-        <li><b>Sound + Color</b> — full balik</li>
+        <li><b>Bypass fix</b> — deteksi URL hasil otomatis</li>
+        <li><b>Tempmail fix</b> — multi-provider + retry</li>
+        <li><b>P2U</b> — Photo to URL multi upload</li>
+        <li><b>Vercel menu</b> — add manual + checkbox</li>
+        <li><b>GitHub menu</b> — upload/download/copy</li>
+        <li><b>BG Retro</b> — 8-bit arcade pixel</li>
+        <li><b>BG Star Wars</b> — peperangan luar angkasa</li>
+        <li><b>UFO update</b> — multi-arah + planet</li>
       </ul>
       <button id="wm-start">MULAI</button>
     </div>
   </div>
 </div>
 
+<!-- ============ DEV MODAL ============ -->
 <div class="modal-overlay" id="devModal">
   <div class="modal-box">
     <div class="modal-head">
@@ -521,11 +639,12 @@ input[type="file"]{display:none!important}
 
 <div id="ach-toast-wrap"></div>
 
+<!-- ============ MAIN WRAPPER ============ -->
 <div class="w">
 
 <div class="tb">
 <span class="lg">RYANN <span class="y">• TOOLS</span></span>
-<span class="ch">v10.4</span>
+<span class="ch">v10.5</span>
 <span class="role-badge" id="role-badge">OWNER</span>
 <span class="sp"></span>
 <span class="pl"><span class="d"></span>ONLINE</span>
@@ -533,8 +652,9 @@ input[type="file"]{display:none!important}
 <button class="tgl" id="mode-tgl">🌙</button>
 </div>
 
+<!-- ============ PAGE: HOME ============ -->
 <div class="pg active" id="pg-home">
-<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">INJECTOR · FUN · OSINT · SCRAPE · BYPASS · DL · API · SEARCH</div></div>
+<div class="c"><div class="hr">RYANN <span class="y">• TOOLS</span></div><div class="sb">INJECTOR · FUN · OSINT · SCRAPE · BYPASS · DL · API · P2U · VERCEL · GITHUB</div></div>
 <div class="c"><div class="cl">QUICK ACTIONS</div>
 <div class="br"><button class="g" onclick="go('spy')">INJECT</button><button class="g" onclick="go('utl')">FUN</button></div>
 <div class="br"><button class="g" onclick="go('osi')">OSINT</button><button class="g" onclick="go('scr')">SCRAPE</button></div>
@@ -543,7 +663,8 @@ input[type="file"]{display:none!important}
 <div class="br"><button class="g" onclick="go('up')">UPSCALE</button><button class="g" onclick="go('imgai')">IMG AI</button></div>
 <div class="br"><button class="g" onclick="go('imghd')">IMG HD</button><button class="g" onclick="go('maker')">MAKER</button></div>
 <div class="br"><button class="g" onclick="go('srchapi')">SRCH API</button><button class="g" onclick="go('tpl')">TEMPLATE</button></div>
-<div class="br"><button class="g" onclick="go('set')">SETTINGS</button></div>
+<div class="br"><button class="g" onclick="go('p2u')">P2U</button><button class="g" onclick="go('vc')">VERCEL</button></div>
+<div class="br"><button class="g" onclick="go('gh')">GITHUB</button><button class="g" onclick="go('set')">SETTINGS</button></div>
 </div>
 <div class="c"><div class="cl">INFO</div>
 <div class="r" style="font-size:.55rem;line-height:1.6">
@@ -552,11 +673,12 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 </div>
 <div class="c"><div class="cl">ACHIEVEMENTS</div>
-<div class="ach-counter" id="achCounter">0 <span>/ 25</span></div>
+<div class="ach-counter" id="achCounter">0 <span>/ 26</span></div>
 <div class="ach-grid" id="ach-wrap"></div>
 </div>
 </div>
 
+<!-- ============ PAGE: SPY ============ -->
 <div class="pg hd" id="pg-spy">
 <div class="c"><div class="cl">INPUT CODE</div>
 <div class="tabs"><div class="tab a" id="tp">PASTE</div><div class="tab" id="tu">UPLOAD</div></div>
@@ -584,6 +706,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 </div>
 
+<!-- ============ PAGE: FUN ============ -->
 <div class="pg hd" id="pg-utl">
 <div class="c"><div class="cl">PASSWORD GENERATOR</div>
 <label>Prefix (opsional)</label><input id="pg-prefix" placeholder="misal ryann">
@@ -635,6 +758,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 </div>
 </div>
 
+<!-- ============ PAGE: OSINT ============ -->
 <div class="pg hd" id="pg-osi">
 <div class="c"><div class="cl">IP LOOKUP</div><input id="ipin" placeholder="8.8.8.8"><button class="g" id="ilook">LOOKUP</button><div class="r" id="ires">—</div></div>
 <div class="c"><div class="cl">MY IP</div><button class="g" id="mip">CEK IP</button><div class="r" id="mres">—</div></div>
@@ -647,6 +771,7 @@ Device ID: <span id="homeDevice" style="font-size:.5rem;word-break:break-all;col
 <div class="c"><div class="cl">DEVICE INFO</div><button class="g" id="dvinfo">CEK DEVICE</button><div class="r" id="dvres">—</div></div>
 </div>
 
+<!-- ============ PAGE: SCRAPE (Vercel DIHAPUS) ============ -->
 <div class="pg hd" id="pg-scr">
 <div class="c"><div class="cl">DEEP WEB SCRAPER</div>
 <label>URL Target</label><input id="ds-url" placeholder="https://example.com">
@@ -687,20 +812,9 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 <div class="s"><div class="l">Skip</div><div class="n" id="pc-stat-skip" style="color:var(--ac)">0</div></div>
 </div>
 </div>
-<div class="c"><div class="cl">AUTO DEPLOY VERCEL</div>
-<label>Vercel Token</label><input id="scr-vtoken" placeholder="vercel token">
-<label>Project Name Base</label><input id="scr-vname" placeholder="my-project">
-<label>Total Project (max 20)</label><input type="number" id="scr-vtotal" value="20" min="1" max="20">
-<label>File Project</label>
-<div class="filedrop" id="scr-vdrop"><span style="font-size:24px;display:block">📁</span><div style="font-weight:700;font-size:.65rem">TAP / DROP FILE</div></div>
-<input type="file" id="scr-vfile" multiple>
-<div class="filelist" id="scr-vlist"></div>
-<div class="br"><button class="g" id="scr-vdeploy">DEPLOY</button><button class="g" id="scr-vclear">CLEAR</button></div>
-<div id="scr-vlog" class="console-log" style="height:200px"></div>
-<div id="scr-vresult" class="r hd"></div>
-</div>
 </div>
 
+<!-- ============ PAGE: TEMPLATE ============ -->
 <div class="pg hd" id="pg-tpl">
 <div class="c"><div class="cl">TEMPLATE LIST</div><div id="tl">Loading...</div></div>
 <div class="c"><div class="cl">EDITOR</div>
@@ -712,6 +826,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: BYPASS ============ -->
 <div class="pg hd" id="pg-bp">
 <div class="c"><div class="cl">BYPASS LINK</div>
 <label>URL Target</label><input id="bp-url" placeholder="https://sfl.gl/xxx">
@@ -742,6 +857,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: DOWNLOADER ============ -->
 <div class="pg hd" id="pg-dl">
 <div class="c"><div class="cl">DOWNLOADER</div>
 <label>Kategori</label><div id="dl-cat-custom" class="zy-select-wrap"></div>
@@ -754,6 +870,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: SEARCH ============ -->
 <div class="pg hd" id="pg-srch">
 <div class="apihub-header"><div class="apihub-title">🔍 SEARCH</div><div class="apihub-sub">WEB · VIDEO · MUSIC</div></div>
 <div class="c">
@@ -773,6 +890,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: UPSCALE ============ -->
 <div class="pg hd" id="pg-up">
 <div class="apihub-header"><div class="apihub-title">UPSCALE VIDEO</div><div class="apihub-sub">HD Video Enhancer</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -796,6 +914,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: IMG AI ============ -->
 <div class="pg hd" id="pg-imgai">
 <div class="apihub-header"><div class="apihub-title">IMAGE AI</div><div class="apihub-sub">AI Image Generator</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -807,6 +926,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: IMG HD ============ -->
 <div class="pg hd" id="pg-imghd">
 <div class="apihub-header"><div class="apihub-title">IMAGE HD</div><div class="apihub-sub">Upscaler &amp; Enhancer</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -818,6 +938,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: MAKER ============ -->
 <div class="pg hd" id="pg-maker">
 <div class="apihub-header"><div class="apihub-title">MAKER</div><div class="apihub-sub">Fake Canvas Generator</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -829,6 +950,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: SEARCH API ============ -->
 <div class="pg hd" id="pg-srchapi">
 <div class="apihub-header"><div class="apihub-title">SEARCH API</div><div class="apihub-sub">Direct API Call</div><span class="apihub-count">api.zyvor.my.id</span></div>
 <div class="c">
@@ -840,6 +962,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: TEMPMAIL ============ -->
 <div class="pg hd" id="pg-tmp">
 <div class="c"><div class="cl">TEMP MAIL</div>
 <label>Provider</label><div id="tmp-provider"></div>
@@ -860,6 +983,119 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: P2U (NEW v10.5) ============ -->
+<div class="pg hd" id="pg-p2u">
+<div class="apihub-header"><div class="apihub-title">P2U</div><div class="apihub-sub">PHOTO TO URL · MULTI UPLOAD</div></div>
+<div class="c">
+<div class="cl">UPLOAD FOTO</div>
+<div class="p2u-drop" id="p2u-drop">
+  <span class="p2u-ic">🖼️</span>
+  <div class="p2u-label">TAP / DROP FOTO</div>
+  <div class="p2u-hint">bisa multi foto · PNG JPG WEBP GIF</div>
+</div>
+<input type="file" id="p2u-file" accept="image/*" multiple>
+<div class="p2u-list" id="p2u-list"></div>
+<div class="br" style="margin-top:10px">
+  <button id="p2u-transform">⚡ TRANSFORM</button>
+  <button class="g" id="p2u-clear">CLEAR</button>
+</div>
+<div id="p2u-log" class="console-log hd" style="height:150px"></div>
+<div id="p2u-result" class="hd" style="margin-top:8px"></div>
+</div>
+</div>
+
+<!-- ============ PAGE: VERCEL (NEW v10.5) ============ -->
+<div class="pg hd" id="pg-vc">
+<div class="apihub-header"><div class="apihub-title">VERCEL DEPLOY</div><div class="apihub-sub">UPLOAD CODE · AUTO DEPLOY</div><span class="apihub-count">vercel.com</span></div>
+<div class="c">
+<div class="cl">TOKEN & PROJECT</div>
+<label>Vercel Token</label><input id="vc-token" placeholder="vercel token">
+<label>Project Name Base</label><input id="vc-proj-name" placeholder="my-project">
+<label>Total Project (max 20)</label><input type="number" id="vc-total" value="20" min="1" max="20">
+</div>
+<div class="c">
+<div class="cl">ADD FILE MANUAL</div>
+<label>Nama File</label><input id="vc-file-name" placeholder="misal: index.html">
+<label>Content</label><textarea id="vc-file-content" placeholder="isi kode di sini..." style="min-height:140px;font-size:.6rem"></textarea>
+<button class="g" id="vc-add-file">➕ TAMBAH FILE</button>
+</div>
+<div class="c">
+<div class="cl">ATAU UPLOAD FILE</div>
+<div class="filedrop" id="vc-drop"><span style="font-size:24px;display:block">📁</span><div style="font-weight:700;font-size:.65rem">TAP / DROP FILE</div></div>
+<input type="file" id="vc-file" multiple>
+</div>
+<div class="c">
+<div class="cl">FILE LIST (centang yang mau di-deploy)</div>
+<div id="vc-file-list"></div>
+<div class="br" style="margin-top:10px">
+  <button id="vc-upload">🚀 DEPLOY</button>
+  <button class="g" id="vc-clear">CLEAR</button>
+</div>
+<div id="vc-log" class="console-log hd" style="height:180px"></div>
+</div>
+</div>
+
+<!-- ============ PAGE: GITHUB (NEW v10.5) ============ -->
+<div class="pg hd" id="pg-gh">
+<div class="apihub-header"><div class="apihub-title">GITHUB</div><div class="apihub-sub">UPLOAD · DOWNLOAD · COPY REPO</div><span class="apihub-count">api.github.com</span></div>
+
+<div id="gh-token-box" class="c">
+<div class="cl">🔑 VALIDATE TOKEN</div>
+<label>GitHub Token (PAT)</label><input type="password" id="gh-token" placeholder="ghp_...">
+<button id="gh-validate">VALIDATE TOKEN</button>
+<div id="gh-log" class="console-log hd" style="height:150px"></div>
+</div>
+
+<div id="gh-main-box" class="hd">
+<div class="c">
+<div class="cl">ACCOUNT</div>
+<div class="gh-user-badge">USER: <span id="gh-user-display">—</span></div>
+<div style="margin-top:8px;font-size:.55rem;color:var(--txd);letter-spacing:1px">REPO:</div>
+<div class="gh-repo-info" id="gh-repo-display">—</div>
+</div>
+
+<div class="c">
+<div class="cl">PILIH REPO</div>
+<select id="gh-repo-select" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--ac);background:rgba(4,8,15,.7);color:var(--tx);font-family:var(--fm);font-size:.7rem;outline:none">
+<option value="">— Pilih Repo —</option>
+</select>
+<div id="gh-repo-info" class="gh-repo-info hd">—</div>
+</div>
+
+<div class="c">
+<div class="cl">ADD FILE MANUAL</div>
+<label>Nama File</label><input id="gh-file-name" placeholder="misal: app.js">
+<label>Content</label><textarea id="gh-file-content" placeholder="isi kode..." style="min-height:120px;font-size:.6rem"></textarea>
+<button class="g" id="gh-add-file">➕ TAMBAH FILE</button>
+</div>
+
+<div class="c">
+<div class="cl">FILE LIST (centang yang mau di-upload)</div>
+<div id="gh-file-list"></div>
+<label style="margin-top:10px">Commit Message</label>
+<input id="gh-commit-msg" placeholder="Upload via RyannTools" value="Upload via RyannTools">
+<div class="br" style="margin-top:10px">
+  <button id="gh-upload">🚀 UPLOAD</button>
+  <button class="g" id="gh-download">⬇ DOWNLOAD</button>
+</div>
+</div>
+
+<div class="c">
+<div class="cl">COPY REPO</div>
+<div class="br">
+  <button class="g" id="gh-copy-new">📋 COPY → NEW REPO</button>
+  <button class="g" id="gh-copy-existing">📋 COPY → EXISTING</button>
+</div>
+</div>
+
+<div class="c">
+<button class="d" id="gh-logout">🚪 LOGOUT</button>
+<div id="gh-main-log" class="console-log hd" style="height:180px"></div>
+</div>
+</div>
+</div>
+
+<!-- ============ PAGE: HISTORY ============ -->
 <div class="pg hd" id="pg-hst">
 <div class="c"><div class="cl">HISTORY</div>
 <div id="hl">Belum ada</div>
@@ -867,6 +1103,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
+<!-- ============ PAGE: SETTINGS ============ -->
 <div class="pg hd" id="pg-set">
 <div class="c"><div class="cl">THEME PRESET</div>
 <div class="tg" id="tg">
@@ -903,6 +1140,8 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 <div class="snd-opt a" data-bg="galaxy">GALAXY</div>
 <div class="snd-opt" data-bg="binary">BINARY</div>
 <div class="snd-opt" data-bg="ufo">UFO</div>
+<div class="snd-opt" data-bg="retro">RETRO 8BIT</div>
+<div class="snd-opt" data-bg="starwars">STAR WARS</div>
 <div class="snd-opt" data-bg="plain">PLAIN</div>
 <div class="snd-opt" data-bg="custom">CUSTOM</div>
 </div>
@@ -915,7 +1154,7 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 <div class="c"><div class="cl">SOUND</div>
 <div class="snd-pack" id="snd-grid">
-<div class="snd-opt a" data-snd="beep">BEEP</div><div class="snd-opt" data-snd="click">CLICK</div><div class="snd-opt" data-snd="digital">DIGITAL</div><div class="snd-opt" data-snd="soft">SOFT</div><div class="snd-opt" data-snd="honey">HONEY</div><div class="snd-opt" data-snd="cloud">CLOUD</div><div class="snd-opt" data-snd="cherry">CHERRY</div><div class="snd-opt" data-snd="ocean">OCEAN</div><div class="snd-opt" data-snd="coral">CORAL</div><div class="snd-opt" data-snd="mint">MINT</div><div class="snd-opt" data-snd="lavender">LAVENDER</div><div class="snd-opt" data-snd="peach">PEACH</div><div class="snd-opt" data-snd="tap">TAP</div><div class="snd-opt" data-snd="pop">POP</div><div class="snd-opt" data-snd="off">OFF</div>
+<div class="snd-opt a" data-snd="beep">BEEP</div><div class="snd-opt" data-snd="click">CLICK</div><div class="snd-opt" data-snd="digital">DIGITAL</div><div class="snd-opt" data-snd="soft">SOFT</div><div class="snd-opt" data-snd="honey">HONEY</div><div class="snd-opt" data-snd="cloud">CLOUD</div><div class="snd-opt" data-snd="cherry">CHERRY</div><div class="snd-opt" data-snd="ocean">OCEAN</div><div class="snd-opt" data-snd="coral">CORAL</div><div class="snd-opt" data-snd="mint">MINT</div><div class="snd-opt" data-snd="lavender">LAVENDER</div><div class="snd-opt" data-snd="peach">PEACH</div><div class="snd-opt" data-snd="tap">TAP</div><div class="snd-opt" data-snd="pop">POP</div><div class="snd-opt" data-snd="8bit">8-BIT</div><div class="snd-opt" data-snd="off">OFF</div>
 </div>
 <button class="g" id="test-snd">TEST</button>
 </div>
@@ -938,9 +1177,10 @@ https://thingproxy.freeboard.io/fetch/</textarea>
 </div>
 </div>
 
-<div class="ft">RYANN • TOOLS · v10.4</div>
+<div class="ft">RYANN • TOOLS · v10.5</div>
 </div>
 
+<!-- ============ NAVBAR (20 TAB) ============ -->
 <div class="nv" id="nav-main">
   <div class="nb a" data-p="home"><span class="i"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span>HOME</div>
   <div class="nb" data-p="spy"><span class="i"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><circle cx="8.5" cy="10.5" r="1.2"/><circle cx="15.5" cy="10.5" r="1.2"/><path d="M12 16c-2 0-3.5-1-4-2.5"/></svg></span>SPY</div>
@@ -956,11 +1196,15 @@ https://thingproxy.freeboard.io/fetch/</textarea>
   <div class="nb" data-p="maker"><span class="i"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 1 5.3 5.3L9 22.6a2 2 0 0 1-2.8 0l-2.5-2.5a2 2 0 0 1 0-2.8z"/></svg></span>MAKER</div>
   <div class="nb" data-p="srchapi"><span class="i"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.5-4.5"/><path d="M8 8l5 5"/></svg></span>SRCH API</div>
   <div class="nb" data-p="tmp"><span class="i"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>TMP</div>
+  <div class="nb" data-p="p2u"><span class="i"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></span>P2U</div>
+  <div class="nb" data-p="vc"><span class="i"><svg viewBox="0 0 24 24"><path d="M12 2L2 19h20L12 2z"/></svg></span>VERCEL</div>
+  <div class="nb" data-p="gh"><span class="i"><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.4 2.9 8.2 6.8 9.5.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1 .8-.2 1.7-.3 2.5-.3s1.7.1 2.5.3c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .3.3.7 1 .7 2v3c0 .3.2.6.7.5C19.1 20.2 22 16.4 22 12c0-5.5-4.5-10-10-10z"/></svg></span>GITHUB</div>
   <div class="nb" data-p="tpl"><span class="i"><svg viewBox="0 0 24 24"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M15 3v5h5"/></svg></span>TPL</div>
   <div class="nb" data-p="hst"><span class="i"><svg viewBox="0 0 24 24"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg></span>HIST</div>
   <div class="nb" data-p="set"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>SET</div>
 </div>
 
+<!-- ============ INLINE SCRIPT (Binary Rain + UFO Smoke) ============ -->
 <script>
 (function initBinaryRain(){
   function startRain(){
@@ -1017,8 +1261,8 @@ https://thingproxy.freeboard.io/fetch/</textarea>
       var crafts=scene.querySelectorAll('.ufo-craft');
       crafts.forEach(function(ufo,idx){
         var rect=ufo.getBoundingClientRect();
-        if(rect.left<0 || rect.left>window.innerWidth) return;
-        if(rect.top<0 || rect.top>window.innerHeight) return;
+        if(rect.left<-100 || rect.left>window.innerWidth+100) return;
+        if(rect.top<-100 || rect.top>window.innerHeight+100) return;
         var now=Date.now();
         if(lastSpawn[idx] && now-lastSpawn[idx]<120) return;
         lastSpawn[idx]=now;
